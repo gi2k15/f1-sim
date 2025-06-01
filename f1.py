@@ -119,8 +119,8 @@ def obter_dados_pilotos():
     """
     while True:
         print("\n--- Método de Entrada de Dados dos Pilotos ---")
-        metodo = input("Como você gostaria de inserir os dados dos pilotos? (manual / json): ").lower()
-        if metodo == 'json':
+        metodo = input("Como você gostaria de inserir os dados dos pilotos? (manual / json*): ").lower()
+        if metodo == 'json' or metodo == '':
             dados_pilotos = obter_dados_pilotos_json()
             if dados_pilotos is not None: 
                 return dados_pilotos
@@ -136,7 +136,7 @@ def obter_numero_corridas_restantes():
     """
     while True:
         try:
-            num_corridas_str = input("Quantas corridas faltam no campeonato? ")
+            num_corridas_str = input("\nQuantas corridas faltam no campeonato? ")
             num_corridas = int(num_corridas_str)
             if num_corridas < 0: 
                 print("O número de corridas não pode ser negativo. Tente novamente.")
@@ -291,7 +291,7 @@ def main():
     print("\n--- Dados Iniciais ---")
     for piloto in pilotos_data:
         print(f"{piloto['nome']}: {piloto['pontuacao_total']} pontos")
-    print(f"Corridas restantes: {num_corridas}")
+    print(f"\nCorridas restantes: {num_corridas}")
     print(f"Número de simulações: {num_simulacoes}") # Informa o número fixo de simulações
 
     probabilidades_campeonato = executar_simulacao_monte_carlo(pilotos_data, num_corridas, num_simulacoes)
