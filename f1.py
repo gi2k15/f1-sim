@@ -1,6 +1,7 @@
 import random
 import copy
 import json # Adicionado para manipulação de JSON
+from tqdm import tqdm  # Adicionado para barra de progresso
 
 # Sistema de pontuação da F1 (Top 10)
 PONTOS_F1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
@@ -197,7 +198,8 @@ def executar_simulacao_monte_carlo(pilotos_originais, num_corridas_restantes, nu
     contagem_campeonatos = {piloto["nome"]: 0 for piloto in pilotos_originais}
 
     print(f"\nExecutando {num_total_simulacoes} simulações...")
-    for i in range(num_total_simulacoes):
+    # Uso da barra de progresso tqdm
+    for i in tqdm(range(num_total_simulacoes), desc="Simulando", unit="sim", ncols=100): 
         pilotos_para_simulacao_atual = copy.deepcopy(pilotos_originais)
         
         for p_orig, p_sim in zip(pilotos_originais, pilotos_para_simulacao_atual):
@@ -217,14 +219,9 @@ def executar_simulacao_monte_carlo(pilotos_originais, num_corridas_restantes, nu
         campeoes_desta_simulacao = [
             piloto["nome"] for piloto in resultado_temporada if piloto["pontuacao_total"] == max_pontos
         ]
-        
         for campeao_nome in campeoes_desta_simulacao:
             if campeao_nome in contagem_campeonatos:
                  contagem_campeonatos[campeao_nome] += 1
-        
-        # Ajuste na frequência de impressão do progresso para 10000 simulações
-        if (i + 1) % (num_total_simulacoes // 20 if num_total_simulacoes >= 20 else 1) == 0: # Imprime 20x
-            print(f"Progresso: {(i + 1) / num_total_simulacoes * 100:.0f}% concluído")
 
     probabilidades = {
         nome: (vitorias / num_total_simulacoes) * 100 
