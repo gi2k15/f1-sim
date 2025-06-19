@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Campeonato F1 2025 (Monte Carlo)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 30px;
+            background: #181a1b;
+            color: #e0e0e0;
+        }
+
+        .card,
+        .form-control,
+        .table,
+        .progress,
+        .btn,
+        .form-label {
+            background-color: #23272b !important;
+            color: #e0e0e0 !important;
+            border-color: #343a40 !important;
+        }
+
+        .table-striped>tbody>tr:nth-of-type(odd) {
+            background-color: #23272b !important;
+        }
+
+        .table-striped>tbody>tr:nth-of-type(even) {
+            background-color: #181a1b !important;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border-color: #343a40 !important;
+        }
+
+        .progress {
+            height: 24px;
+            background: #23272b;
+        }
+
+        .progress-bar {
+            background: #4caf50;
+        }
+
+        textarea {
+            font-family: monospace;
+        }
+
+        .btn-primary {
+            background-color: #007bff !important;
+            border-color: #007bff !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3 !important;
+            border-color: #0056b3 !important;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: #fff !important;
+        }
+
+        ::placeholder {
+            color: #b0b0b0 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="my-4">Simulador de Campeonato F1 2025 (Monte Carlo)</h1>
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Dados dos pilotos (JSON):</label>
+                    <textarea id="pilotos_json" class="form-control" rows="10"></textarea>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Corridas restantes:</label>
+                        <input type="number" id="corridas" class="form-control" value="5" min="1">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Simulações:</label>
+                        <input type="number" id="simulacoes" class="form-control" value="10000" min="100">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="simular()">Simular</button>
+                    </div>
+                </div>
+                <div class="progress mb-2" id="progress" style="display:none;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="progress-bar" role="progressbar"
+                        style="width:0%"></div>
+                </div>
+            </div>
+        </div>
+        <div id="tabela-inicial"></div>
+        <div id="tabela-final"></div>
+    </div>
+    <script>
+        function mostrarTabelaInicial(pilotos, corridas) {
+            let html = `<h2 class='mt-4'>Pontuação Inicial dos Pilotos</h2>`;
+            html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
+            html += `<table class='table table-bordered table-striped table-dark'><thead><tr><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`;
+            pilotos.sort((a, b) => b.pontuacao - a.pontuacao)
+                .forEach(p => {
+                    html += `<tr><td>${p.nome}</td><td>${p.pontuacao}</td></tr>`;
+                });
+            html += `</tbody></table>`;
+            document.getElementById('tabela-inicial').innerHTML = html;
+        }
+
+        function mostrarTabelaFinal(probabilidades, corridas) {
+            let html = `<h2 class='mt-4'>Probabilidades Estimadas para o Campeonato</h2>`;
+            html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
+            html += `<table class='table table-bordered table-striped table-dark'><thead><tr><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
+            probabilidades.sort((a, b) => b.chance - a.chance)
+                .forEach(p => {
+                    html += `<tr><td>${p.nome}</td><td>${p.chance.toFixed(2)}</td></tr>`;
+                });
+            html += `</tbody></table>`;
+            document.getElementById('tabela-final').innerHTML = html;
+        }
+
+        function simularCorrida(pilotos) {
+            let ordem = pilotos.slice();
+            for (let i = ordem.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [ordem[i], ordem[j]] = [ordem[j], ordem[i]];
+            }
+            const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+            let pontos = {};
+            ordem.forEach((p, i) => {
+                pontos[p.nome] = (pontos[p.nome] || 0) + (pontosF1[i] || 0);
+            });
+            return pontos;
+        }
+
+        function simularTemporada(pilotos, corridas) {
+            let temp = pilotos.map(p => ({ nome: p.nome, pontuacao: p.pontuacao }));
+            for (let i = 0; i < corridas; i++) {
+                let pontos = simularCorrida(temp);
+                temp.forEach(p => {
+                    p.pontuacao += pontos[p.nome] || 0;
+                });
+            }
+            return temp;
+        }
+
+        function simular() {
+            let pilotos;
+            try {
+                pilotos = JSON.parse(document.getElementById('pilotos_json').value);
+            } catch {
+                alert('JSON inválido!');
+                return;
+            }
+            if (!Array.isArray(pilotos) || pilotos.length === 0) {
+                alert('Insira ao menos um piloto!');
+                return;
+            }
+            let corridas = parseInt(document.getElementById('corridas').value);
+            let simulacoes = parseInt(document.getElementById('simulacoes').value);
+            pilotos = pilotos.map(p => ({ nome: p.nome, pontuacao: parseInt(p.pontuacao) }));
+            mostrarTabelaInicial(pilotos, corridas);
+            document.getElementById('tabela-final').innerHTML = '';
+            // Barra de progresso
+            let progress = document.getElementById('progress');
+            let progressBar = document.getElementById('progress-bar');
+            progress.style.display = 'block';
+            progressBar.style.width = '0%';
+            setTimeout(() => {
+                let vitorias = {};
+                for (let i = 0; i < simulacoes; i++) {
+                    let resultado = simularTemporada(pilotos, corridas);
+                    let max = Math.max(...resultado.map(p => p.pontuacao));
+                    resultado.filter(p => p.pontuacao === max).forEach(p => {
+                        vitorias[p.nome] = (vitorias[p.nome] || 0) + 1;
+                    });
+                    if (i % Math.ceil(simulacoes / 100) === 0) {
+                        progressBar.style.width = ((i / simulacoes) * 100) + '%';
+                    }
+                }
+                progressBar.style.width = '100%';
+                progress.style.display = 'none';
+                let probabilidades = pilotos.map(p => ({
+                    nome: p.nome,
+                    chance: (vitorias[p.nome] || 0) / simulacoes * 100
+                }));
+                mostrarTabelaFinal(probabilidades, corridas);
+            }, 50);
+        }
+    </script>
+</body>
+
+</html>

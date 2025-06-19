@@ -270,6 +270,28 @@ def imprimir_resultados_tabela(probabilidades_campeonato, num_corridas):
     # Linha de rodapé da tabela
     print(f"+-{'-' * max_len_nome}-+-{'-' * chance_col_width}-+")
 
+def imprimir_tabela_pontuacao_inicial(pilotos_data, num_corridas):
+    """
+    Imprime a pontuação inicial dos pilotos em formato de tabela, igual ao resultado final.
+    """
+    print("\n--- Pontuação Inicial dos Pilotos ---")
+    print(f"---           Corridas restantes: {num_corridas}           ---")
+    if not pilotos_data:
+        print("Nenhum piloto para exibir.")
+        return
+
+    header_piloto = "Piloto"
+    header_pontos = "Pontos"
+
+    max_len_nome = max(len(header_piloto), max(len(p['nome']) for p in pilotos_data))
+    pontos_col_width = max(len(header_pontos), max(len(str(p['pontuacao_total'])) for p in pilotos_data))
+
+    print(f"+-{'-' * max_len_nome}-+-{'-' * pontos_col_width}-+")
+    print(f"| {header_piloto.ljust(max_len_nome)} | {header_pontos.ljust(pontos_col_width)} |")
+    print(f"+-{'-' * max_len_nome}-+-{'-' * pontos_col_width}-+")
+    for p in sorted(pilotos_data, key=lambda x: x['pontuacao_total'], reverse=True):
+        print(f"| {p['nome'].ljust(max_len_nome)} | {str(p['pontuacao_total']).rjust(pontos_col_width)} |")
+    print(f"+-{'-' * max_len_nome}-+-{'-' * pontos_col_width}-+")
 
 def main():
     """
@@ -285,11 +307,8 @@ def main():
     num_corridas = obter_numero_corridas_restantes()
     num_simulacoes = 10000 # Número de simulações fixado em 10000
 
-    print("\n--- Dados Iniciais ---")
-    for piloto in pilotos_data:
-        print(f"{piloto['nome']}: {piloto['pontuacao_total']} pontos")
-    print(f"\nCorridas restantes: {num_corridas}")
-    print(f"Número de simulações: {num_simulacoes}") # Informa o número fixo de simulações
+    imprimir_tabela_pontuacao_inicial(pilotos_data, num_corridas)
+    print(f"\nNúmero de simulações: {num_simulacoes}") # Informa o número fixo de simulações
 
     probabilidades_campeonato = executar_simulacao_monte_carlo(pilotos_data, num_corridas, num_simulacoes)
 
