@@ -4,112 +4,217 @@
 <head>
     <meta charset="UTF-8">
     <title>Simulador de Campeonato F1 2025 (Monte Carlo)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             margin: 30px;
             background: #181a1b;
             color: #e0e0e0;
+            font-family: Arial, sans-serif;
         }
 
-        .card,
-        .form-control,
-        .table,
-        .progress,
-        .btn,
-        .form-label {
-            background-color: #23272b !important;
-            color: #e0e0e0 !important;
-            border-color: #343a40 !important;
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        .table-striped>tbody>tr:nth-of-type(odd) {
-            background-color: #23272b !important;
-        }
-
-        .table-striped>tbody>tr:nth-of-type(even) {
-            background-color: #181a1b !important;
-        }
-
-        .table-bordered th,
-        .table-bordered td {
-            border-color: #343a40 !important;
-        }
-
-        .progress {
-            height: 24px;
+        .accordion {
             background: #23272b;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px #0002;
+            overflow: hidden;
+            transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.5s;
+            max-height: 1000px;
+            opacity: 1;
+            position: relative;
         }
 
-        .progress-bar {
-            background: #4caf50;
+        .accordion.recolher {
+            max-height: 0 !important;
+            opacity: 0.1;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            z-index: 10;
+            background: #343a40;
+            color: #fff;
+            border: none;
+            border-radius: 0 0 8px 8px;
+            padding: 4px 16px;
+            font-size: 1rem;
+            cursor: pointer;
+            opacity: 0.85;
+            transition: opacity 0.2s;
+        }
+
+        .toggle-btn:hover {
+            opacity: 1;
+        }
+
+        .form-section {
+            padding: 32px 24px 16px 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #e0e0e0;
+        }
+
+        textarea,
+        input[type=number] {
+            width: 100%;
+            background: #181a1b;
+            color: #e0e0e0;
+            border: 1px solid #343a40;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 16px;
+            font-size: 1rem;
         }
 
         textarea {
             font-family: monospace;
+            min-height: 120px;
         }
 
-        .btn-primary {
-            background-color: #007bff !important;
-            border-color: #007bff !important;
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
         }
 
-        .btn-primary:hover {
-            background-color: #0056b3 !important;
-            border-color: #0056b3 !important;
+        .form-row>div:last-child {
+            max-width: 140px;
+            flex: 0 0 140px;
+        }
+
+        @media (max-width: 700px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .form-row>div {
+                max-width: 100%;
+                min-width: 0;
+            }
+        }
+
+        .btn-simular {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 0;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-simular:hover {
+            background: #0056b3;
+        }
+
+        .resultado {
+            display: flex;
+            gap: 60px;
+            justify-content: center;
+            margin-top: 32px;
+            align-items: flex-start;
+        }
+
+        .resultado>div {
+            min-width: 320px;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #23272b;
+            color: #e0e0e0;
+            margin-bottom: 16px;
+        }
+
+        th,
+        td {
+            border: 1px solid #343a40;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #181a1b;
+        }
+
+        tr:nth-child(even) {
+            background: #23272b;
+        }
+
+        tr:nth-child(odd) {
+            background: #181a1b;
         }
 
         h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            color: #fff !important;
-        }
-
-        ::placeholder {
-            color: #b0b0b0 !important;
+        h2 {
+            color: #fff;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1 class="my-4">Simulador de Campeonato F1 2025 (Monte Carlo)</h1>
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">Dados dos pilotos (JSON):</label>
-                    <textarea id="pilotos_json" class="form-control" rows="10"></textarea>
-                </div>
-                <div class="row g-3 mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Corridas restantes:</label>
-                        <input type="number" id="corridas" class="form-control" value="5" min="1">
+        <h1 style="margin-bottom: 24px;">Simulador de Campeonato F1 2025 (Monte Carlo)</h1>
+        <div class="accordion" id="form-card">
+            <button class="toggle-btn" id="toggle-btn" onclick="toggleFormulario(event)">▲</button>
+            <div class="form-section" onclick="event.stopPropagation()">
+                <label>Dados dos pilotos (JSON):</label>
+                <textarea id="pilotos_json"></textarea>
+                <div class="form-row">
+                    <div>
+                        <label>Corridas restantes:</label>
+                        <input type="number" id="corridas" value="14" min="1">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Simulações:</label>
-                        <input type="number" id="simulacoes" class="form-control" value="10000" min="100">
+                    <div>
+                        <label>Simulações:</label>
+                        <input type="number" id="simulacoes" value="10000" min="100">
                     </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <button class="btn btn-primary w-100" onclick="simular()">Simular</button>
+                    <div>
+                        <button class="btn-simular" onclick="simular()">Simular</button>
                     </div>
-                </div>
-                <div class="progress mb-2" id="progress" style="display:none;">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="progress-bar" role="progressbar"
-                        style="width:0%"></div>
                 </div>
             </div>
         </div>
-        <div id="tabela-inicial"></div>
-        <div id="tabela-final"></div>
+        <div class="resultado">
+            <div id="tabela-inicial"></div>
+            <div id="tabela-final"></div>
+        </div>
     </div>
     <script>
+        function extrairChave(obj, alternativas) {
+            for (let alt of alternativas) {
+                if (obj.hasOwnProperty(alt)) return obj[alt];
+            }
+            // Se não encontrar, retorna o primeiro valor string/number
+            for (let k in obj) {
+                if (typeof obj[k] === 'string' || typeof obj[k] === 'number') return obj[k];
+            }
+            return '';
+        }
+
         function mostrarTabelaInicial(pilotos, corridas) {
             let html = `<h2 class='mt-4'>Pontuação Inicial dos Pilotos</h2>`;
             html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
-            html += `<table class='table table-bordered table-striped table-dark'><thead><tr><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`;
+            html += `<table><thead><tr><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`;
             pilotos.sort((a, b) => b.pontuacao - a.pontuacao)
                 .forEach(p => {
                     html += `<tr><td>${p.nome}</td><td>${p.pontuacao}</td></tr>`;
@@ -119,9 +224,9 @@
         }
 
         function mostrarTabelaFinal(probabilidades, corridas) {
-            let html = `<h2 class='mt-4'>Probabilidades Estimadas para o Campeonato</h2>`;
+            let html = `<h2 class='mt-4'>Estimativas</h2>`;
             html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
-            html += `<table class='table table-bordered table-striped table-dark'><thead><tr><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
+            html += `<table><thead><tr><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
             probabilidades.sort((a, b) => b.chance - a.chance)
                 .forEach(p => {
                     html += `<tr><td>${p.nome}</td><td>${p.chance.toFixed(2)}</td></tr>`;
@@ -169,35 +274,54 @@
             }
             let corridas = parseInt(document.getElementById('corridas').value);
             let simulacoes = parseInt(document.getElementById('simulacoes').value);
-            pilotos = pilotos.map(p => ({ nome: p.nome, pontuacao: parseInt(p.pontuacao) }));
+            // Aceita qualquer chave para nome e pontuacao
+            pilotos = pilotos.map(p => ({
+                nome: extrairChave(p, ['nome', 'piloto', 'driver', 'n']),
+                pontuacao: parseInt(extrairChave(p, ['pontuacao', 'pontos', 'score', 'pts', 'p']))
+            }));
             mostrarTabelaInicial(pilotos, corridas);
             document.getElementById('tabela-final').innerHTML = '';
-            // Barra de progresso
-            let progress = document.getElementById('progress');
-            let progressBar = document.getElementById('progress-bar');
-            progress.style.display = 'block';
-            progressBar.style.width = '0%';
-            setTimeout(() => {
-                let vitorias = {};
-                for (let i = 0; i < simulacoes; i++) {
-                    let resultado = simularTemporada(pilotos, corridas);
-                    let max = Math.max(...resultado.map(p => p.pontuacao));
-                    resultado.filter(p => p.pontuacao === max).forEach(p => {
-                        vitorias[p.nome] = (vitorias[p.nome] || 0) + 1;
-                    });
-                    if (i % Math.ceil(simulacoes / 100) === 0) {
-                        progressBar.style.width = ((i / simulacoes) * 100) + '%';
-                    }
-                }
-                progressBar.style.width = '100%';
-                progress.style.display = 'none';
-                let probabilidades = pilotos.map(p => ({
-                    nome: p.nome,
-                    chance: (vitorias[p.nome] || 0) / simulacoes * 100
-                }));
-                mostrarTabelaFinal(probabilidades, corridas);
-            }, 50);
+            let vitorias = {};
+            for (let i = 0; i < simulacoes; i++) {
+                let resultado = simularTemporada(pilotos, corridas);
+                let max = Math.max(...resultado.map(p => p.pontuacao));
+                resultado.filter(p => p.pontuacao === max).forEach(p => {
+                    vitorias[p.nome] = (vitorias[p.nome] || 0) + 1;
+                });
+            }
+            let probabilidades = pilotos.map(p => ({
+                nome: p.nome,
+                chance: (vitorias[p.nome] || 0) / simulacoes * 100
+            }));
+            mostrarTabelaFinal(probabilidades, corridas);
+            // Recolher o formulário animadamente estilo sanfona
+            let card = document.getElementById('form-card');
+            let btn = document.getElementById('toggle-btn');
+            if (card && !card.classList.contains('recolher')) {
+                card.classList.add('recolher');
+                if (btn) btn.innerHTML = '▼';
+            }
         }
+
+        function toggleFormulario(e) {
+            if (e) e.stopPropagation();
+            let card = document.getElementById('form-card');
+            let btn = document.getElementById('toggle-btn');
+            if (card.classList.contains('recolher')) {
+                card.classList.remove('recolher');
+                btn.innerHTML = '▲';
+            } else {
+                card.classList.add('recolher');
+                btn.innerHTML = '▼';
+            }
+        }
+
+        document.addEventListener('click', function (event) {
+            let card = document.getElementById('form-card');
+            if (!card.contains(event.target)) {
+                card.classList.add('recolher');
+            }
+        });
     </script>
 </body>
 
