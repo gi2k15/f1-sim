@@ -4,213 +4,39 @@
 <head>
     <meta charset="UTF-8">
     <title>Simulador de Campeonato F1 2025 (Monte Carlo)</title>
-    <style>
-        body {
-            margin: 30px;
-            background: #181a1b;
-            color: #e0e0e0;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .accordion {
-            background: #23272b;
-            border-radius: 10px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px #0002;
-            overflow: hidden;
-            transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.5s;
-            max-height: 1000px;
-            opacity: 1;
-            position: relative;
-        }
-
-        .accordion.recolher {
-            max-height: 0 !important;
-            opacity: 0.1;
-        }
-
-        .toggle-btn {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 0;
-            z-index: 10;
-            background: #343a40;
-            color: #fff;
-            border: none;
-            border-radius: 0 0 8px 8px;
-            padding: 4px 16px;
-            font-size: 1rem;
-            cursor: pointer;
-            opacity: 0.85;
-            transition: opacity 0.2s;
-        }
-
-        .toggle-btn:hover {
-            opacity: 1;
-        }
-
-        .form-section {
-            padding: 32px 24px 16px 24px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            color: #e0e0e0;
-        }
-
-        textarea,
-        input[type=number] {
-            width: 100%;
-            background: #181a1b;
-            color: #e0e0e0;
-            border: 1px solid #343a40;
-            border-radius: 6px;
-            padding: 8px;
-            margin-bottom: 16px;
-            font-size: 1rem;
-        }
-
-        textarea {
-            font-family: monospace;
-            min-height: 120px;
-        }
-
-        .form-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
-
-        .form-row>div:last-child {
-            max-width: 140px;
-            flex: 0 0 140px;
-        }
-
-        @media (max-width: 700px) {
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-
-            .form-row>div {
-                max-width: 100%;
-                min-width: 0;
-            }
-        }
-
-        .btn-simular {
-            background: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 0;
-            font-size: 1.1rem;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-        }
-
-        .btn-simular:hover {
-            background: #0056b3;
-        }
-
-        .resultado {
-            display: flex;
-            gap: 60px;
-            justify-content: center;
-            margin-top: 32px;
-            align-items: flex-start;
-        }
-
-        .resultado>div {
-            min-width: 320px;
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #23272b;
-            color: #e0e0e0;
-            margin-bottom: 16px;
-        }
-
-        th,
-        td {
-            border: 1px solid #343a40;
-            padding: 8px 12px;
-            text-align: left;
-        }
-
-        th {
-            background: #181a1b;
-        }
-
-        tr:nth-child(even) {
-            background: #23272b;
-        }
-
-        tr:nth-child(odd) {
-            background: #181a1b;
-        }
-
-        h1,
-        h2 {
-            color: #fff;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1 style="margin-bottom: 24px;">Simulador de Campeonato F1 2025 (Monte Carlo)</h1>
-        <div class="accordion" id="form-card">
-            <button class="toggle-btn" id="toggle-btn" onclick="toggleFormulario(event)">▲</button>
-            <div class="form-section" onclick="event.stopPropagation()">
-                <label>Dados dos pilotos (JSON):</label>
-                <textarea id="pilotos_json"></textarea>
-                <div class="form-row">
-                    <div>
-                        <label>Corridas restantes:</label>
-                        <input type="number" id="corridas" value="14" min="1">
-                    </div>
-                    <div>
-                        <label>Simulações:</label>
-                        <input type="number" id="simulacoes" value="10000" min="100">
-                    </div>
-                    <div>
-                        <button class="btn-simular" onclick="simular()">Simular</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="resultado">
-            <div id="tabela-inicial"></div>
-            <div id="tabela-final"></div>
-        </div>
-    </div>
     <script>
+        /**
+         * Extrai o valor de uma chave alternativa de um objeto.
+         * @param {Object} obj - O objeto de onde extrair o valor.
+         * @param {string[]} alternativas - Lista de possíveis nomes de chave.
+         * @returns {string|number} O valor encontrado ou o primeiro valor string/number do objeto.
+         *
+         * Exemplo de uso:
+         *   let nome = extrairChave(piloto, ['nome', 'piloto', 'driver']);
+         */
         function extrairChave(obj, alternativas) {
             for (let alt of alternativas) {
                 if (obj.hasOwnProperty(alt)) return obj[alt];
             }
-            // Se não encontrar, retorna o primeiro valor string/number
             for (let k in obj) {
                 if (typeof obj[k] === 'string' || typeof obj[k] === 'number') return obj[k];
             }
             return '';
         }
 
+        /**
+         * Gera e exibe a tabela inicial dos pilotos.
+         * @param {Array} pilotos - Array de objetos de pilotos (com .nome e .pontuacao).
+         * @param {number} corridas - Número de corridas restantes.
+         *
+         * Exemplo de uso:
+         *   mostrarTabelaInicial(pilotos, 10);
+         *
+         * Espera que exista um elemento com id 'tabela-inicial' no HTML.
+         */
         function mostrarTabelaInicial(pilotos, corridas) {
             let html = `<h2 class='mt-4'>Pontuação Inicial dos Pilotos</h2>`;
             html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
@@ -223,6 +49,16 @@
             document.getElementById('tabela-inicial').innerHTML = html;
         }
 
+        /**
+         * Gera e exibe a tabela final de probabilidades dos pilotos.
+         * @param {Array} probabilidades - Array de objetos {nome, chance}.
+         * @param {number} corridas - Número de corridas restantes.
+         *
+         * Exemplo de uso:
+         *   mostrarTabelaFinal(probabilidades, 10);
+         *
+         * Espera que exista um elemento com id 'tabela-final' no HTML.
+         */
         function mostrarTabelaFinal(probabilidades, corridas) {
             let html = `<h2 class='mt-4'>Estimativas</h2>`;
             html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
@@ -235,6 +71,14 @@
             document.getElementById('tabela-final').innerHTML = html;
         }
 
+        /**
+         * Simula uma corrida, embaralhando os pilotos e atribuindo pontos de acordo com a posição.
+         * @param {Array} pilotos - Array de objetos de pilotos (com .nome).
+         * @returns {Object} Um objeto {nome: pontos} com os pontos ganhos por cada piloto nesta corrida.
+         *
+         * Exemplo de uso:
+         *   let pontos = simularCorrida(pilotos);
+         */
         function simularCorrida(pilotos) {
             let ordem = pilotos.slice();
             for (let i = ordem.length - 1; i > 0; i--) {
@@ -249,6 +93,15 @@
             return pontos;
         }
 
+        /**
+         * Simula uma temporada completa, acumulando pontos dos pilotos.
+         * @param {Array} pilotos - Array de objetos {nome, pontuacao}.
+         * @param {number} corridas - Número de corridas a simular.
+         * @returns {Array} Novo array de pilotos com pontuação final.
+         *
+         * Exemplo de uso:
+         *   let resultado = simularTemporada(pilotos, 10);
+         */
         function simularTemporada(pilotos, corridas) {
             let temp = pilotos.map(p => ({ nome: p.nome, pontuacao: p.pontuacao }));
             for (let i = 0; i < corridas; i++) {
@@ -260,6 +113,22 @@
             return temp;
         }
 
+        /**
+         * Função principal para simular o campeonato.
+         * Lê os dados do JSON, executa as simulações e exibe os resultados.
+         *
+         * Espera que existam elementos com ids:
+         *   - 'pilotos_json' (textarea com o JSON dos pilotos)
+         *   - 'corridas' (input number)
+         *   - 'simulacoes' (input number)
+         *   - 'tabela-inicial' (div para tabela inicial)
+         *   - 'tabela-final' (div para tabela final)
+         *
+         * Exemplo de uso:
+         *   simular();
+         *
+         * O JSON pode ter qualquer chave para nome/pontuação, pois é feita a extração automática.
+         */
         function simular() {
             let pilotos;
             try {
@@ -294,15 +163,15 @@
                 chance: (vitorias[p.nome] || 0) / simulacoes * 100
             }));
             mostrarTabelaFinal(probabilidades, corridas);
-            // Recolher o formulário animadamente estilo sanfona
-            let card = document.getElementById('form-card');
-            let btn = document.getElementById('toggle-btn');
-            if (card && !card.classList.contains('recolher')) {
-                card.classList.add('recolher');
-                if (btn) btn.innerHTML = '▼';
-            }
         }
 
+        /**
+         * Alterna a exibição do formulário sanfona (caso use sanfona no HTML).
+         * Espera que exista um elemento com id 'form-card' e um botão com id 'toggle-btn'.
+         *
+         * Exemplo de uso:
+         *   toggleFormulario(event);
+         */
         function toggleFormulario(e) {
             if (e) e.stopPropagation();
             let card = document.getElementById('form-card');
@@ -315,13 +184,6 @@
                 btn.innerHTML = '▼';
             }
         }
-
-        document.addEventListener('click', function (event) {
-            let card = document.getElementById('form-card');
-            if (!card.contains(event.target)) {
-                card.classList.add('recolher');
-            }
-        });
     </script>
 </body>
 
