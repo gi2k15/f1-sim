@@ -1,0 +1,66 @@
+:root {
+/** Base colors */
+--clr-dark-a0: #000000;
+--clr-light-a0: #ffffff;
+
+/** Theme primary colors */
+--clr-primary-a0: #a9e362;
+--clr-primary-a10: #b4e675;
+--clr-primary-a20: #beea87;
+--clr-primary-a30: #c8ed98;
+--clr-primary-a40: #d2f0a9;
+--clr-primary-a50: #dbf3ba;
+
+/** Theme surface colors */
+--clr-surface-a0: #121212;
+--clr-surface-a10: #282828;
+--clr-surface-a20: #3f3f3f;
+--clr-surface-a30: #575757;
+--clr-surface-a40: #717171;
+--clr-surface-a50: #8b8b8b;
+
+/** Theme tonal surface colors */
+--clr-surface-tonal-a0: #20241a;
+--clr-surface-tonal-a10: #35382f;
+--clr-surface-tonal-a20: #4b4e45;
+--clr-surface-tonal-a30: #62655d;
+--clr-surface-tonal-a40: #7a7d76;
+--clr-surface-tonal-a50: #939590;
+}
+
+/** Examples */
+body {
+    color: var(--clr-light-a0);
+    background-color: var(--clr-surface-a0);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.json {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.resultados {
+    display: flex;
+    justify-content: space-between;
+    flex: 1;
+}
+
+table tr:nth-child(even) {
+    background-color: var(--clr-surface-a10);
+}
+
+table tr:nth-child(odd) {
+    background-color: var(--clr-surface-a20);
+}

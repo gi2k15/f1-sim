@@ -28,7 +28,7 @@ function extrairChave(obj, alternativas) {
  * Espera que exista um elemento com id 'tabela-inicial' no HTML.
  */
 function mostrarTabelaInicial(pilotos, corridas) {
-    let html = `<h2 class='mt-4'>Pontuação Inicial dos Pilotos</h2>`;
+    let html = `<h2>Pontuação Inicial dos Pilotos</h2>`;
     html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
     html += `<table><thead><tr><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`;
     pilotos.sort((a, b) => b.pontuacao - a.pontuacao)
@@ -50,7 +50,7 @@ function mostrarTabelaInicial(pilotos, corridas) {
  * Espera que exista um elemento com id 'tabela-final' no HTML.
  */
 function mostrarTabelaFinal(probabilidades, corridas) {
-    let html = `<h2 class='mt-4'>Estimativas</h2>`;
+    let html = `<h2>Estimativas</h2>`;
     html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
     html += `<table><thead><tr><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
     probabilidades.sort((a, b) => b.chance - a.chance)
@@ -119,7 +119,8 @@ function simularTemporada(pilotos, corridas) {
  *
  * O JSON pode ter qualquer chave para nome/pontuação, pois é feita a extração automática.
  */
-function simular() {
+function simular(event) {
+    event.preventDefault();
     let pilotos;
     try {
         pilotos = JSON.parse(document.getElementById('pilotos_json').value);
