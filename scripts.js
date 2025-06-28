@@ -28,7 +28,7 @@ function extrairChave(obj, alternativas) {
  * Espera que exista um elemento com id 'tabela-inicial' no HTML.
  */
 function mostrarTabelaInicial(pilotos, corridas) {
-    let html = `<h2>Pontuação Inicial dos Pilotos</h2>`;
+    let html = `<h3>Pontuação Inicial dos Pilotos</h3>`;
     html += `<table><thead><tr><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`;
     pilotos.sort((a, b) => b.pontuacao - a.pontuacao)
         .forEach(p => {
@@ -49,7 +49,7 @@ function mostrarTabelaInicial(pilotos, corridas) {
  * Espera que exista um elemento com id 'tabela-final' no HTML.
  */
 function mostrarTabelaFinal(probabilidades, corridas) {
-    let html = `<h2>Estimativas</h2>`;
+    let html = `<h3>Estimativas</h3>`;
     html += `<table><thead><tr><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
     probabilidades.sort((a, b) => b.chance - a.chance)
         .forEach(p => {
@@ -99,6 +99,18 @@ function simularTemporada(pilotos, corridas) {
         });
     }
     return temp;
+}
+
+/**
+ * Função que exibe ou oculta o accordion.
+ */
+function exibirAccordion() {
+    const acc = document.getElementById('accordion')
+    if (acc.style.display === 'none' || acc.style.display === '') {
+        acc.style.display = 'block';
+    } else {
+        acc.style.display = 'none';
+    }
 }
 
 /**
@@ -152,24 +164,6 @@ function simular(event) {
         chance: (vitorias[p.nome] || 0) / simulacoes * 100
     }));
     mostrarTabelaFinal(probabilidades, corridas);
-}
-
-/**
- * Alterna a exibição do formulário sanfona (caso use sanfona no HTML).
- * Espera que exista um elemento com id 'form-card' e um botão com id 'toggle-btn'.
- *
- * Exemplo de uso:
- *   toggleFormulario(event);
- */
-function toggleFormulario(e) {
-    if (e) e.stopPropagation();
-    let card = document.getElementById('form-card');
-    let btn = document.getElementById('toggle-btn');
-    if (card.classList.contains('recolher')) {
-        card.classList.remove('recolher');
-        btn.innerHTML = '▲';
-    } else {
-        card.classList.add('recolher');
-        btn.innerHTML = '▼';
-    }
+    document.getElementById('accordion').style.display = 'none';
+    document.getElementById('resultados').style.display = 'block';
 }

@@ -1,43 +1,49 @@
 :root {
-/** Base colors */
---clr-dark-a0: #000000;
---clr-light-a0: #ffffff;
-
-/** Theme primary colors */
---clr-primary-a0: #a9e362;
---clr-primary-a10: #b4e675;
---clr-primary-a20: #beea87;
---clr-primary-a30: #c8ed98;
---clr-primary-a40: #d2f0a9;
---clr-primary-a50: #dbf3ba;
-
-/** Theme surface colors */
---clr-surface-a0: #121212;
---clr-surface-a10: #282828;
---clr-surface-a20: #3f3f3f;
---clr-surface-a30: #575757;
---clr-surface-a40: #717171;
---clr-surface-a50: #8b8b8b;
-
-/** Theme tonal surface colors */
---clr-surface-tonal-a0: #20241a;
---clr-surface-tonal-a10: #35382f;
---clr-surface-tonal-a20: #4b4e45;
---clr-surface-tonal-a30: #62655d;
---clr-surface-tonal-a40: #7a7d76;
---clr-surface-tonal-a50: #939590;
+    --clr-light-a0: #ffffff;
+    --clr-surface-a0: #121212;
+    --clr-surface-a10: #282828;
+    --clr-surface-a20: #3f3f3f;
 }
 
-/** Examples */
 body {
     color: var(--clr-light-a0);
     background-color: var(--clr-surface-a0);
     font-family: Arial, Helvetica, sans-serif;
 }
 
+input, textarea, button {
+    background-color: var(--clr-surface-a0);
+    color: var(--clr-light-a0);
+    border: 2px solid var(--clr-light-a0);
+    border-radius: 5px;
+}
+
+button {
+    width: 100px;
+}
+
 .container {
     max-width: 800px;
     margin: 0 auto;
+}
+
+.accordion {
+    position: relative;
+    width: 100%;
+    transition: 0.4s;
+}
+
+.accordion:hover {
+    cursor: pointer;
+    background-color: var(--clr-surface-a10);
+}
+
+.accordion::after {
+    content: "+";
+    position: absolute;
+    right: 0;
+    text-align: right;
+    transition: 0.4s;
 }
 
 .json {
@@ -51,6 +57,10 @@ body {
     justify-content: space-between;
 }
 
+#resultados {
+    display: none;
+}
+
 .resultados {
     display: flex;
     justify-content: space-between;
@@ -61,7 +71,7 @@ table {
     width: 300px;
     border-collapse: collapse;
     border: none;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 table thead tr {
