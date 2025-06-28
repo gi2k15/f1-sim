@@ -1,12 +1,12 @@
 /**
-        * Extrai o valor de uma chave alternativa de um objeto.
-        * @param {Object} obj - O objeto de onde extrair o valor.
-        * @param {string[]} alternativas - Lista de possíveis nomes de chave.
-        * @returns {string|number} O valor encontrado ou o primeiro valor string/number do objeto.
-        *
-        * Exemplo de uso:
-        *   let nome = extrairChave(piloto, ['nome', 'piloto', 'driver']);
-        */
+* Extrai o valor de uma chave alternativa de um objeto.
+* @param {Object} obj - O objeto de onde extrair o valor.
+* @param {string[]} alternativas - Lista de possíveis nomes de chave.
+* @returns {string|number} O valor encontrado ou o primeiro valor string/number do objeto.
+*
+* Exemplo de uso:
+*   let nome = extrairChave(piloto, ['nome', 'piloto', 'driver']);
+*/
 function extrairChave(obj, alternativas) {
     for (let alt of alternativas) {
         if (obj.hasOwnProperty(alt)) return obj[alt];
@@ -29,7 +29,6 @@ function extrairChave(obj, alternativas) {
  */
 function mostrarTabelaInicial(pilotos, corridas) {
     let html = `<h2>Pontuação Inicial dos Pilotos</h2>`;
-    html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
     html += `<table><thead><tr><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`;
     pilotos.sort((a, b) => b.pontuacao - a.pontuacao)
         .forEach(p => {
@@ -51,7 +50,6 @@ function mostrarTabelaInicial(pilotos, corridas) {
  */
 function mostrarTabelaFinal(probabilidades, corridas) {
     let html = `<h2>Estimativas</h2>`;
-    html += `<p>Corridas restantes: <b>${corridas}</b></p>`;
     html += `<table><thead><tr><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
     probabilidades.sort((a, b) => b.chance - a.chance)
         .forEach(p => {
