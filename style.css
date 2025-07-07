@@ -3,6 +3,7 @@
     --clr-surface-a0: #121212;
     --clr-surface-a10: #282828;
     --clr-surface-a20: #3f3f3f;
+    --clr-surface-a30: #767676;
 }
 
 body {
@@ -93,4 +94,10 @@ table tr:nth-child(even) {
 
 table tr:nth-child(odd) {
     background-color: var(--clr-surface-a20);
+}
+
+table tr:hover td,
+table tr:hover th {
+    background-color: var(--clr-surface-a30) !important;
+    cursor: pointer;
 }
