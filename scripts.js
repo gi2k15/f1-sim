@@ -59,10 +59,10 @@ function extrairChave(obj, alternativas) {
 function mostrarTabelaInicial(pilotos, corridas, sprints = 0) {
     let html = `<h3>Pontuação Inicial dos Pilotos</h3>`;
     html += `<p>Corridas restantes: <b>${corridas}</b> | Sprints restantes: <b>${sprints}</b></p>`;
-    html += `<table><thead><tr><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`;
+    html += `<table><thead><tr><th>P</th><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`;
     pilotos.sort((a, b) => b.pontuacao - a.pontuacao)
         .forEach(p => {
-            html += `<tr><td>${emojiBandeira(p.pais)} ${p.nome}</td><td>${p.pontuacao}</td></tr>`;
+            html += `<tr><td>${pilotos.indexOf(p) + 1}</td><td>${emojiBandeira(p.pais)} ${p.nome}</td><td>${p.pontuacao}</td></tr>`;
         });
     html += `</tbody></table>`;
     document.getElementById('tabela-inicial').innerHTML = html;
@@ -81,10 +81,10 @@ function mostrarTabelaInicial(pilotos, corridas, sprints = 0) {
 function mostrarTabelaFinal(probabilidades, corridas, sprints = 0) {
     let html = `<h3>Estimativas</h3>`;
     html += `<p>Corridas restantes: <b>${corridas}</b> | Sprints restantes: <b>${sprints}</b></p>`;
-    html += `<table><thead><tr><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
+    html += `<table><thead><tr><th>P</th><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
     probabilidades.sort((a, b) => b.chance - a.chance)
         .forEach(p => {
-            html += `<tr><td>${emojiBandeira(p.pais)} ${p.nome}</td><td>${p.chance.toFixed(2)}</td></tr>`;
+            html += `<tr><td>${probabilidades.indexOf(p) + 1}</td><td>${emojiBandeira(p.pais)} ${p.nome}</td><td>${p.chance.toFixed(2)}</td></tr>`;
         });
     html += `</tbody></table>`;
     document.getElementById('tabela-final').innerHTML = html;
