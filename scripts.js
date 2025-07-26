@@ -1,28 +1,3 @@
-// [
-//   { "piloto": "Oscar Piastri", "pontuacao": 241, "nacionalidade": "AU" },
-//   { "piloto": "Lando Norris", "pontuacao": 232, "nacionalidade": "GB" },
-//   { "piloto": "Max Verstappen", "pontuacao": 173, "nacionalidade": "NL" },
-//   { "piloto": "George Russell", "pontuacao": 147, "nacionalidade": "GB" },
-//   { "piloto": "Charles Leclerc", "pontuacao": 124, "nacionalidade": "MC" },
-//   { "piloto": "Lewis Hamilton", "pontuacao": 103, "nacionalidade": "GB" },
-//   { "piloto": "Kimi Antonelli", "pontuacao": 63, "nacionalidade": "IT" },
-//   { "piloto": "Alexander Albon", "pontuacao": 46, "nacionalidade": "TH" },
-//   { "piloto": "Nico Hulkenberg", "pontuacao": 37, "nacionalidade": "DE" },
-//   { "piloto": "Esteban Ocon", "pontuacao": 27, "nacionalidade": "FR" },
-//   { "piloto": "Isack Hadjar", "pontuacao": 22, "nacionalidade": "FR" },
-//   { "piloto": "Lance Stroll", "pontuacao": 20, "nacionalidade": "CA" },
-//   { "piloto": "Pierre Gasly", "pontuacao": 19, "nacionalidade": "FR" },
-//   { "piloto": "Fernando Alonso", "pontuacao": 16, "nacionalidade": "ES" },
-//   { "piloto": "Carlos Sainz", "pontuacao": 16, "nacionalidade": "ES" },
-//   { "piloto": "Liam Lawson", "pontuacao": 12, "nacionalidade": "NZ" },
-//   { "piloto": "Yuki Tsunoda", "pontuacao": 10, "nacionalidade": "JP" },
-//   { "piloto": "Oliver Bearman", "pontuacao": 8, "nacionalidade": "GB" },
-//   { "piloto": "Gabriel Bortoleto", "pontuacao": 4, "nacionalidade": "BR" },
-//   { "piloto": "Franco Colapinto", "pontuacao": 0, "nacionalidade": "AR" },
-//   { "piloto": "Jack Doohan", "pontuacao": 0, "nacionalidade": "AU" }
-// ]
-
-
 // Data de todos os grande prêmios
 const dataCorridas = [
     "2025-03-16", "2025-03-23", "2025-04-06", "2025-04-13", "2025-04-20", "2025-05-04", "2025-05-18",
@@ -35,14 +10,20 @@ const dataSprints = [
 ];
 
 /**
- * Retorna o emoji da bandeira do piloto.
- * @param {string} bandeira - Código ISO 3166-1 alpha-2 da nacionalidade.
- * @returns {string} O emoji da bandeira do piloto.
+ * Retorna a imagem SVG da bandeira do piloto.
+ * Necessária a biblioteca `flag-icons`.
+ * 
+ * @param {string} pais - Código ISO 3166-1 alpha-2 da nacionalidade.
+ * @returns {string} Um `<span>` com o SVG da bandeira.
  */
 function emojiBandeira(pais) {
     if (!pais || pais.length !== 2) return '';
-    const codePoints = [...pais.toUpperCase()].map(c => 127397 + c.charCodeAt());
-    return String.fromCodePoint(...codePoints);
+    pais = pais.toLowerCase();
+    const nomePais = (codigo, locale = 'pt-BR') => {
+        const paisLocal = new Intl.DisplayNames([locale], { type: 'region'});
+        return paisLocal.of(codigo.toUpperCase());
+    };
+    return `<span class="fi fi-${pais}" title="${nomePais(pais)}"></span>`;
 }
 
 /**
@@ -102,7 +83,7 @@ function mostrarTabelaFinal(probabilidades, corridas, sprints = 0) {
     html += `<table><thead><tr><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
     probabilidades.sort((a, b) => b.chance - a.chance)
         .forEach(p => {
-            html += `<tr><td>${p.nome}</td><td>${p.chance.toFixed(2)}</td></tr>`;
+            html += `<tr><td>${emojiBandeira(p.pais)} ${p.nome}</td><td>${p.chance.toFixed(2)}</td></tr>`;
         });
     html += `</tbody></table>`;
     document.getElementById('tabela-final').innerHTML = html;
@@ -217,6 +198,7 @@ function simular(event) {
     }
     let probabilidades = pilotos.map(p => ({
         nome: p.nome,
+        pais: p.pais,
         chance: (vitorias[p.nome] || 0) / simulacoes * 100
     }));
     mostrarTabelaFinal(probabilidades, corridas, sprints);
