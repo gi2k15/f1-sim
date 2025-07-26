@@ -1,9 +1,13 @@
 // Data de todos os grande prêmios
-const f1_2025 = [
-    "2025-03-16","2025-03-23","2025-04-06","2025-04-13","2025-04-20","2025-05-04","2025-05-18",
-    "2025-05-25","2025-06-01","2025-06-15","2025-06-29","2025-07-06","2025-07-27","2025-08-03",
-    "2025-08-31","2025-09-07","2025-09-21","2025-10-05","2025-10-19","2025-10-26","2025-11-09",
-    "2025-11-22","2025-11-30","2025-12-07"];
+const dataCorridas = [
+    "2025-03-16", "2025-03-23", "2025-04-06", "2025-04-13", "2025-04-20", "2025-05-04", "2025-05-18",
+    "2025-05-25", "2025-06-01", "2025-06-15", "2025-06-29", "2025-07-06", "2025-07-27", "2025-08-03",
+    "2025-08-31", "2025-09-07", "2025-09-21", "2025-10-05", "2025-10-19", "2025-10-26", "2025-11-09",
+    "2025-11-22", "2025-11-30", "2025-12-07"];
+
+const dataSprints = [
+    "2025-03-22", "2025-05-03", "2025-07-26", "2025-10-18", "2025-11-08", "2025-11-29"
+];
 
 /**
 * Extrai o valor de uma chave alternativa de um objeto.
@@ -34,8 +38,9 @@ function extrairChave(obj, alternativas) {
  *
  * Espera que exista um elemento com id 'tabela-inicial' no HTML.
  */
-function mostrarTabelaInicial(pilotos, corridas) {
+function mostrarTabelaInicial(pilotos, corridas, sprints = 0) {
     let html = `<h3>Pontuação Inicial dos Pilotos</h3>`;
+    html += `<p>Corridas restantes: <b>${corridas}</b> | Sprints restantes: <b>${sprints}</b></p>`;
     html += `<table><thead><tr><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`;
     pilotos.sort((a, b) => b.pontuacao - a.pontuacao)
         .forEach(p => {
@@ -55,8 +60,9 @@ function mostrarTabelaInicial(pilotos, corridas) {
  *
  * Espera que exista um elemento com id 'tabela-final' no HTML.
  */
-function mostrarTabelaFinal(probabilidades, corridas) {
+function mostrarTabelaFinal(probabilidades, corridas, sprints = 0) {
     let html = `<h3>Estimativas</h3>`;
+    html += `<p>Corridas restantes: <b>${corridas}</b> | Sprints restantes: <b>${sprints}</b></p>`;
     html += `<table><thead><tr><th>Piloto</th><th>Chance (%)</th></tr></thead><tbody>`;
     probabilidades.sort((a, b) => b.chance - a.chance)
         .forEach(p => {
@@ -74,18 +80,25 @@ function mostrarTabelaFinal(probabilidades, corridas) {
  * Exemplo de uso:
  *   let pontos = simularCorrida(pilotos);
  */
-function simularCorrida(pilotos) {
+function simularCorrida(pilotos, tipo = 'normal') {
     let ordem = pilotos.slice();
     for (let i = ordem.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [ordem[i], ordem[j]] = [ordem[j], ordem[i]];
     }
-    const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
-    let pontos = {};
+    let pontos;
+    if (tipo === 'sprint') {
+        // Pontuação sprint: 8, 7, 6, 5, 4, 3, 2, 1 para os 8 primeiros
+        pontos = [8, 7, 6, 5, 4, 3, 2, 1];
+    } else {
+        // Pontuação normal F1
+        pontos = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+    }
+    let resultado = {};
     ordem.forEach((p, i) => {
-        pontos[p.nome] = (pontos[p.nome] || 0) + (pontosF1[i] || 0);
+        resultado[p.nome] = (resultado[p.nome] || 0) + (pontos[i] || 0);
     });
-    return pontos;
+    return resultado;
 }
 
 /**
@@ -97,12 +110,20 @@ function simularCorrida(pilotos) {
  * Exemplo de uso:
  *   let resultado = simularTemporada(pilotos, 10);
  */
-function simularTemporada(pilotos, corridas) {
+function simularTemporada(pilotos, corridas, sprints) {
     let temp = pilotos.map(p => ({ nome: p.nome, pontuacao: p.pontuacao }));
+    // Simula corridas normais
     for (let i = 0; i < corridas; i++) {
-        let pontos = simularCorrida(temp);
+        let pontos = simularCorrida(temp, 'normal');
         temp.forEach(p => {
             p.pontuacao += pontos[p.nome] || 0;
+        });
+    }
+    // Simula corridas sprint
+    for (let i = 0; i < sprints; i++) {
+        let pontosSprint = simularCorrida(temp, 'sprint');
+        temp.forEach(p => {
+            p.pontuacao += pontosSprint[p.nome] || 0;
         });
     }
     return temp;
@@ -140,17 +161,18 @@ function simular(event) {
     // Fazer as simulações somente com os 20 pilotos do grid, excluindo os demais.
     pilotos = pilotos.slice(0, 20);
     let corridas = parseInt(document.getElementById('corridas').value);
+    let sprints = parseInt(document.getElementById('sprints').value);
     let simulacoes = parseInt(document.getElementById('simulacoes').value);
     // Aceita qualquer chave para nome e pontuacao
     pilotos = pilotos.map(p => ({
         nome: extrairChave(p, ['nome', 'piloto', 'driver', 'n']),
         pontuacao: parseInt(extrairChave(p, ['pontuacao', 'pontos', 'score', 'pts', 'p']))
     }));
-    mostrarTabelaInicial(pilotos, corridas);
+    mostrarTabelaInicial(pilotos, corridas, sprints);
     document.getElementById('tabela-final').innerHTML = '';
     let vitorias = {};
     for (let i = 0; i < simulacoes; i++) {
-        let resultado = simularTemporada(pilotos, corridas);
+        let resultado = simularTemporada(pilotos, corridas, sprints);
         let max = Math.max(...resultado.map(p => p.pontuacao));
         resultado.filter(p => p.pontuacao === max).forEach(p => {
             vitorias[p.nome] = (vitorias[p.nome] || 0) + 1;
@@ -160,7 +182,7 @@ function simular(event) {
         nome: p.nome,
         chance: (vitorias[p.nome] || 0) / simulacoes * 100
     }));
-    mostrarTabelaFinal(probabilidades, corridas);
+    mostrarTabelaFinal(probabilidades, corridas, sprints);
     document.getElementById('accordion').style.display = 'none';
     document.getElementById('resultados').style.display = 'block';
 }
@@ -171,8 +193,8 @@ function simular(event) {
 function exibirAccordion() {
     const acc = document.getElementById('accordion');
     acc.style.display = acc.style.display === 'none'
-    ? 'block'
-    : 'none';
+        ? 'block'
+        : 'none';
 }
 
 /**
@@ -188,5 +210,6 @@ function contarDatasFuturas(datas) {
     }).length;
 }
 
-// Verifica quantas corridas restantes há e atualiza o input.
-document.getElementById('corridas').value = contarDatasFuturas(f1_2025)
+// Verifica quantas corridas restantes (e sprints) há e atualiza o input.
+document.getElementById('corridas').value = contarDatasFuturas(dataCorridas)
+document.getElementById('sprints').value = contarDatasFuturas(dataSprints)
