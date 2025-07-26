@@ -161,9 +161,7 @@ function simular(event) {
  */
 function exibirAccordion() {
     const acc = document.getElementById('accordion')
-    if (acc.style.display === 'none' || acc.style.display === '') {
-        acc.style.display = 'block';
-    } else {
-        acc.style.display = 'none';
-    }
+    acc.style.display = acc.style.display === 'none'
+    ? 'block'
+    : 'none'
 }
