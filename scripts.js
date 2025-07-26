@@ -177,7 +177,7 @@ function simular(event) {
         return;
     }
     // Fazer as simulações somente com os 20 pilotos do grid, excluindo os demais.
-    pilotos = pilotos.slice(0, 19);
+    pilotos = pilotos.slice(0, 20);
     let corridas = parseInt(document.getElementById('corridas').value);
     let sprints = parseInt(document.getElementById('sprints').value);
     let simulacoes = parseInt(document.getElementById('simulacoes').value);
