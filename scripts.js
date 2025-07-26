@@ -1,3 +1,10 @@
+// Data de todos os grande prêmios
+const f1_2025 = [
+    "2025-03-16","2025-03-23","2025-04-06","2025-04-13","2025-04-20","2025-05-04","2025-05-18",
+    "2025-05-25","2025-06-01","2025-06-15","2025-06-29","2025-07-06","2025-07-27","2025-08-03",
+    "2025-08-31","2025-09-07","2025-09-21","2025-10-05","2025-10-19","2025-10-26","2025-11-09",
+    "2025-11-22","2025-11-30","2025-12-07"];
+
 /**
 * Extrai o valor de uma chave alternativa de um objeto.
 * @param {Object} obj - O objeto de onde extrair o valor.
@@ -165,3 +172,19 @@ function exibirAccordion() {
     ? 'block'
     : 'none';
 }
+
+/**
+ * Retorna quantas datas do array ainda estão à frente da data atual.
+ * @param {string[]} datas - Array de datas em formato 'YYYY-MM-DD' ou similar.
+ * @returns {number} Quantidade de datas futuras.
+ */
+function contarDatasFuturas(datas) {
+    const agora = new Date();
+    return datas.filter(dataStr => {
+        const data = new Date(dataStr);
+        return data > agora;
+    }).length;
+}
+
+// Verifica quantas corridas restantes há e atualiza o input.
+document.getElementById('corridas').value = contarDatasFuturas(f1_2025)
