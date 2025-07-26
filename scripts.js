@@ -137,6 +137,8 @@ function simular(event) {
         alert('Insira ao menos um piloto!');
         return;
     }
+    // Fazer as simulações somente com os 20 pilotos do grid, excluindo os demais.
+    pilotos = pilotos.slice(0, 20);
     let corridas = parseInt(document.getElementById('corridas').value);
     let simulacoes = parseInt(document.getElementById('simulacoes').value);
     // Aceita qualquer chave para nome e pontuacao
