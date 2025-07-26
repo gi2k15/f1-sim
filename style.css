@@ -80,7 +80,7 @@ button {
 
 .row {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.5rem;
     justify-content: space-between;
 }

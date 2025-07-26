@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='42' font-size='52'>🏎️</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='42' font-size='52'>🏎️</text></svg>">
     <title>Simulador de campeonato de Fórmula 1</title>
 </head>
 
@@ -17,7 +18,8 @@
         <main>
             <section>
                 <div class="standings">
-                    <a href="https://www.formula1.com/en/results/2025/drivers" target="_blank" rel="noreferrer noopener">Classificação dos pilotos</a>
+                    <a href="https://www.formula1.com/en/results/2025/drivers" target="_blank"
+                        rel="noreferrer noopener">Classificação dos pilotos</a>
                 </div>
                 <h2 class="accordion" onclick="exibirAccordion()">Configurações</h2>
                 <div id="accordion" style="display: block;">
@@ -33,6 +35,8 @@
                             <input type="number" id="sprints" value="6" required>
                             <label for="simulacoes">Nº de simulações</label>
                             <input type="number" id="simulacoes" value="10000" required>
+                        </div>
+                        <div>
                             <button type="submit" onclick="simular(event)">Simular</button>
                         </div>
                     </form>
