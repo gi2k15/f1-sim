@@ -31,11 +31,16 @@ button {
     color: var(--clr-light-a0);
     border: 2px solid var(--clr-light-a0);
     border-radius: 5px;
+    padding: 0.5rem;
     font-size: 1rem;
     box-sizing: border-box;
 }
 
 button {
+    color: var(--clr-light-a0);
+    border: 2px solid var(--clr-light-a0);
+    border-radius: 5px;
+    box-sizing: border-box;
     width: 100%;
     min-width: 80px;
     padding: 0.5rem 1rem;
