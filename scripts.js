@@ -102,18 +102,6 @@ function simularTemporada(pilotos, corridas) {
 }
 
 /**
- * Função que exibe ou oculta o accordion.
- */
-function exibirAccordion() {
-    const acc = document.getElementById('accordion')
-    if (acc.style.display === 'none' || acc.style.display === '') {
-        acc.style.display = 'block';
-    } else {
-        acc.style.display = 'none';
-    }
-}
-
-/**
  * Função principal para simular o campeonato.
  * Lê os dados do JSON, executa as simulações e exibe os resultados.
  *
@@ -166,4 +154,16 @@ function simular(event) {
     mostrarTabelaFinal(probabilidades, corridas);
     document.getElementById('accordion').style.display = 'none';
     document.getElementById('resultados').style.display = 'block';
+}
+
+/**
+ * Função que exibe ou oculta o accordion.
+ */
+function exibirAccordion() {
+    const acc = document.getElementById('accordion')
+    if (acc.style.display === 'none' || acc.style.display === '') {
+        acc.style.display = 'block';
+    } else {
+        acc.style.display = 'none';
+    }
 }
