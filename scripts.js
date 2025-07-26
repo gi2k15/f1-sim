@@ -160,8 +160,8 @@ function simular(event) {
  * Função que exibe ou oculta o accordion.
  */
 function exibirAccordion() {
-    const acc = document.getElementById('accordion')
+    const acc = document.getElementById('accordion');
     acc.style.display = acc.style.display === 'none'
     ? 'block'
-    : 'none'
+    : 'none';
 }

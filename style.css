@@ -4,7 +4,7 @@
     --clr-surface-a10: #282828;
     --clr-surface-a20: #3f3f3f;
     --clr-surface-a30: #717171;
-    --clr-link: #009f4d;
+    --clr-surface-highlight: #009f4d;
 }
 
 body {
@@ -16,7 +16,7 @@ body {
 }
 
 a {
-    color: var(--clr-link);
+    color: var(--clr-surface-highlight);
     text-decoration: none;
 }
 
@@ -41,6 +41,7 @@ button {
     padding: 0.5rem 1rem;
     font-size: 1rem;
     margin-top: 0.5rem;
+    background-color: var(--clr-surface-highlight);
 }
 
 .container {
