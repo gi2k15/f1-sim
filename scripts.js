@@ -10,6 +10,31 @@ const dataSprints = [
     "2025-03-22", "2025-05-03", "2025-07-26", "2025-10-18", "2025-11-08", "2025-11-29"
 ];
 
+const standings = `[
+  { "piloto": "Oscar Piastri", "pontuacao": 241, "nacionalidade": "AU" },
+  { "piloto": "Lando Norris", "pontuacao": 232, "nacionalidade": "GB" },
+  { "piloto": "Max Verstappen", "pontuacao": 173, "nacionalidade": "NL" },
+  { "piloto": "George Russell", "pontuacao": 147, "nacionalidade": "GB" },
+  { "piloto": "Charles Leclerc", "pontuacao": 124, "nacionalidade": "MC" },
+  { "piloto": "Lewis Hamilton", "pontuacao": 103, "nacionalidade": "GB" },
+  { "piloto": "Kimi Antonelli", "pontuacao": 63, "nacionalidade": "IT" },
+  { "piloto": "Alexander Albon", "pontuacao": 46, "nacionalidade": "TH" },
+  { "piloto": "Nico Hulkenberg", "pontuacao": 37, "nacionalidade": "DE" },
+  { "piloto": "Esteban Ocon", "pontuacao": 27, "nacionalidade": "FR" },
+  { "piloto": "Isack Hadjar", "pontuacao": 22, "nacionalidade": "FR" },
+  { "piloto": "Lance Stroll", "pontuacao": 20, "nacionalidade": "CA" },
+  { "piloto": "Pierre Gasly", "pontuacao": 19, "nacionalidade": "FR" },
+  { "piloto": "Fernando Alonso", "pontuacao": 16, "nacionalidade": "ES" },
+  { "piloto": "Carlos Sainz", "pontuacao": 16, "nacionalidade": "ES" },
+  { "piloto": "Liam Lawson", "pontuacao": 12, "nacionalidade": "NZ" },
+  { "piloto": "Yuki Tsunoda", "pontuacao": 10, "nacionalidade": "JP" },
+  { "piloto": "Oliver Bearman", "pontuacao": 8, "nacionalidade": "GB" },
+  { "piloto": "Gabriel Bortoleto", "pontuacao": 4, "nacionalidade": "BR" },
+  { "piloto": "Franco Colapinto", "pontuacao": 0, "nacionalidade": "AR" },
+  { "piloto": "Jack Doohan", "pontuacao": 0, "nacionalidade": "AU" }
+]`;
+
+
 /**
  * Retorna a imagem SVG da bandeira do piloto.
  * Necessária a biblioteca `flag-icons`.
@@ -26,6 +51,7 @@ function emojiBandeira(pais) {
     };
     return `<span class="fi fi-${pais}" title="${nomePais(pais)}"></span>`;
 }
+console.log(emojiBandeira('BR'))
 
 /**
 * Extrai o valor de uma chave alternativa de um objeto.
@@ -231,5 +257,7 @@ function contarDatasFuturas(datas) {
 }
 
 // Verifica quantas corridas restantes (e sprints) há e atualiza o input.
-document.getElementById('corridas').value = contarDatasFuturas(dataCorridas)
-document.getElementById('sprints').value = contarDatasFuturas(dataSprints)
+document.getElementById('corridas').value = contarDatasFuturas(dataCorridas);
+document.getElementById('sprints').value = contarDatasFuturas(dataSprints);
+// Um standing padrão, de 26/07/2025
+document.getElementById('pilotos_json').value = standings;
