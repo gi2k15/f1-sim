@@ -42,13 +42,19 @@ const standingsURL = "https://www.formula1.com/en/results/2025/drivers"
  * Copia para a área de transferência um prompt para que uma AI extraia a tabela JSON
  * da classificação dos pilotos de alguma página da web fornecida.
  * 
+ * A seguir, abre a página URL de classficiação em uma nova aba.
  */
 async function abrirClassificacao() {
-    try {
-        await navigator.clipboard.writeText(promptAI);
-        window.open(standingsURL, "_blank", "noreferrer, noopener");
-    } catch {
-        alert("Não foi possível copiar o texto ou abrir a janela.");
+    if (!promptAI || !standings) {
+        alert("Prompt ou página não definidos.");
+        return;
+    } else {
+        try {
+            await navigator.clipboard.writeText(promptAI);
+            window.open(standingsURL, "_blank", "noreferrer, noopener");
+        } catch {
+            alert("Não foi possível copiar o texto ou abrir a janela.");
+        }
     }
 }
 
