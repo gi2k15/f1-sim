@@ -34,6 +34,23 @@ const standings = `[
   { "piloto": "Jack Doohan", "pontuacao": 0, "nacionalidade": "AU" }
 ]`;
 
+const promptAI = `Monte uma tabela JSON com o nome dos pilotos, a nacionalidade no formato
+ISO 3166-1 alpha 2 e a pontuação do piloto`;
+const standingsURL = "https://www.formula1.com/en/results/2025/drivers"
+
+/**
+ * Copia para a área de transferência um prompt para que uma AI extraia a tabela JSON
+ * da classificação dos pilotos de alguma página da web fornecida.
+ * 
+ */
+async function abrirClassificacao() {
+    try {
+        await navigator.clipboard.writeText(promptAI);
+        window.open(standingsURL, "_blank", "noreferrer, noopener");
+    } catch {
+        alert("Não foi possível copiar o texto ou abrir a janela.");
+    }
+}
 
 /**
  * Retorna a imagem SVG da bandeira do piloto.
