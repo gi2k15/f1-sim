@@ -21,7 +21,7 @@ const standingsURL = "https://www.formula1.com/en/results/2025/drivers"
  * A seguir, abre a página URL de classficiação em uma nova aba.
  */
 async function abrirClassificacao() {
-    if (!promptAI || !standings) {
+    if (!promptAI || !standingsURL) {
         alert("Prompt ou página não definidos.");
         return;
     } else {
