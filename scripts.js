@@ -36,7 +36,6 @@ function emojiBandeira(pais) {
     }
     return `<span class="fi fi-${pais}" title="${nomePais(pais)}"></span>`
 }
-console.log(emojiBandeira('BR'))
 
 function extrairChave(obj, alternativas) {
     for (let alt of alternativas) {
