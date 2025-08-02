@@ -12,7 +12,7 @@ const dataSprints = [
 
 const promptAI = `Monte uma tabela JSON com o nome dos pilotos, a nacionalidade no formato
 ISO 3166-1 alpha 2 e a pontuação do piloto`;
-const standingsURL = "https://www.formula1.com/en/results/2025/drivers"
+const standingsURL = "https://www.formula1.com/en/results/2025/drivers";
 
 /**
  * Copia para a área de transferência um prompt para que uma AI extraia a tabela JSON
