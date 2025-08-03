@@ -200,46 +200,62 @@ function simularTemporada(pilotos, corridas, sprints) {
  *
  * O JSON pode ter qualquer chave para nome/pontuação, pois é feita a extração automática.
  */
-function simular(event) {
+async function simular(event) {
     event.preventDefault()
-    let pilotos
+
+    const resultadosSection = document.getElementById('resultados');
+    const simularButton = event.target;
+
+    resultadosSection.style.display = 'none';
+    simularButton.disabled = true;
+    simularButton.innerHTML = '<div class="button-loader"></div>';
+
     try {
-        pilotos = JSON.parse(document.getElementById('pilotos_json').value)
-    } catch {
-        alert('JSON inválido!')
-        return
+        // Aguarda um instante para o navegador renderizar o loader
+        await new Promise(resolve => setTimeout(resolve, 20));
+
+        let pilotos;
+        try {
+            pilotos = JSON.parse(document.getElementById('pilotos_json').value);
+        } catch {
+            alert('JSON inválido!');
+            return;
+        }
+        if (!Array.isArray(pilotos) || pilotos.length === 0) {
+            alert('Insira ao menos um piloto!');
+            return;
+        }
+        pilotos = pilotos.slice(0, 20);
+        let corridas = parseInt(document.getElementById('corridas').value);
+        let sprints = parseInt(document.getElementById('sprints').value);
+        let simulacoes = parseInt(document.getElementById('simulacoes').value);
+        pilotos = pilotos.map(p => ({
+            nome: extrairChave(p, ['nome', 'piloto', 'driver', 'n']),
+            pontuacao: parseInt(extrairChave(p, ['pontuacao', 'pontos', 'score', 'pts', 'p'])),
+            pais: extrairChave(p, ['country', 'pais', 'nacionalidade'])
+        }));
+        mostrarTabelaInicial(pilotos, corridas, sprints);
+        document.getElementById('tabela-final').innerHTML = '';
+        let vitorias = {};
+        for (let i = 0; i < simulacoes; i++) {
+            let resultado = simularTemporada(pilotos, corridas, sprints);
+            let max = Math.max(...resultado.map(p => p.pontuacao));
+            resultado.filter(p => p.pontuacao === max).forEach(p => {
+                vitorias[p.nome] = (vitorias[p.nome] || 0) + 1;
+            });
+        }
+        let probabilidades = pilotos.map(p => ({
+            nome: p.nome,
+            pais: p.pais,
+            chance: (vitorias[p.nome] || 0) / simulacoes * 100
+        }));
+        mostrarTabelaFinal(probabilidades, corridas, sprints);
+        document.getElementById('accordion').style.display = 'none';
+        resultadosSection.style.display = 'block';
+    } finally {
+        simularButton.disabled = false;
+        simularButton.innerHTML = 'Simular';
     }
-    if (!Array.isArray(pilotos) || pilotos.length === 0) {
-        alert('Insira ao menos um piloto!')
-        return
-    }
-    pilotos = pilotos.slice(0, 20)
-    let corridas = parseInt(document.getElementById('corridas').value)
-    let sprints = parseInt(document.getElementById('sprints').value)
-    let simulacoes = parseInt(document.getElementById('simulacoes').value)
-    pilotos = pilotos.map(p => ({
-        nome: extrairChave(p, ['nome', 'piloto', 'driver', 'n']),
-        pontuacao: parseInt(extrairChave(p, ['pontuacao', 'pontos', 'score', 'pts', 'p'])),
-        pais: extrairChave(p, ['country', 'pais', 'nacionalidade'])
-    }))
-    mostrarTabelaInicial(pilotos, corridas, sprints)
-    document.getElementById('tabela-final').innerHTML = ''
-    let vitorias = {}
-    for (let i = 0; i < simulacoes; i++) {
-        let resultado = simularTemporada(pilotos, corridas, sprints)
-        let max = Math.max(...resultado.map(p => p.pontuacao))
-        resultado.filter(p => p.pontuacao === max).forEach(p => {
-            vitorias[p.nome] = (vitorias[p.nome] || 0) + 1
-        })
-    }
-    let probabilidades = pilotos.map(p => ({
-        nome: p.nome,
-        pais: p.pais,
-        chance: (vitorias[p.nome] || 0) / simulacoes * 100
-    }))
-    mostrarTabelaFinal(probabilidades, corridas, sprints)
-    document.getElementById('accordion').style.display = 'none'
-    document.getElementById('resultados').style.display = 'block'
 }
 
 /**
