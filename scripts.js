@@ -15,6 +15,13 @@ ISO 3166-1 alpha 2 e a pontuação do piloto`
 const standingsURL = "https://www.formula1.com/en/results/2025/drivers"
 
 /**
+ * Abre a lightbox.
+ */
+function abrirLightBox() {
+    document.getElementById('lightbox').style.display = 'flex';
+}
+
+/**
  * Copia para a área de transferência um prompt para que uma AI extraia a tabela JSON
  * da classificação dos pilotos de alguma página da web fornecida.
  * 
@@ -267,6 +274,20 @@ function exibirAccordion() {
         ? 'block'
         : 'none'
 }
+
+/**
+ * Função para fechar a lightbox.
+ */
+function fecharLightBox() {
+    document.getElementById('lightbox').style.display = 'none';
+}
+
+// Adiciona um event listener para fechar a lightbox se o usuário clicar fora do conteúdo
+document.getElementById('lightbox').addEventListener('click', function(event) {
+    if (event.target === this) {
+        fecharLightBox();
+    }
+});
 
 /**
  * Retorna quantas datas do array ainda estão à frente da data atual.
