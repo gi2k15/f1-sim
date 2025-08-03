@@ -109,6 +109,12 @@ button {
     flex: 1;
 }
 
+.diferenca {
+    color: #d54747;
+    margin-left: 10px;
+    font-size: 0.75rem;
+}
+
 table {
     width: 100%;
     min-width: 220px;

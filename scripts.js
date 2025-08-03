@@ -81,12 +81,27 @@ function extrairChave(obj, alternativas) {
  * Espera que exista um elemento com id 'tabela-inicial' no HTML.
  */
 function mostrarTabelaInicial(pilotos, corridas, sprints = 0) {
+    let pontosDoAnterior = 0
+    let diferenca = ''
     let html = `<h3>Pontuação Inicial dos Pilotos</h3>`
     html += `<p>Corridas restantes: <b>${corridas}</b> | Sprints restantes: <b>${sprints}</b></p>`
     html += `<table><thead><tr><th>P</th><th>Piloto</th><th>Pontos</th></tr></thead><tbody>`
     pilotos.sort((a, b) => b.pontuacao - a.pontuacao)
-        .forEach(p => {
-            html += `<tr><td>${pilotos.indexOf(p) + 1}</td><td>${emojiBandeira(p.pais)} ${p.nome}</td><td>${p.pontuacao}</td></tr>`
+        .forEach((p, i) => {
+            if (i === 0) {
+                pontosDoAnterior = p.pontuacao
+                diferenca = ''
+            } else {
+                diferenca = p.pontuacao - pontosDoAnterior
+                pontosDoAnterior = p.pontuacao
+            }
+            html += `<tr><td>
+            ${i + 1}
+            </td><td>
+            ${emojiBandeira(p.pais)} ${p.nome}
+            </td><td>
+            ${p.pontuacao}<span class='diferenca'>${diferenca}</span>
+            </td></tr>`
         })
     html += `</tbody></table>`
     document.getElementById('tabela-inicial').innerHTML = html
