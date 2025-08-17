@@ -1,73 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
+<html lang="">
+  <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='42' font-size='52'>🏎️</text></svg>">
-    <title>Simulador de campeonato de Fórmula 1</title>
-</head>
-
-<body>
-    <div class="container">
-        <header>
-            <h1>Simulador de campeonato de Fórmula 1</h1>
-        </header>
-        <main>
-            <section>
-                <p><a href="#" class="como-funciona" onclick="abrirLightBox()">Como funciona?</a></p>
-                <div class="standings">
-                    <a href="#" onclick="abrirClassificacao()">Classificação dos pilotos</a>
-                </div>
-                <h2 class="accordion" onclick="exibirAccordion()">Configurações</h2>
-                <div id="accordion">
-                    <form>
-                        <div class="json">
-                            <label for="pilotos_json">Tabela de pilotos (JSON)</label>
-                            <textarea id="pilotos_json" rows="24" spellcheck="false" required></textarea>
-                        </div>
-                        <div class="row">
-                            <label for="corridas">Corridas restantes</label>
-                            <input type="number" id="corridas" value="24" required>
-                            <label for="sprints">Corridas sprint restantes</label>
-                            <input type="number" id="sprints" value="6" required>
-                            <label for="simulacoes">Nº de simulações</label>
-                            <input type="number" id="simulacoes" value="10000" required>
-                        </div>
-                        <div>
-                            <button type="submit" onclick="simular(event)">Simular</button>
-                        </div>
-                    </form>
-                </div>
-            </section>
-            <section id="resultados">
-                <h2>Resultados</h2>
-                <div class="resultados">
-                    <div id="tabela-inicial"></div>
-                    <div id="tabela-final"></div>
-                </div>
-            </section>
-        </main>
-        <footer>
-            <p>
-                <a href="https://github.com/gi2k15/f1-sim" target="_blank"
-                    rel="noreferrer noopener">GitHub</a>
-            </p>
-        </footer>
-        <div class="lightbox" id="lightbox">
-            <div class="lightbox-content">
-                <button type="button" class="close-btn" onclick="fecharLightBox()">X</button>
-                <h3>Como funciona?</h3>
-                <p>Este simulador calcula as probabilidades de cada piloto ganhar o campeonato de pilotos
-                    da Fórmula 1 a partir da pontuação atual e do número de corridas restantes.
-                </p>
-            </div>
-        </div>
-    </div>
-    <script src="scripts.js"></script>
-</body>
-
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
