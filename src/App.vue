@@ -3,13 +3,30 @@ import { ref } from 'vue'
 
 const tabelaPilotos = ref([])
 
+const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
+
 function getJSON() {
-  const textoJSON = document.getElementById('json-pilotos').value
+  const textoJSON = document.getElementById('json-pilotos').value;
   try {
     tabelaPilotos.value = JSON.parse(textoJSON).slice(0, 20)
   } catch (e) {
     alert("Erro: " + e.message)
   }
+}
+
+function simularCorrida(pilotos, tipo = 'normal') {
+  let ordem = pilotos.slice()
+  //Algoritmo para embaralhar um array de maneira efetiva.
+  for (let i = ordem.lenght() - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [ordem[i], ordem[j]] = [ordem[j], ordem[i]]
+  }
+  let resultado = {}
+  const pontos = tipo === 'normal' ? pontosF1 : pontosSprint
+  ordem.forEach((p, i) => {
+    resultado[p.nome] = (resultado[p.nome] || 0 ) + pontos[i]
+  })
 }
 </script>
 
