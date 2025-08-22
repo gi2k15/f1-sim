@@ -1,38 +1,62 @@
 <script setup>
 import { ref } from 'vue'
 
-const tabelaPilotos = ref([])
+const tabelaPilotos = ref([]);
+const jsonPilotos = ref('');
+const numSimulacoes = ref(10000)
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
 
+// Data de todos os grande prêmios
+const dataCorridas = [
+  "2025-03-16", "2025-03-23", "2025-04-06", "2025-04-13", "2025-04-20", "2025-05-04",
+  "2025-05-18", "2025-05-25", "2025-06-01", "2025-06-15", "2025-06-29", "2025-07-06",
+  "2025-07-27", "2025-08-03", "2025-08-31", "2025-09-07", "2025-09-21", "2025-10-05",
+  "2025-10-19", "2025-10-26", "2025-11-09", "2025-11-22", "2025-11-30", "2025-12-07"
+];
+
+const dataSprints = [
+  "2025-03-22", "2025-05-03", "2025-07-26", "2025-10-18", "2025-11-08", "2025-11-29"
+];
+
 function getJSON() {
-  const textoJSON = document.getElementById('json-pilotos').value;
   try {
-    tabelaPilotos.value = JSON.parse(textoJSON).slice(0, 20)
+    tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
   } catch (e) {
-    alert("Erro: " + e.message)
+    alert("Erro: " + e.message);
   }
 }
+
+function datasRestantes(datas) {
+  const agora = new Date();
+  return datas.filter(dataStr => {
+    const data = new Date(dataStr);
+    return data > agora;
+  }).length;
+}
+
+const corridasRestantes = ref(datasRestantes(dataCorridas));
+const sprintsRestantes = ref(datasRestantes(dataSprints));
 
 function simularCorrida(pilotos, tipo = 'normal') {
   let ordem = pilotos.slice()
   //Algoritmo para embaralhar um array de maneira efetiva.
   for (let i = ordem.lenght() - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [ordem[i], ordem[j]] = [ordem[j], ordem[i]]
+    [ordem[i], ordem[j]] = [ordem[j], ordem[i]];
   }
-  let resultado = {}
-  const pontos = tipo === 'normal' ? pontosF1 : pontosSprint
+  let resultado = {};
+  const pontos = tipo === 'normal' ? pontosF1 : pontosSprint;
   ordem.forEach((p, i) => {
-    resultado[p.nome] = (resultado[p.nome] || 0 ) + pontos[i]
+    resultado[p.nome] = (resultado[p.nome] || 0) + pontos[i];
   })
 }
 </script>
 
 <template>
   <form class="form-json">
-    <textarea id="json-pilotos" spellcheck="false"></textarea>
+    <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
     <button @click.prevent="getJSON()">Importar</button>
   </form>
   <form>
@@ -45,15 +69,15 @@ function simularCorrida(pilotos, tipo = 'normal') {
     <div class="config">
       <div>
         <label>Corridas restantes</label>
-        <input id="corridas-restantes" />
+        <input :value="corridasRestantes" />
       </div>
       <div>
         <label>Corridas sprint restantes</label>
-        <input id="corridas-sprint-restantes" />
+        <input :value="sprintsRestantes" />
       </div>
       <div>
         <label>Número de simulações</label>
-        <input id="numero-simulacoes" value="10000" />
+        <input id="numero-simulacoes" v-model="numSimulacoes" />
       </div>
     </div>
   </form>
