@@ -1,9 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 const tabelaPilotos = ref([]);
 const jsonPilotos = ref('');
-const numSimulacoes = ref(10000)
+const numSimulacoes = ref(10000);
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
