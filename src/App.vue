@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 const tabelaPilotos = ref([]);
-const jsonPilotos = ref('');
+const jsonPilotosStr = ref('');
 const numSimulacoes = ref(10000);
 const showTable = ref(false);
 let chances = [];
@@ -24,13 +24,13 @@ const dataSprints = [
 ];
 
 /**
- * Analisa a string JSON de `jsonPilotos.value`, extrai os primeiros 20 objetos de pilotos,
+ * Analisa a string JSON de `jsonPilotosStr.value`, extrai os primeiros 20 objetos de pilotos,
  * ordena em ordem decrescente pela `pontuacao`, e atribui o resultado a `tabelaPilotos.value`.
  * Se ocorrer falha na análise ou no processamento, exibe um alerta com a mensagem de erro.
  */
 function getJSON() {
   try {
-    tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
+    tabelaPilotos.value = JSON.parse(jsonPilotosStr.value).slice(0, 20);
     tabelaPilotos.value.sort((a, b) => b.pontuacao - a.pontuacao);
   } catch (e) {
     alert("Erro: " + e.message);
@@ -138,7 +138,7 @@ function simular() {
 <template>
   <div class="container">
     <form class="form-json">
-      <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
+      <textarea v-model="jsonPilotosStr" spellcheck="false"></textarea>
       <button class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
     <form>
@@ -178,7 +178,7 @@ function simular() {
         <tr v-for="(p, i) in tabelaPilotos" :key="i">
           <td>{{ i + 1 }}</td>
           <td>{{ p.nome }}</td>
-          <td>{{ p.pontuacao }}<span class="dif">{{ i !== 0 ? (tabelaPilotos[i - 1].pontuacao - p.pontuacao) * -1 : '' }}</span></td>
+          <td>{{ p.pontuacao }}<span class="dif">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span></td>
           <td>{{ p.chance }}</td>
         </tr>
       </tbody>
