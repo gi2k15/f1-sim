@@ -136,7 +136,7 @@ function simular() {
   <div class="container">
     <form class="form-json">
       <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
-      <button @click.prevent="getJSON()">Importar</button>
+      <button class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
     <form>
       <div class="grid-pilotos">
@@ -145,6 +145,7 @@ function simular() {
           <input v-model.number="p.pontuacao" maxlength="3" />
         </div>
       </div>
+      <hr />
       <div class="config">
         <div>
           <label>Corridas restantes</label>
@@ -159,6 +160,7 @@ function simular() {
           <input v-model.number="numSimulacoes" />
         </div>
       </div>
+      <button class="click-button" @click.prevent="simular()">Simular</button>
     </form>
     <table v-if="tabelaPilotos.length > 0">
       <thead>
@@ -167,7 +169,7 @@ function simular() {
           <th>Piloto</th>
           <th>Pontos</th>
           <th>Dif.</th>
-          <th>Prob.</th>
+          <th>Prob. %</th>
         </tr>
       </thead>
       <tbody>
@@ -209,8 +211,9 @@ function simular() {
   resize: vertical;
   font-size: 1em;
 }
-.form-json button {
+.click-button {
   height: 2.5em;
+  width: 100%;
   background-color: rgb(0, 88, 12);
   color: white;
   border: none;
@@ -219,13 +222,13 @@ function simular() {
   margin-top: 4px;
   transition: background 0.2s;
 }
-.form-json button:hover {
+.click-button:hover {
   background-color: rgb(0, 51, 7);
   cursor: pointer;
 }
 
 .grid-pilotos {
-  margin-top: 1em;
+  margin: 1em 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 10px;
@@ -241,6 +244,7 @@ function simular() {
 
 .config {
   margin-top: 1em;
+  margin-bottom: 1em;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
