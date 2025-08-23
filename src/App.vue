@@ -40,6 +40,16 @@ function datasRestantes(datas) {
 const corridasRestantes = ref(datasRestantes(dataCorridas));
 const sprintsRestantes = ref(datasRestantes(dataSprints));
 
+/**
+ * Simula uma corrida de Fórmula 1 embaralhando a ordem dos pilotos e atribuindo pontos conforme o tipo de corrida.
+ *
+ * @param {Array} pilotos - Array de objetos representando os pilotos.
+ * @param {string} [tipo='normal'] - Tipo da corrida ('normal' para corrida principal, qualquer outro valor para sprint).
+ * @returns {Object} Um objeto onde as chaves são os nomes dos pilotos e os valores são os pontos acumulados na corrida.
+ *
+ * O algoritmo embaralha a ordem dos pilotos usando o método de Fisher-Yates e atribui pontos conforme a posição final.
+ * Os pontos são definidos pelos arrays 'pontosF1' (corrida normal) ou 'pontosSprint' (corrida sprint).
+ */
 function simularCorrida(pilotos, tipo = 'normal') {
   let ordem = pilotos.slice();
   // Algoritmo para embaralhar um array de maneira efetiva.
@@ -53,6 +63,30 @@ function simularCorrida(pilotos, tipo = 'normal') {
     resultado[p.nome] = (resultado[p.nome] || 0) + pontos[i];
   })
   return resultado;
+}
+
+/**
+ * Simula uma temporada de corridas atualizando a pontuação de cada piloto com base nos resultados das corridas e sprints.
+ *
+ * @param {Array} pilotos - Array de objetos de pilotos, cada um contendo as propriedades 'nome' e 'pontuacao'.
+ * @param {number} corridas - Número de corridas a serem simuladas.
+ * @param {number} sprints - Número de corridas sprint a serem simuladas.
+ * @returns {Object} Um objeto onde as chaves são os nomes dos pilotos e os valores são a pontuação ao final do campeonato.
+ *
+ * A função cria uma cópia temporária das pontuações dos pilotos, simula cada corrida e sprint,
+ * e atualiza as pontuações conforme os resultados obtidos pela função `simularCorrida`.
+ */
+function simularTemporada(pilotos, corridas, sprints) {
+  let temp = pilotos.map(p => ({ nome: p.nome, pontuacao: p.pontuacao }));
+  for (let i = 0; i < corridas; i++) {
+    const pontos = simularCorrida(tabelaPilotos);
+    temp.forEach(p => p.pontuacao += pontos[p.nome] || 0);
+  }
+  for (let i = 0; i < sprints; i++) {
+    const pontos = simularCorrida(tabelaPilotos, 'sprint');
+    temp.forEach(p => p.pontuacao += pontos[p.nome]) || 0;
+  }
+  return temp;
 }
 </script>
 
@@ -121,6 +155,7 @@ function simularCorrida(pilotos, tipo = 'normal') {
 
 .form-json button:hover {
   background-color: rgb(0, 51, 7);
+  cursor: pointer;
 }
 
 .grid-pilotos {
