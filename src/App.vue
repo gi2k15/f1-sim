@@ -4,6 +4,7 @@ import { ref } from 'vue';
 const tabelaPilotos = ref([]);
 const jsonPilotos = ref('');
 const numSimulacoes = ref(10000);
+let chances = [];
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -100,17 +101,18 @@ function simularTemporada(pilotos, corridas, sprints) {
 
 function simular() {
   getJSON();
-  const vitorias = ref({});
-  for (let i = 0; i < 10; i++) {
+  let vitorias = {};
+  for (let i = 0; i < numSimulacoes.value; i++) {
     let temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
     let max = Math.max(...temporada.map(p => p.pontuacao));
     let campeao = temporada.filter(p => p.pontuacao === max);
     campeao.forEach(p => vitorias[p.nome] = (vitorias[p.nome] || 0) + 1);
   };
-  let chances = tabelaPilotos.value.map(p => ({
+  chances = tabelaPilotos.value.map(p => ({
     nome: p.nome,
     chance: (vitorias[p.nome] || 0) / numSimulacoes.value * 100
   }));
+  console.log(chances);
 }
 </script>
 
