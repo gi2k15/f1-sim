@@ -148,15 +148,15 @@ function simular() {
       <div class="config">
         <div>
           <label>Corridas restantes</label>
-          <input :value="corridasRestantes" />
+          <input v-model.number="corridasRestantes" />
         </div>
         <div>
           <label>Corridas sprint restantes</label>
-          <input :value="sprintsRestantes" />
+          <input v-model.number="sprintsRestantes" />
         </div>
         <div>
           <label>Número de simulações</label>
-          <input id="numero-simulacoes" v-model="numSimulacoes" />
+          <input v-model.number="numSimulacoes" />
         </div>
       </div>
     </form>
@@ -236,6 +236,18 @@ function simular() {
 
 .config label {
   margin-right: 1em;
+}
+
+table {
+  width: 50%;
+  margin-top: 1em;
+  border-collapse: collapse;
+}
+
+table thead tr {
+  border-bottom: 2px solid white;
+  text-align: left;
+  margin-bottom: 5px;
 }
 </style>
 
