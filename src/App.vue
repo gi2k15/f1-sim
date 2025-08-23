@@ -21,6 +21,11 @@ const dataSprints = [
   "2025-03-22", "2025-05-03", "2025-07-26", "2025-10-18", "2025-11-08", "2025-11-29"
 ];
 
+/**
+ * Analisa a string JSON de `jsonPilotos.value`, extrai os primeiros 20 objetos de pilotos,
+ * ordena em ordem decrescente pela `pontuacao`, e atribui o resultado a `tabelaPilotos.value`.
+ * Se ocorrer falha na análise ou no processamento, exibe um alerta com a mensagem de erro.
+ */
 function getJSON() {
   try {
     tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
@@ -30,6 +35,12 @@ function getJSON() {
   }
 }
 
+/**
+ * Retorna a quantidade de datas futuras em relação ao momento atual.
+ *
+ * @param {string[]} datas - Array de strings representando datas.
+ * @returns {number} Quantidade de datas que ainda não passaram.
+ */
 function datasRestantes(datas) {
   const agora = new Date();
   return datas.filter(dataStr => {
@@ -99,6 +110,9 @@ function simularTemporada(pilotos, corridas, sprints) {
   return temp;
 }
 
+/**
+ * Função principal da simulação.
+ */
 function simular() {
   getJSON();
   let vitorias = {};
