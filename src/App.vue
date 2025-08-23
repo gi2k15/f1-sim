@@ -114,7 +114,6 @@ function simularTemporada(pilotos, corridas, sprints) {
  * Função principal da simulação.
  */
 function simular() {
-  getJSON();
   let vitorias = {};
   for (let i = 0; i < numSimulacoes.value; i++) {
     const temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
@@ -134,56 +133,64 @@ function simular() {
 </script>
 
 <template>
-  <form class="form-json">
-    <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
-    <button @click.prevent="simular()">Importar</button>
-  </form>
-  <form>
-    <div class="grid-pilotos">
-      <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
-        <label>{{ p.nome }}</label>
-        <input v-model.number="p.pontuacao" maxlength="3" />
+  <div class="container">
+    <form class="form-json">
+      <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
+      <button @click.prevent="getJSON()">Importar</button>
+    </form>
+    <form>
+      <div class="grid-pilotos">
+        <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
+          <label>{{ p.nome }}</label>
+          <input v-model.number="p.pontuacao" maxlength="3" />
+        </div>
       </div>
-    </div>
-    <div class="config">
-      <div>
-        <label>Corridas restantes</label>
-        <input :value="corridasRestantes" />
+      <div class="config">
+        <div>
+          <label>Corridas restantes</label>
+          <input :value="corridasRestantes" />
+        </div>
+        <div>
+          <label>Corridas sprint restantes</label>
+          <input :value="sprintsRestantes" />
+        </div>
+        <div>
+          <label>Número de simulações</label>
+          <input id="numero-simulacoes" v-model="numSimulacoes" />
+        </div>
       </div>
-      <div>
-        <label>Corridas sprint restantes</label>
-        <input :value="sprintsRestantes" />
-      </div>
-      <div>
-        <label>Número de simulações</label>
-        <input id="numero-simulacoes" v-model="numSimulacoes" />
-      </div>
-    </div>
-  </form>
-  <table v-if="tabelaPilotos.length > 0">
-    <thead>
-      <tr>
-        <th>P</th>
-        <th>Piloto</th>
-        <th>Pontos</th>
-        <th>Dif.</th>
-        <th>Prob.</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(p, i) in tabelaPilotos" :key="i">
-        <td>{{ i + 1 }}</td>
-        <td>{{ p.nome }}</td>
-        <td>{{ p.pontuacao }}</td>
-        <td>{{ i !== 0 ? tabelaPilotos[i - 1].pontuacao - p.pontuacao : '' }}</td>
-        <td>{{ p.chance }}</td>
-      </tr>
-    </tbody>
-  </table>
-
+    </form>
+    <table v-if="tabelaPilotos.length > 0">
+      <thead>
+        <tr>
+          <th>P</th>
+          <th>Piloto</th>
+          <th>Pontos</th>
+          <th>Dif.</th>
+          <th>Prob.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(p, i) in tabelaPilotos" :key="i">
+          <td>{{ i + 1 }}</td>
+          <td>{{ p.nome }}</td>
+          <td>{{ p.pontuacao }}</td>
+          <td>{{ i !== 0 ? tabelaPilotos[i - 1].pontuacao - p.pontuacao : '' }}</td>
+          <td>{{ p.chance }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <style scoped>
+.container {
+  width: 100%;
+  max-width: 70vw;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
 .form-json {
   display: flex;
   flex-direction: column;
@@ -207,8 +214,10 @@ function simular() {
 .grid-pilotos {
   margin-top: 1em;
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
   gap: 5px;
+  font-size: 0.9em;
+  text-wrap: nowrap;
 }
 
 .pilotos {
@@ -220,7 +229,9 @@ function simular() {
 .config {
   margin-top: 1em;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
+  font-size: 0.9em;
+  flex-wrap: nowrap;
 }
 
 .config label {
