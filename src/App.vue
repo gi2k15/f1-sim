@@ -4,7 +4,9 @@ import { ref } from 'vue';
 const tabelaPilotos = ref([]);
 const jsonPilotos = ref('');
 const numSimulacoes = ref(10000);
+const showTable = ref(false);
 let chances = [];
+
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -89,6 +91,7 @@ function simularCorrida(pilotos, tipo = 'normal') {
  * e atualiza as pontuações conforme os resultados obtidos pela função `simularCorrida`.
  */
 function simularTemporada(pilotos, corridas, sprints) {
+  showTable.value = true;
   let temp = pilotos.map(p => ({
     nome: p.nome,
     pontuacao: Number(p.pontuacao) || 0
@@ -162,13 +165,12 @@ function simular() {
       </div>
       <button class="click-button" @click.prevent="simular()">Simular</button>
     </form>
-    <table v-if="tabelaPilotos.length > 0">
+    <table v-if="showTable">
       <thead>
         <tr>
           <th>P</th>
           <th>Piloto</th>
           <th>Pontos</th>
-          <th>Dif.</th>
           <th>Prob. %</th>
         </tr>
       </thead>
@@ -176,8 +178,7 @@ function simular() {
         <tr v-for="(p, i) in tabelaPilotos" :key="i">
           <td>{{ i + 1 }}</td>
           <td>{{ p.nome }}</td>
-          <td>{{ p.pontuacao }}</td>
-          <td>{{ i !== 0 ? tabelaPilotos[i - 1].pontuacao - p.pontuacao : '' }}</td>
+          <td>{{ p.pontuacao }}<span class="dif">{{ i !== 0 ? (tabelaPilotos[i - 1].pontuacao - p.pontuacao) * -1 : '' }}</span></td>
           <td>{{ p.chance }}</td>
         </tr>
       </tbody>
@@ -257,6 +258,12 @@ function simular() {
   flex-direction: column;
   align-items: flex-start;
   min-width: 140px;
+}
+
+.dif {
+  font-size: 0.8em;
+  color: rgb(255, 95, 95);
+  margin-left: 4px;
 }
 
 table {
