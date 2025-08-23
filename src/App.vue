@@ -103,16 +103,19 @@ function simular() {
   getJSON();
   let vitorias = {};
   for (let i = 0; i < numSimulacoes.value; i++) {
-    let temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
-    let max = Math.max(...temporada.map(p => p.pontuacao));
-    let campeao = temporada.filter(p => p.pontuacao === max);
+    const temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
+    const max = Math.max(...temporada.map(p => p.pontuacao));
+    const campeao = temporada.filter(p => p.pontuacao === max);
     campeao.forEach(p => vitorias[p.nome] = (vitorias[p.nome] || 0) + 1);
   };
   chances = tabelaPilotos.value.map(p => ({
     nome: p.nome,
-    chance: (vitorias[p.nome] || 0) / numSimulacoes.value * 100
+    chance: ((vitorias[p.nome] || 0) / numSimulacoes.value * 100).toFixed(2)
   }));
-  console.log(chances);
+  tabelaPilotos.value.forEach(p => {
+    const chanceObj = chances.find(c => c.nome === p.nome);
+    p.chance = chanceObj ? chanceObj.chance : 0;
+  })
 }
 </script>
 
@@ -150,6 +153,7 @@ function simular() {
         <th>Piloto</th>
         <th>Pontos</th>
         <th>Dif.</th>
+        <th>Prob.</th>
       </tr>
     </thead>
     <tbody>
@@ -158,9 +162,11 @@ function simular() {
         <td>{{ p.nome }}</td>
         <td>{{ p.pontuacao }}</td>
         <td>{{ i !== 0 ? tabelaPilotos[i - 1].pontuacao - p.pontuacao : '' }}</td>
+        <td>{{ p.chance }}</td>
       </tr>
     </tbody>
   </table>
+
 </template>
 
 <style scoped>
