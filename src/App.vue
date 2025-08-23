@@ -77,23 +77,47 @@ function simularCorrida(pilotos, tipo = 'normal') {
  * e atualiza as pontuações conforme os resultados obtidos pela função `simularCorrida`.
  */
 function simularTemporada(pilotos, corridas, sprints) {
-  let temp = pilotos.map(p => ({ nome: p.nome, pontuacao: p.pontuacao }));
+  let temp = pilotos.map(p => ({
+    nome: p.nome,
+    pontuacao: Number(p.pontuacao) || 0
+  }));
   for (let i = 0; i < corridas; i++) {
-    const pontos = simularCorrida(tabelaPilotos);
-    temp.forEach(p => p.pontuacao += pontos[p.nome] || 0);
+    const pontos = simularCorrida(temp);
+    temp.forEach(p => {
+      const valor = Number(pontos[p.nome]);
+      p.pontuacao += isNaN(valor) ? 0 : valor;
+    });
   }
   for (let i = 0; i < sprints; i++) {
-    const pontos = simularCorrida(tabelaPilotos, 'sprint');
-    temp.forEach(p => p.pontuacao += pontos[p.nome]) || 0;
+    const pontos = simularCorrida(temp, 'sprint');
+    temp.forEach(p => {
+      const valor = Number(pontos[p.nome]);
+      p.pontuacao += isNaN(valor) ? 0 : valor;
+    });
   }
   return temp;
+}
+
+function simular() {
+  getJSON();
+  const vitorias = ref({});
+  for (let i = 0; i < 10; i++) {
+    let temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
+    let max = Math.max(...temporada.map(p => p.pontuacao));
+    let campeao = temporada.filter(p => p.pontuacao === max);
+    campeao.forEach(p => vitorias[p.nome] = (vitorias[p.nome] || 0) + 1);
+  };
+  let chances = tabelaPilotos.value.map(p => ({
+    nome: p.nome,
+    chance: (vitorias[p.nome] || 0) / numSimulacoes.value * 100
+  }));
 }
 </script>
 
 <template>
   <form class="form-json">
     <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
-    <button @click.prevent="getJSON()">Importar</button>
+    <button @click.prevent="simular()">Importar</button>
   </form>
   <form>
     <div class="grid-pilotos">
@@ -117,7 +141,7 @@ function simularTemporada(pilotos, corridas, sprints) {
       </div>
     </div>
   </form>
-  <table>
+  <table v-if="tabelaPilotos.length > 0">
     <thead>
       <tr>
         <th>P</th>
