@@ -23,6 +23,7 @@ const dataSprints = [
 function getJSON() {
   try {
     tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
+    tabelaPilotos.value.sort((a, b) => b.pontuacao - a.pontuacao);
   } catch (e) {
     alert("Erro: " + e.message);
   }
@@ -40,8 +41,8 @@ const corridasRestantes = ref(datasRestantes(dataCorridas));
 const sprintsRestantes = ref(datasRestantes(dataSprints));
 
 function simularCorrida(pilotos, tipo = 'normal') {
-  let ordem = pilotos.slice()
-  //Algoritmo para embaralhar um array de maneira efetiva.
+  let ordem = pilotos.slice();
+  // Algoritmo para embaralhar um array de maneira efetiva.
   for (let i = ordem.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [ordem[i], ordem[j]] = [ordem[j], ordem[i]];
@@ -82,9 +83,24 @@ function simularCorrida(pilotos, tipo = 'normal') {
       </div>
     </div>
   </form>
-  <div class="grid-pilotos">
-    <p v-for="(p, i) in tabelaPilotos" :key="i">{{ p.nome }}: {{ p.pontuacao }}</p>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>P</th>
+        <th>Piloto</th>
+        <th>Pontos</th>
+        <th>Dif.</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(p, i) in tabelaPilotos" :key="i">
+        <td>{{ i + 1 }}</td>
+        <td>{{ p.nome }}</td>
+        <td>{{ p.pontuacao }}</td>
+        <td>{{ i !== 0 ? tabelaPilotos[i - 1].pontuacao - p.pontuacao : '' }}</td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <style scoped>
