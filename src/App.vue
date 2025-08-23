@@ -183,29 +183,42 @@ function simular() {
   </div>
 </template>
 
-<style scoped>
+
+<style>
 .container {
   width: 100%;
-  max-width: 70vw;
+  max-width: 900px;
   margin: 0 auto;
+  padding: 1em;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .form-json {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
+  width: 100%;
+  max-width: 500px;
 }
-
 .form-json textarea {
-  height: 27em;
+  height: 18em;
+  width: 100%;
+  resize: vertical;
+  font-size: 1em;
 }
-
 .form-json button {
-  height: 3em;
+  height: 2.5em;
   background-color: rgb(0, 88, 12);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  margin-top: 4px;
+  transition: background 0.2s;
 }
-
 .form-json button:hover {
   background-color: rgb(0, 51, 7);
   cursor: pointer;
@@ -214,57 +227,128 @@ function simular() {
 .grid-pilotos {
   margin-top: 1em;
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
-  gap: 5px;
-  font-size: 0.9em;
-  text-wrap: nowrap;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  width: 100%;
+  font-size: 1em;
 }
-
 .pilotos {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  align-items: stretch;
 }
 
 .config {
   margin-top: 1em;
   display: flex;
-  justify-content: space-evenly;
-  font-size: 0.9em;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  font-size: 1em;
 }
-
-.config label {
-  margin-right: 1em;
+.config > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 140px;
 }
 
 table {
-  width: 50%;
-  margin-top: 1em;
+  width: 100%;
+  margin-top: 2em;
   border-collapse: collapse;
+  font-size: 1em;
+  background: rgba(0,0,0,0.7);
+  border-radius: 8px;
+  overflow: hidden;
 }
-
-table thead tr {
-  border-bottom: 2px solid white;
-  text-align: left;
-  margin-bottom: 5px;
+thead th {
+  background: #222;
+  color: #fff;
+  padding: 10px 6px;
+  text-align: center;
 }
-</style>
-
-<style>
-body {
-  background-color: black;
-  color: white;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+tbody td {
+  background: #111;
+  color: #fff;
+  padding: 8px 4px;
+  text-align: center;
 }
 
 input,
 textarea,
 button {
-  background-color: black;
+  background-color: #181818;
   color: white;
-  border: 1px solid white;
-  padding: 3px 5px;
-  font-size: medium;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+input:focus,
+textarea:focus {
+  outline: 2px solid #0a8d2b;
+}
+
+body {
+  background-color: #101010;
+  color: white;
+  font-family: 'Segoe UI', Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 700px) {
+  .container {
+    max-width: 100vw;
+    padding: 0.5em;
+  }
+  .form-json {
+    max-width: 100vw;
+    padding: 0;
+  }
+  .grid-pilotos {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 6px;
+    font-size: 0.95em;
+  }
+  .config {
+    gap: 8px;
+    font-size: 0.95em;
+  }
+  table {
+    font-size: 0.95em;
+  }
+  thead th, tbody td {
+    padding: 6px 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.2em;
+  }
+  .form-json textarea {
+    height: 8em;
+    font-size: 0.95em;
+  }
+  .grid-pilotos {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 4px;
+    font-size: 0.9em;
+  }
+  .config {
+    gap: 4px;
+    font-size: 0.9em;
+  }
+  table {
+    font-size: 0.9em;
+  }
+  thead th, tbody td {
+    padding: 4px 1px;
+  }
 }
 </style>
