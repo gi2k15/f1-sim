@@ -194,7 +194,6 @@ function simular() {
           <th>P</th>
           <th>Piloto</th>
           <th>Pontos</th>
-          <th>Dif.</th>
           <th>Prob. %</th>
         </tr>
       </thead>
@@ -202,8 +201,7 @@ function simular() {
         <tr v-for="(p, i) in tabelaPilotos" :key="i">
           <td>{{ i + 1 }}</td>
           <td>{{ p.nome }}</td>
-          <td>{{ p.pontuacao }}</td>
-          <td>{{ i !== 0 ? tabelaPilotos[i - 1].pontuacao - p.pontuacao : '' }}</td>
+          <td>{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span></td>
           <td>{{ p.chance }}</td>
         </tr>
       </tbody>
@@ -292,6 +290,12 @@ function simular() {
   flex-direction: column;
   align-items: flex-start;
   min-width: 140px;
+}
+
+.diff {
+  margin-left: 1em;
+  font-size: 0.9em;
+  color: rgb(253, 72, 72);
 }
 
 table {
