@@ -9,6 +9,31 @@ let chances = [];
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
 
+// Exemplo de JSON
+const jsonExemplo = `[
+  { "nome": "Oscar Piastri", "nacionalidade": "AU", "pontuacao": 284 },
+  { "nome": "Lando Norris", "nacionalidade": "GB", "pontuacao": 275 },
+  { "nome": "Max Verstappen", "nacionalidade": "NL", "pontuacao": 187 },
+  { "nome": "George Russell", "nacionalidade": "GB", "pontuacao": 172 },
+  { "nome": "Charles Leclerc", "nacionalidade": "MC", "pontuacao": 151 },
+  { "nome": "Lewis Hamilton", "nacionalidade": "GB", "pontuacao": 109 },
+  { "nome": "Kimi Antonelli", "nacionalidade": "IT", "pontuacao": 64 },
+  { "nome": "Alexander Albon", "nacionalidade": "TH", "pontuacao": 54 },
+  { "nome": "Nico Hulkenberg", "nacionalidade": "DE", "pontuacao": 37 },
+  { "nome": "Esteban Ocon", "nacionalidade": "FR", "pontuacao": 27 },
+  { "nome": "Fernando Alonso", "nacionalidade": "ES", "pontuacao": 26 },
+  { "nome": "Lance Stroll", "nacionalidade": "CA", "pontuacao": 26 },
+  { "nome": "Isack Hadjar", "nacionalidade": "FR", "pontuacao": 22 },
+  { "nome": "Pierre Gasly", "nacionalidade": "FR", "pontuacao": 20 },
+  { "nome": "Liam Lawson", "nacionalidade": "NZ", "pontuacao": 20 },
+  { "nome": "Carlos Sainz", "nacionalidade": "ES", "pontuacao": 16 },
+  { "nome": "Gabriel Bortoleto", "nacionalidade": "BR", "pontuacao": 14 },
+  { "nome": "Yuki Tsunoda", "nacionalidade": "JP", "pontuacao": 10 },
+  { "nome": "Oliver Bearman", "nacionalidade": "GB", "pontuacao": 8 },
+  { "nome": "Franco Colapinto", "nacionalidade": "AR", "pontuacao": 0 },
+  { "nome": "Jack Doohan", "nacionalidade": "AU", "pontuacao": 0 }
+]`;
+
 // Data de todos os grande prêmios
 const dataCorridas = [
   "2025-03-16", "2025-03-23", "2025-04-06", "2025-04-13", "2025-04-20", "2025-05-04",
@@ -136,6 +161,7 @@ function simular() {
   <div class="container">
     <form class="form-json">
       <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
+      <a href="#" @click="jsonPilotos = jsonExemplo">Exemplo</a>
       <button class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
     <form style="width: 100%;">
@@ -307,6 +333,10 @@ button {
 input:focus,
 textarea:focus {
   outline: 2px solid #0a8d2b;
+}
+
+a {
+  color: #0a8d2b;
 }
 
 body {
