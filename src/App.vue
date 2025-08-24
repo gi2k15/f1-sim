@@ -358,12 +358,12 @@ body {
 
 @media (max-width: 700px) {
   .container {
-    max-width: 100vw;
+    max-width: 90vw;
     padding: 0.5em;
   }
 
   .form-json {
-    max-width: 100vw;
+    max-width: 90vw;
     padding: 0;
   }
 
