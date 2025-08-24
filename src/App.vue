@@ -4,6 +4,7 @@ import { ref } from 'vue';
 const tabelaPilotos = ref([]);
 const jsonPilotos = ref('');
 const numSimulacoes = ref(10000);
+const simularBtn = ref('Simular');
 let chances = [];
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
@@ -114,6 +115,7 @@ function simularTemporada(pilotos, corridas, sprints) {
  * Função principal da simulação.
  */
 function simular() {
+  simularBtn.value = 'Simulando...';
   let vitorias = {};
   for (let i = 0; i < numSimulacoes.value; i++) {
     const temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
@@ -129,6 +131,7 @@ function simular() {
     const chanceObj = chances.find(c => c.nome === p.nome);
     p.chance = chanceObj ? chanceObj.chance : 0;
   })
+  simularBtn.value = 'Simular';
 }
 </script>
 
@@ -160,7 +163,7 @@ function simular() {
           <input v-model.number="numSimulacoes" />
         </div>
       </div>
-      <button class="click-button" @click.prevent="simular()">Simular</button>
+      <button class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">{{ simularBtn }}</button>
     </form>
     <table v-if="tabelaPilotos.length > 0">
       <thead>
@@ -225,6 +228,11 @@ function simular() {
 .click-button:hover {
   background-color: rgb(0, 51, 7);
   cursor: pointer;
+}
+
+.click-button:disabled {
+  background-color: rgb(78, 78, 78);
+  cursor: not-allowed;
 }
 
 .grid-pilotos {
