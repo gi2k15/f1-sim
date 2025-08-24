@@ -55,8 +55,8 @@ function getJSON() {
   try {
     tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
     tabelaPilotos.value.sort((a, b) => b.pontuacao - a.pontuacao);
-  } catch (e) {
-    alert("Erro: " + e.message);
+  } catch {
+    alert("JSON inválido!");
   }
 }
 
@@ -164,6 +164,7 @@ function simular() {
       <a href="#" @click="jsonPilotos = jsonExemplo">Exemplo</a>
       <button class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
+    <div v-if="tabelaPilotos.length > 0">
     <form style="width: 100%;">
       <div class="grid-pilotos">
         <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
@@ -194,7 +195,7 @@ function simular() {
           <th>P</th>
           <th>Piloto</th>
           <th>Pontos</th>
-          <th>Prob. %</th>
+          <th>Probabilidade (%)</th>
         </tr>
       </thead>
       <tbody>
@@ -206,6 +207,7 @@ function simular() {
         </tr>
       </tbody>
     </table>
+  </div>
   </div>
 </template>
 
@@ -227,6 +229,7 @@ function simular() {
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  max-width: 668px;
 }
 
 .form-json textarea {
@@ -293,7 +296,7 @@ function simular() {
 }
 
 .diff {
-  margin-left: 1em;
+  margin-left: 5px;
   font-size: 0.9em;
   color: rgb(253, 72, 72);
 }
@@ -312,6 +315,7 @@ thead th {
   background: #222;
   color: #fff;
   padding: 10px 6px;
+  white-space: nowrap;
   text-align: center;
 }
 
@@ -319,6 +323,7 @@ tbody td {
   background: #111;
   color: #fff;
   padding: 8px 4px;
+  white-space: nowrap;
   text-align: center;
 }
 
