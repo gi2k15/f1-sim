@@ -4,7 +4,6 @@ import { ref } from 'vue';
 const tabelaPilotos = ref([]);
 const jsonPilotos = ref('');
 const numSimulacoes = ref(10000);
-const simularBtn = ref('Simular');
 let chances = [];
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
@@ -115,7 +114,6 @@ function simularTemporada(pilotos, corridas, sprints) {
  * Função principal da simulação.
  */
 function simular() {
-  simularBtn.value = 'Simulando...';
   let vitorias = {};
   for (let i = 0; i < numSimulacoes.value; i++) {
     const temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
@@ -131,7 +129,6 @@ function simular() {
     const chanceObj = chances.find(c => c.nome === p.nome);
     p.chance = chanceObj ? chanceObj.chance : 0;
   })
-  simularBtn.value = 'Simular';
 }
 </script>
 
@@ -141,7 +138,7 @@ function simular() {
       <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
       <button class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
-    <form>
+    <form style="width: 100%;">
       <div class="grid-pilotos">
         <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
           <label>{{ p.nome }}</label>
@@ -163,7 +160,7 @@ function simular() {
           <input v-model.number="numSimulacoes" />
         </div>
       </div>
-      <button class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">{{ simularBtn }}</button>
+      <button class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">Simular</button>
     </form>
     <table v-if="tabelaPilotos.length > 0">
       <thead>
@@ -206,14 +203,15 @@ function simular() {
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  max-width: 500px;
 }
+
 .form-json textarea {
   height: 18em;
   width: 100%;
   resize: vertical;
   font-size: 1em;
 }
+
 .click-button {
   height: 2.5em;
   width: 100%;
@@ -225,6 +223,7 @@ function simular() {
   margin-top: 4px;
   transition: background 0.2s;
 }
+
 .click-button:hover {
   background-color: rgb(0, 51, 7);
   cursor: pointer;
@@ -243,6 +242,7 @@ function simular() {
   width: 100%;
   font-size: 1em;
 }
+
 .pilotos {
   display: flex;
   flex-direction: column;
@@ -260,7 +260,8 @@ function simular() {
   width: 100%;
   font-size: 1em;
 }
-.config > div {
+
+.config>div {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -272,16 +273,18 @@ table {
   margin-top: 2em;
   border-collapse: collapse;
   font-size: 1em;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   border-radius: 8px;
   overflow: hidden;
 }
+
 thead th {
   background: #222;
   color: #fff;
   padding: 10px 6px;
   text-align: center;
 }
+
 tbody td {
   background: #111;
   color: #fff;
@@ -300,6 +303,7 @@ button {
   font-size: 1em;
   box-sizing: border-box;
 }
+
 input:focus,
 textarea:focus {
   outline: 2px solid #0a8d2b;
@@ -318,23 +322,29 @@ body {
     max-width: 100vw;
     padding: 0.5em;
   }
+
   .form-json {
     max-width: 100vw;
     padding: 0;
   }
+
   .grid-pilotos {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 6px;
     font-size: 0.95em;
   }
+
   .config {
     gap: 8px;
     font-size: 0.95em;
   }
+
   table {
     font-size: 0.95em;
   }
-  thead th, tbody td {
+
+  thead th,
+  tbody td {
     padding: 6px 2px;
   }
 }
@@ -343,23 +353,29 @@ body {
   .container {
     padding: 0.2em;
   }
+
   .form-json textarea {
     height: 8em;
     font-size: 0.95em;
   }
+
   .grid-pilotos {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 4px;
     font-size: 0.9em;
   }
+
   .config {
     gap: 4px;
     font-size: 0.9em;
   }
+
   table {
     font-size: 0.9em;
   }
-  thead th, tbody td {
+
+  thead th,
+  tbody td {
     padding: 4px 1px;
   }
 }
