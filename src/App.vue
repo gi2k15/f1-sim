@@ -11,6 +11,31 @@ let chances = [];
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
 
+// Exemplo de JSON
+const jsonExemplo = `[
+  { "nome": "Oscar Piastri", "nacionalidade": "AU", "pontuacao": 284 },
+  { "nome": "Lando Norris", "nacionalidade": "GB", "pontuacao": 275 },
+  { "nome": "Max Verstappen", "nacionalidade": "NL", "pontuacao": 187 },
+  { "nome": "George Russell", "nacionalidade": "GB", "pontuacao": 172 },
+  { "nome": "Charles Leclerc", "nacionalidade": "MC", "pontuacao": 151 },
+  { "nome": "Lewis Hamilton", "nacionalidade": "GB", "pontuacao": 109 },
+  { "nome": "Kimi Antonelli", "nacionalidade": "IT", "pontuacao": 64 },
+  { "nome": "Alexander Albon", "nacionalidade": "TH", "pontuacao": 54 },
+  { "nome": "Nico Hulkenberg", "nacionalidade": "DE", "pontuacao": 37 },
+  { "nome": "Esteban Ocon", "nacionalidade": "FR", "pontuacao": 27 },
+  { "nome": "Fernando Alonso", "nacionalidade": "ES", "pontuacao": 26 },
+  { "nome": "Lance Stroll", "nacionalidade": "CA", "pontuacao": 26 },
+  { "nome": "Isack Hadjar", "nacionalidade": "FR", "pontuacao": 22 },
+  { "nome": "Pierre Gasly", "nacionalidade": "FR", "pontuacao": 20 },
+  { "nome": "Liam Lawson", "nacionalidade": "NZ", "pontuacao": 20 },
+  { "nome": "Carlos Sainz", "nacionalidade": "ES", "pontuacao": 16 },
+  { "nome": "Gabriel Bortoleto", "nacionalidade": "BR", "pontuacao": 14 },
+  { "nome": "Yuki Tsunoda", "nacionalidade": "JP", "pontuacao": 10 },
+  { "nome": "Oliver Bearman", "nacionalidade": "GB", "pontuacao": 8 },
+  { "nome": "Franco Colapinto", "nacionalidade": "AR", "pontuacao": 0 },
+  { "nome": "Jack Doohan", "nacionalidade": "AU", "pontuacao": 0 }
+]`;
+
 // Data de todos os grande prêmios
 const dataCorridas = [
   "2025-03-16", "2025-03-23", "2025-04-06", "2025-04-13", "2025-04-20", "2025-05-04",
@@ -32,8 +57,8 @@ function getJSON() {
   try {
     tabelaPilotos.value = JSON.parse(jsonPilotosStr.value).slice(0, 20);
     tabelaPilotos.value.sort((a, b) => b.pontuacao - a.pontuacao);
-  } catch (e) {
-    alert("Erro: " + e.message);
+  } catch {
+    alert("JSON inválido!");
   }
 }
 
@@ -138,10 +163,12 @@ function simular() {
 <template>
   <div class="container">
     <form class="form-json">
-      <textarea v-model="jsonPilotosStr" spellcheck="false"></textarea>
+      <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
+      <a href="#" @click="jsonPilotos = jsonExemplo">Exemplo</a>
       <button class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
-    <form>
+    <div v-if="tabelaPilotos.length > 0">
+    <form style="width: 100%;">
       <div class="grid-pilotos">
         <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
           <label>{{ p.nome }}</label>
@@ -163,7 +190,7 @@ function simular() {
           <input v-model.number="numSimulacoes" />
         </div>
       </div>
-      <button class="click-button" @click.prevent="simular()">Simular</button>
+      <button class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">Simular</button>
     </form>
     <table v-if="showTable">
       <thead>
@@ -171,18 +198,19 @@ function simular() {
           <th>P</th>
           <th>Piloto</th>
           <th>Pontos</th>
-          <th>Prob. %</th>
+          <th>Probabilidade (%)</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(p, i) in tabelaPilotos" :key="i">
           <td>{{ i + 1 }}</td>
           <td>{{ p.nome }}</td>
-          <td>{{ p.pontuacao }}<span class="dif">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span></td>
+          <td>{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span></td>
           <td>{{ p.chance }}</td>
         </tr>
       </tbody>
     </table>
+  </div>
   </div>
 </template>
 
@@ -204,14 +232,16 @@ function simular() {
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  max-width: 500px;
+  max-width: 668px;
 }
+
 .form-json textarea {
   height: 18em;
   width: 100%;
   resize: vertical;
   font-size: 1em;
 }
+
 .click-button {
   height: 2.5em;
   width: 100%;
@@ -223,9 +253,15 @@ function simular() {
   margin-top: 4px;
   transition: background 0.2s;
 }
+
 .click-button:hover {
   background-color: rgb(0, 51, 7);
   cursor: pointer;
+}
+
+.click-button:disabled {
+  background-color: rgb(78, 78, 78);
+  cursor: not-allowed;
 }
 
 .grid-pilotos {
@@ -236,6 +272,7 @@ function simular() {
   width: 100%;
   font-size: 1em;
 }
+
 .pilotos {
   display: flex;
   flex-direction: column;
@@ -253,17 +290,18 @@ function simular() {
   width: 100%;
   font-size: 1em;
 }
-.config > div {
+
+.config>div {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   min-width: 140px;
 }
 
-.dif {
-  font-size: 0.8em;
-  color: rgb(255, 95, 95);
-  margin-left: 4px;
+.diff {
+  margin-left: 5px;
+  font-size: 0.9em;
+  color: rgb(253, 72, 72);
 }
 
 table {
@@ -271,20 +309,24 @@ table {
   margin-top: 2em;
   border-collapse: collapse;
   font-size: 1em;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   border-radius: 8px;
   overflow: hidden;
 }
+
 thead th {
   background: #222;
   color: #fff;
   padding: 10px 6px;
+  white-space: nowrap;
   text-align: center;
 }
+
 tbody td {
   background: #111;
   color: #fff;
   padding: 8px 4px;
+  white-space: nowrap;
   text-align: center;
 }
 
@@ -299,9 +341,14 @@ button {
   font-size: 1em;
   box-sizing: border-box;
 }
+
 input:focus,
 textarea:focus {
   outline: 2px solid #0a8d2b;
+}
+
+a {
+  color: #0a8d2b;
 }
 
 body {
@@ -314,26 +361,32 @@ body {
 
 @media (max-width: 700px) {
   .container {
-    max-width: 100vw;
+    max-width: 90vw;
     padding: 0.5em;
   }
+
   .form-json {
-    max-width: 100vw;
+    max-width: 90vw;
     padding: 0;
   }
+
   .grid-pilotos {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 6px;
     font-size: 0.95em;
   }
+
   .config {
     gap: 8px;
     font-size: 0.95em;
   }
+
   table {
     font-size: 0.95em;
   }
-  thead th, tbody td {
+
+  thead th,
+  tbody td {
     padding: 6px 2px;
   }
 }
@@ -342,23 +395,29 @@ body {
   .container {
     padding: 0.2em;
   }
+
   .form-json textarea {
     height: 8em;
     font-size: 0.95em;
   }
+
   .grid-pilotos {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 4px;
     font-size: 0.9em;
   }
+
   .config {
     gap: 4px;
     font-size: 0.9em;
   }
+
   table {
     font-size: 0.9em;
   }
-  thead th, tbody td {
+
+  thead th,
+  tbody td {
     padding: 4px 1px;
   }
 }
