@@ -20,7 +20,15 @@ const currentView = computed(() => {
 </script>
 
 <template>
-  <a href="#/">Home</a> |
-  <a href="#/faq">FAQ</a>
-  <component :is="currentView" />
+  <div class="links">
+    <a href="#/">Home</a>&nbsp;
+    <a href="#/faq">FAQ</a>
+    <component :is="currentView" />
+  </div>
 </template>
+
+<style scoped>
+.links {
+  padding: 5px;;
+}
+</style>
