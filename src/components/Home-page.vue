@@ -56,7 +56,6 @@ function getJSON() {
   try {
     tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
     tabelaPilotos.value.sort((a, b) => b.pontuacao - a.pontuacao);
-    tabelaPilotos.value.forEach(p => p.nacionalidade.toLowerCase());
   } catch {
     alert("JSON inválido!");
   }
