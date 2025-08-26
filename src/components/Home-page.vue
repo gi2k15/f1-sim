@@ -123,6 +123,14 @@ function getJSON() {
 }
 
 /**
+ * Reordena a `tabelaPilotos` com base na pontuação em ordem decrescente.
+ * Esta função é chamada quando a pontuação de um piloto é alterada.
+ */
+function reordenarTabela() {
+  tabelaPilotos.value.sort((a, b) => b.pontuacao - a.pontuacao);
+}
+
+/**
  * Retorna a quantidade de datas futuras em relação ao momento atual.
  *
  * @param {string[]} datas - Array de strings representando datas.
@@ -225,7 +233,7 @@ function simular() {
       <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
       <div class="importar">
         <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
-        <a href="#" @click.prevent="importarDaAPI()">Buscar online</a>
+        <a href="#" @click.prevent="importarDaAPI()">Buscar dados online</a>
       </div>
       <button class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
@@ -234,7 +242,7 @@ function simular() {
         <div class="grid-pilotos">
           <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
             <label>{{ p.nome }}</label>
-            <input type="number" v-model.number="p.pontuacao" maxlength="3" />
+            <input type="number" v-model.number="p.pontuacao" @change="reordenarTabela" maxlength="3" />
           </div>
         </div>
         <hr />

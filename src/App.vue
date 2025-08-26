@@ -22,7 +22,8 @@ const currentView = computed(() => {
 <template>
   <div class="links">
     <a href="#/">Home</a>&nbsp;
-    <a href="#/faq">FAQ</a>
+    <a href="#/faq">FAQ</a>&nbsp;
+    <a href="https://github.com/gi2k15/f1-sim" target="_blank" noreferrer noopener>GitHub</a>
     <component :is="currentView" />
   </div>
 </template>
