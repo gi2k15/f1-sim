@@ -1,6 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import "/node_modules/flag-icons/css/flag-icons.min.css";
+import countries from "i18n-iso-countries";
+import enLocale from "i18n-iso-countries/langs/en.json";
+
+countries.registerLocale(enLocale);
 
 const tabelaPilotos = ref([]);
 const jsonPilotos = ref('');
@@ -46,6 +50,62 @@ const dataCorridas = [
 const dataSprints = [
   "2025-03-22", "2025-05-03", "2025-07-26", "2025-10-18", "2025-11-08", "2025-11-29"
 ];
+
+/**
+ * Busca a classificação atual do campeonato de pilotos da F1 a partir de uma API externa,
+ * formata os dados e os retorna como uma string JSON.
+ *
+ * A função realiza as seguintes etapas:
+ * 1. Faz uma requisição para a API 'https://f1api.dev/api/current/drivers-championship'.
+ * 2. Mapeia a resposta para um formato simplificado contendo nome, pontuação e nacionalidade.
+ * 3. Converte nacionalidades específicas (ex: "Italian") para nomes de países (ex: "Italy")
+ *    usando um mapa interno para garantir a correta conversão para o código ISO de 2 letras.
+ * 4. Converte o array de objetos de pilotos em uma string JSON formatada.
+ *
+ * Em caso de falha na requisição ou no processamento, um erro é registrado no console,
+ * um alerta é exibido ao usuário e uma string JSON de um array vazio ("[]") é retornada.
+ *
+ * @returns {Promise<string>} Uma promessa que resolve para uma string JSON com os dados dos pilotos.
+ */
+async function getClassificacao() {
+  const API_URL = 'https://f1api.dev/api/current/drivers-championship';
+  const paisOrigem = {
+    Italian: 'Italy',
+    'New Zealander': 'New Zealand',
+    Argentine: 'Argentina'
+  };
+  try {
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+    const data = await response.json();
+    const classificacao = data.drivers_championship;
+    const mappedData = classificacao.map(p => {
+      return {
+        nome: `${p.driver.name} ${p.driver.surname}`,
+        pontuacao: p.points,
+        // Mapeia a nacionalidade (ex: "Italian") para o nome do país (ex: "Italy") antes de obter o código.
+        nacionalidade: countries.getAlpha2Code(paisOrigem[p.driver.nationality] || p.driver.nationality, "en")
+      }
+    });
+    // Retorna os dados formatados como uma string JSON.
+    return JSON.stringify(mappedData, null, 2);
+  } catch (error) {
+    console.error("Falha ao buscar dados da API:", error);
+    alert("Não foi possível carregar os dados da API.");
+    return "[]"; // Retorna um JSON de array vazio em caso de erro.
+  }
+}
+
+/**
+ * Busca os dados da classificação de pilotos da API e preenche a área de texto.
+ *
+ * Esta função assíncrona chama `getClassificacao()` para obter a string JSON
+ * dos pilotos e atualiza o valor de `jsonPilotos`, que está vinculado
+ * à `<textarea>` na interface do usuário.
+ */
+async function importarDaAPI() {
+  jsonPilotos.value = await getClassificacao();
+}
 
 /**
  * Analisa a string JSON de `jsonPilotos.value`, extrai os primeiros 20 objetos de pilotos,
@@ -162,53 +222,57 @@ function simular() {
   <div class="container">
     <form class="form-json">
       <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
-      <a href="#" @click="jsonPilotos = jsonExemplo">Exemplo</a>
+      <div class="importar">
+        <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar Exemplo</a>
+        <a href="#" @click.prevent="importarDaAPI()">Buscar online</a>
+      </div>
       <button class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
     <div v-if="tabelaPilotos.length > 0">
-    <form style="width: 100%;">
-      <div class="grid-pilotos">
-        <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
-          <label>{{ p.nome }}</label>
-          <input  type="number" v-model.number="p.pontuacao" maxlength="3" />
+      <form style="width: 100%;">
+        <div class="grid-pilotos">
+          <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
+            <label>{{ p.nome }}</label>
+            <input type="number" v-model.number="p.pontuacao" maxlength="3" />
+          </div>
         </div>
-      </div>
-      <hr />
-      <div class="config">
-        <div>
-          <label>Corridas restantes</label>
-          <input type="number" v-model.number="corridasRestantes" />
+        <hr />
+        <div class="config">
+          <div>
+            <label>Corridas restantes</label>
+            <input type="number" v-model.number="corridasRestantes" />
+          </div>
+          <div>
+            <label>Corridas sprint restantes</label>
+            <input type="number" v-model.number="sprintsRestantes" />
+          </div>
+          <div>
+            <label>Número de simulações</label>
+            <input type="number" v-model.number="numSimulacoes" />
+          </div>
         </div>
-        <div>
-          <label>Corridas sprint restantes</label>
-          <input type="number" v-model.number="sprintsRestantes" />
-        </div>
-        <div>
-          <label>Número de simulações</label>
-          <input type="number" v-model.number="numSimulacoes" />
-        </div>
-      </div>
-      <button class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">Simular</button>
-    </form>
-    <table v-if="tabelaPilotos.length > 0">
-      <thead>
-        <tr>
-          <th>P</th>
-          <th>Piloto</th>
-          <th>Pontos</th>
-          <th>Probabilidade (%)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(p, i) in tabelaPilotos" :key="i">
-          <td>{{ i + 1 }}</td>
-          <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
-          <td>{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span></td>
-          <td>{{ p.chance }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        <button class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">Simular</button>
+      </form>
+      <table v-if="tabelaPilotos.length > 0">
+        <thead>
+          <tr>
+            <th>P</th>
+            <th>Piloto</th>
+            <th>Pontos</th>
+            <th>Probabilidade (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(p, i) in tabelaPilotos" :key="i">
+            <td>{{ i + 1 }}</td>
+            <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
+            <td>{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span>
+            </td>
+            <td>{{ p.chance }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -238,6 +302,11 @@ function simular() {
   width: 100%;
   resize: vertical;
   font-size: 1em;
+}
+
+.importar {
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .click-button {
