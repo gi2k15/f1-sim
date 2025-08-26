@@ -169,22 +169,22 @@ function simular() {
       <div class="grid-pilotos">
         <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
           <label>{{ p.nome }}</label>
-          <input v-model.number="p.pontuacao" maxlength="3" />
+          <input  type="number" v-model.number="p.pontuacao" maxlength="3" />
         </div>
       </div>
       <hr />
       <div class="config">
         <div>
           <label>Corridas restantes</label>
-          <input v-model.number="corridasRestantes" />
+          <input type="number" v-model.number="corridasRestantes" />
         </div>
         <div>
           <label>Corridas sprint restantes</label>
-          <input v-model.number="sprintsRestantes" />
+          <input type="number" v-model.number="sprintsRestantes" />
         </div>
         <div>
           <label>Número de simulações</label>
-          <input v-model.number="numSimulacoes" />
+          <input type="number" v-model.number="numSimulacoes" />
         </div>
       </div>
       <button class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">Simular</button>

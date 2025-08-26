@@ -33,3 +33,9 @@
     o resultado real do campeonato, pois o esporte é imprevisível e muitos fatores (desempenho real dos pilotos,
     condições climáticas, incidentes de corrida, etc.) não permitem que seja possível aferir com precisão o resultado.</p>
 </template>
+
+<style scoped>
+h1, h2 {
+  color: #0a8d2b;
+}
+</style>
