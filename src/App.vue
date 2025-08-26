@@ -29,6 +29,6 @@ const currentView = computed(() => {
 
 <style scoped>
 .links {
-  padding: 5px;;
+  padding: 5px;
 }
 </style>
