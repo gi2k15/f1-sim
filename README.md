@@ -1,5 +1,3 @@
-# f1-sim
-
 ## F1 Sim
 
 Simulador de temporada de Fórmula 1
@@ -40,7 +38,7 @@ pnpm install
 
 ## Execução
 ```sh
-pnpm run dev
+pnpm dev
 ```
 
 ## Estrutura do projeto
