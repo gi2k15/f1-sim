@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 const tabelaPilotos = ref([]);
 const jsonPilotos = ref('');
@@ -55,6 +56,7 @@ function getJSON() {
   try {
     tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
     tabelaPilotos.value.sort((a, b) => b.pontuacao - a.pontuacao);
+    tabelaPilotos.value.forEach(p => p.nacionalidade.toLowerCase());
   } catch {
     alert("JSON inválido!");
   }
@@ -201,7 +203,7 @@ function simular() {
       <tbody>
         <tr v-for="(p, i) in tabelaPilotos" :key="i">
           <td>{{ i + 1 }}</td>
-          <td>{{ p.nome }}</td>
+          <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
           <td>{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span></td>
           <td>{{ p.chance }}</td>
         </tr>
