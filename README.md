@@ -1,35 +1,52 @@
 # f1-sim
 
-This template should help get you started developing with Vue 3 in Vite.
+## F1 Sim
 
-## Recommended IDE Setup
+Simulador de temporada de Fórmula 1
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Este projeto permite importar uma lista de pilotos, editar pontuações, configurar corridas e sprints restantes, e simular milhares de temporadas para calcular as chances de cada piloto ser campeão.
 
-## Customize configuration
+## Funcionalidades
+- Importação de pilotos via JSON
+- Edição manual da pontuação dos pilotos
+- Configuração do número de corridas e sprints restantes
+- Definição do número de simulações
+- Visualização da tabela de pilotos, pontuação, diferença e probabilidade de título
+- Interface responsiva para desktop e mobile
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Como usar
+1. Cole o JSON dos pilotos no campo de texto e clique em "Importar".
+2. Edite as pontuações conforme necessário.
+3. Ajuste o número de corridas, sprints e simulações.
+4. Veja a tabela atualizada com as chances de cada piloto.
 
-## Project Setup
+### Exemplo de JSON de pilotos
+```json
+[
+	{ "nome": "Max Verstappen", "pontuacao": 200 },
+	{ "nome": "Lewis Hamilton", "pontuacao": 180 },
+	{ "nome": "Charles Leclerc", "pontuacao": 150 }
+]
+```
 
+## Requisitos
+- Node.js
+- pnpm
+
+## Instalação
 ```sh
 pnpm install
 ```
 
-### Compile and Hot-Reload for Development
-
+## Execução
 ```sh
-pnpm dev
+pnpm run dev
 ```
 
-### Compile and Minify for Production
+## Estrutura do projeto
+- `src/App.vue`: componente principal
+- `src/components/`: componentes de página
+- `public/`: arquivos estáticos
 
-```sh
-pnpm build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
+## Licença
+MIT
