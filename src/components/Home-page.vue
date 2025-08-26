@@ -84,7 +84,8 @@ async function getClassificacao() {
         nome: `${p.driver.name} ${p.driver.surname}`,
         pontuacao: p.points,
         // Mapeia a nacionalidade (ex: "Italian") para o nome do país (ex: "Italy") antes de obter o código.
-        nacionalidade: countries.getAlpha2Code(paisOrigem[p.driver.nationality] || p.driver.nationality, "en")
+        nacionalidade: countries.getAlpha2Code(paisOrigem[p.driver.nationality] || p.driver.nationality, "en"),
+        equipe: p.team.teamName
       }
     });
     // Retorna os dados formatados como uma string JSON.
@@ -223,7 +224,7 @@ function simular() {
     <form class="form-json">
       <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
       <div class="importar">
-        <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar Exemplo</a>
+        <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
         <a href="#" @click.prevent="importarDaAPI()">Buscar online</a>
       </div>
       <button class="click-button" @click.prevent="getJSON()">Importar</button>
@@ -258,6 +259,7 @@ function simular() {
           <tr>
             <th>P</th>
             <th>Piloto</th>
+            <th>Equipe</th>
             <th>Pontos</th>
             <th>Probabilidade (%)</th>
           </tr>
@@ -266,6 +268,7 @@ function simular() {
           <tr v-for="(p, i) in tabelaPilotos" :key="i">
             <td>{{ i + 1 }}</td>
             <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
+            <td>{{ p.equipe }}</td>
             <td>{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span>
             </td>
             <td>{{ p.chance }}</td>
