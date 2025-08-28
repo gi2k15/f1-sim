@@ -31,3 +31,5 @@ coverage
 
 # Igonora backups
 *.bak
+
+.vercel
