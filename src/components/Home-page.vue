@@ -346,7 +346,7 @@ function simular() {
 .grid-pilotos {
   margin: 1em 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   width: 100%;
   font-size: 1em;
