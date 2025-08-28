@@ -451,7 +451,7 @@ body {
   }
 
   .grid-pilotos {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 6px;
     font-size: 0.95em;
   }
