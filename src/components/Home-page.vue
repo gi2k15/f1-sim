@@ -229,6 +229,7 @@ function simular() {
 
 <template>
   <div class="container">
+    <h1>Simulador de campeonato de Fórmula 1</h1>
     <form class="form-json">
       <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
       <div class="importar">
@@ -425,9 +426,10 @@ textarea:focus {
   outline: 2px solid #0a8d2b;
 }
 
-a {
+a, h1 {
   color: #0a8d2b;
 }
+
 
 body {
   background-color: #101010;
