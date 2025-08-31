@@ -365,13 +365,22 @@ hr {
 }
 
 .grid-pilotos {
-  width: 700px;
+  width: 100%;
   display: grid;
   justify-content: center;
   gap: 5px;
   grid-template-columns: repeat(4, auto);
   overflow-x: auto;
 }
+
+.pilotos{
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
 
 .config {
   display: flex;
