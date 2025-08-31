@@ -240,10 +240,12 @@ function simular() {
     </form>
     <div v-if="tabelaPilotos.length > 0">
       <form>
-        <div class="grid-pilotos">
-          <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
-            <label>{{ p.nome }}</label>
-            <input type="number" v-model.number="p.pontuacao" @change="reordenarTabela" maxlength="3" />
+        <div class="div-container">
+          <div class="grid-pilotos">
+            <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
+              <label>{{ p.nome }}</label>
+              <input type="number" v-model.number="p.pontuacao" @change="reordenarTabela" maxlength="3" />
+            </div>
           </div>
         </div>
         <hr />
@@ -263,27 +265,30 @@ function simular() {
         </div>
         <button class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">Simular</button>
       </form>
-      <table v-if="tabelaPilotos.length > 0">
-        <thead>
-          <tr>
-            <th style="text-align: left;">P</th>
-            <th>Piloto</th>
-            <th>Equipe</th>
-            <th>Pontos</th>
-            <th>Probabilidade (%)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(p, i) in tabelaPilotos" :key="i">
-            <td>{{ i + 1 }}</td>
-            <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
-            <td>{{ p.equipe }}</td>
-            <td class="middle">{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span>
-            </td>
-            <td class="middle">{{ p.chance }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="div-container">
+        <table v-if="tabelaPilotos.length > 0">
+          <thead>
+            <tr>
+              <th style="text-align: left;">P</th>
+              <th>Piloto</th>
+              <th>Equipe</th>
+              <th>Pontos</th>
+              <th>Probabilidade (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(p, i) in tabelaPilotos" :key="i">
+              <td>{{ i + 1 }}</td>
+              <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
+              <td>{{ p.equipe }}</td>
+              <td class="middle">{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao -
+                tabelaPilotos[0].pontuacao : '' }}</span>
+              </td>
+              <td class="middle">{{ p.chance }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -324,7 +329,8 @@ button:hover {
   background-color: var(--cor-botao-hover);
 }
 
-input, textarea {
+input,
+textarea {
   background-color: black;
   color: white;
   border-radius: var(--borda-radius);
@@ -359,11 +365,12 @@ hr {
 }
 
 .grid-pilotos {
-    display: grid;
-    justify-content: center;
-    gap: 5px;
-    grid-template-columns: repeat(4, auto);
-    overflow-x: auto;
+  width: 700px;
+  display: grid;
+  justify-content: center;
+  gap: 5px;
+  grid-template-columns: repeat(4, auto);
+  overflow-x: auto;
 }
 
 .config {
@@ -372,7 +379,7 @@ hr {
   align-items: center;
 }
 
-.config > div {
+.config>div {
   width: min-content;
 }
 
@@ -400,6 +407,25 @@ table tbody td {
   margin-left: 5px;
   font-size: 0.7em;
   color: rgb(255, 72, 72);
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 90vw;
+  }
+
+  .config {
+    flex-direction: column;
+  }
+
+  .div-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 700px;
+  }
 }
 </style>
 
