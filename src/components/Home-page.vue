@@ -151,7 +151,7 @@ const sprintsRestantes = ref(datasRestantes(dataSprints));
  * Simula uma corrida de Fórmula 1 embaralhando a ordem dos pilotos e atribuindo pontos conforme o tipo de corrida.
  *
  * @param {Array} pilotos - Array de objetos representando os pilotos.
- * @param {string} [tipo='normal'] - Tipo da corrida ('normal' para corrida principal, qualquer outro valor para sprint).
+ * @param {string} [tipo='normal'] - Tipo da corrida ('normal' para corrida-links, qualquer outro valor para sprint).
  * @returns {Object} Um objeto onde as chaves são os nomes dos pilotos e os valores são os pontos acumulados na corrida.
  *
  * O algoritmo embaralha a ordem dos pilotos usando o método de Fisher-Yates e atribui pontos conforme a posição final.
@@ -206,7 +206,7 @@ function simularTemporada(pilotos, corridas, sprints) {
 }
 
 /**
- * Função principal da simulação.
+ * Função-links da simulação.
  */
 function simular() {
   let vitorias = {};
@@ -232,14 +232,14 @@ function simular() {
     <h1>Simulador de campeonato de Fórmula 1</h1>
     <form class="form-json">
       <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
-      <div class="importar">
+      <div class="importar-links">
         <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
         <a href="#" @click.prevent="importarDaAPI()">Buscar dados online</a>
       </div>
       <button class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
     <div v-if="tabelaPilotos.length > 0">
-      <form style="width: 100%;">
+      <form>
         <div class="grid-pilotos">
           <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
             <label>{{ p.nome }}</label>
@@ -266,7 +266,7 @@ function simular() {
       <table v-if="tabelaPilotos.length > 0">
         <thead>
           <tr>
-            <th>P</th>
+            <th style="text-align: left;">P</th>
             <th>Piloto</th>
             <th>Equipe</th>
             <th>Pontos</th>
@@ -278,9 +278,9 @@ function simular() {
             <td>{{ i + 1 }}</td>
             <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
             <td>{{ p.equipe }}</td>
-            <td>{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span>
+            <td class="middle">{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao - tabelaPilotos[0].pontuacao : '' }}</span>
             </td>
-            <td>{{ p.chance }}</td>
+            <td class="middle">{{ p.chance }}</td>
           </tr>
         </tbody>
       </table>
@@ -288,8 +288,122 @@ function simular() {
   </div>
 </template>
 
-
 <style>
+:root {
+  --cor-links: rgb(64, 255, 47);
+  --cor-botao: rgb(11, 131, 0);
+  --cor-botao-hover: rgb(7, 87, 0);
+  --borda: 1px solid white;
+  --borda-radius: 5px;
+  --margin-top-botton: 1em 0;
+}
+
+body {
+  color: white;
+  background-color: black;
+  font-family: sans-serif;
+}
+
+a {
+  color: var(--cor-links);
+}
+
+button {
+  margin: var(--margin-top-botton);
+  height: 3em;
+  background-color: var(--cor-botao);
+  color: white;
+  font-size: large;
+  transition: background 0.3s ease;
+  border: var(--borda);
+  border-radius: var(--borda-radius);
+  width: 100%;
+}
+
+button:hover {
+  background-color: var(--cor-botao-hover);
+}
+
+input, textarea {
+  background-color: black;
+  color: white;
+  border-radius: var(--borda-radius);
+  border: var(--borda);
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+hr {
+  margin: var(--margin-top-botton);
+}
+
+.container {
+  width: 900px;
+  margin: 0 auto;
+}
+
+.form-json {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.form-json textarea {
+  height: 22rem;
+}
+
+.importar-links {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.grid-pilotos {
+    display: grid;
+    justify-content: center;
+    gap: 5px;
+    grid-template-columns: repeat(4, auto);
+    overflow-x: auto;
+}
+
+.config {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.config > div {
+  width: min-content;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+}
+
+table thead th {
+  border-bottom: 2px solid white;
+  padding-bottom: 10px;
+}
+
+table tbody td {
+  height: 1.8em;
+  vertical-align: middle;
+}
+
+.middle {
+  text-align: center;
+}
+
+.diff {
+  margin-left: 5px;
+  font-size: 0.7em;
+  color: rgb(255, 72, 72);
+}
+</style>
+
+<!-- <style>
 .container {
   width: 100%;
   max-width: 900px;
@@ -501,4 +615,4 @@ body {
     padding: 4px 1px;
   }
 }
-</style>
+</style> -->
