@@ -236,13 +236,13 @@ function simular() {
         <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
         <a href="#" @click.prevent="importarDaAPI()">Buscar dados online</a>
       </div>
-      <button class="click-button" @click.prevent="getJSON()">Importar</button>
+      <button type="button" class="click-button" @click.prevent="getJSON()">Importar</button>
     </form>
     <div v-if="tabelaPilotos.length > 0">
       <form>
         <div class="div-container">
           <div class="grid-pilotos">
-            <div v-for="(p, i) in tabelaPilotos" :key="i" class="pilotos">
+            <div v-for="(p, i) in tabelaPilotos" :key="i" class="label-inputs">
               <label>{{ p.nome }}</label>
               <input type="number" v-model.number="p.pontuacao" @change="reordenarTabela" maxlength="3" />
             </div>
@@ -252,18 +252,18 @@ function simular() {
         <div class="config">
           <div>
             <label>Corridas restantes</label>
-            <input type="number" v-model.number="corridasRestantes" />
+            <input type="number" class="label-inputs" v-model.number="corridasRestantes" />
           </div>
           <div>
             <label>Corridas sprint restantes</label>
-            <input type="number" v-model.number="sprintsRestantes" />
+            <input type="number" class="label-inputs" v-model.number="sprintsRestantes" />
           </div>
           <div>
             <label>Número de simulações</label>
-            <input type="number" v-model.number="numSimulacoes" />
+            <input type="number" class="label-inputs" v-model.number="numSimulacoes" />
           </div>
         </div>
-        <button class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">Simular</button>
+        <button type="button" class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">Simular</button>
       </form>
       <div class="div-container">
         <table v-if="tabelaPilotos.length > 0">
@@ -337,6 +337,7 @@ textarea {
   border: var(--borda);
   padding: 5px;
   box-sizing: border-box;
+  width: 100%;
 }
 
 hr {
@@ -368,16 +369,15 @@ hr {
     width: 100%;
     flex-wrap: wrap;
     display: flex;
-    justify-content: center;
-    gap: 5px;
+    justify-content: space-between;
+    gap: 10px;
     overflow-x: auto;
 }
 
-.pilotos{
-  width: 220px;
+.label-inputs {
+  width: 200px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
 }
 
