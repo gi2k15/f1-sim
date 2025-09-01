@@ -231,7 +231,8 @@ function simular() {
   <div class="container">
     <h1>Simulador de campeonato de Fórmula 1</h1>
     <form class="form-json">
-      <textarea v-model="jsonPilotos" spellcheck="false"></textarea>
+      <label>Tabela JSON dos pilotos</label>
+      <textarea v-model="jsonPilotos" spellcheck="false" :placeholder="jsonExemplo"></textarea>
       <div class="importar-links">
         <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
         <a href="#" @click.prevent="importarDaAPI()">Buscar dados online</a>
@@ -244,7 +245,7 @@ function simular() {
           <div class="grid-pilotos">
             <div v-for="(p, i) in tabelaPilotos" :key="i" class="label-inputs">
               <label>{{ p.nome }}</label>
-              <input type="number" v-model.number="p.pontuacao" @change="reordenarTabela" maxlength="3" />
+              <input type="number" :id="p.nome" v-model.number="p.pontuacao" @change="reordenarTabela" maxlength="3" />
             </div>
           </div>
         </div>
@@ -385,10 +386,7 @@ hr {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-}
-
-.config>div {
-  width: min-content;
+  gap: 10px;
 }
 
 table {
@@ -417,7 +415,7 @@ table tbody td {
   color: rgb(255, 72, 72);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .container {
     width: 90vw;
   }
@@ -429,6 +427,10 @@ table tbody td {
   .div-container {
     width: 100%;
     overflow-x: auto;
+  }
+
+  .grid-pilotos {
+    justify-content: center;
   }
 
   table {
