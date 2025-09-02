@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
@@ -12,6 +12,11 @@ const numSimulacoes = ref(10000);
 const dataUltimaCorrida = ref('');
 const localUltimaCorrida = ref('');
 let chances = [];
+
+const pilotosOrdenados = computed(() => {
+  const copia = [...tabelaPilotos.value];
+  return copia.sort((a, b) => b.pontuacao - a.pontuacao);
+})
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -138,18 +143,9 @@ async function importarDaAPI() {
 function getJSON() {
   try {
     tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
-    tabelaPilotos.value.sort((a, b) => b.pontuacao - a.pontuacao);
   } catch {
     alert("JSON inválido!");
   }
-}
-
-/**
- * Reordena a `tabelaPilotos` com base na pontuação em ordem decrescente.
- * Esta função é chamada quando a pontuação de um piloto é alterada.
- */
-function reordenarTabela() {
-  tabelaPilotos.value.sort((a, b) => b.pontuacao - a.pontuacao);
 }
 
 /**
@@ -267,7 +263,7 @@ function simular() {
           <div class="grid-pilotos">
             <div v-for="(p, i) in tabelaPilotos" :key="i" class="label-inputs">
               <label>{{ p.nome }}</label>
-              <input type="number" :id="p.nome" v-model.number="p.pontuacao" @change="reordenarTabela" maxlength="3" />
+              <input type="number" :id="p.nome" v-model.number="p.pontuacao" maxlength="3" />
             </div>
           </div>
         </div>
@@ -302,12 +298,12 @@ function simular() {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(p, i) in tabelaPilotos" :key="i">
+            <tr v-for="(p, i) in pilotosOrdenados" :key="i">
               <td>{{ i + 1 }}</td>
               <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
               <td>{{ p.equipe }}</td>
               <td class="middle">{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao -
-                tabelaPilotos[0].pontuacao : '' }}</span>
+                pilotosOrdenados[0].pontuacao : '' }}</span>
               </td>
               <td class="middle">{{ p.chance }}</td>
             </tr>
