@@ -9,6 +9,8 @@ countries.registerLocale(enLocale);
 const tabelaPilotos = ref([]);
 const jsonPilotos = ref('');
 const numSimulacoes = ref(10000);
+const dataUltimaCorrida = ref('');
+const localUltimaCorrida = ref('');
 let chances = [];
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
@@ -68,14 +70,14 @@ const dataSprints = [
  * @returns {Promise<string>} Uma promessa que resolve para uma string JSON com os dados dos pilotos.
  */
 async function getClassificacao() {
-  const API_URL = 'https://f1api.dev/api/current/drivers-championship';
+  const API_STANDING = 'https://f1api.dev/api/current/drivers-championship';
   const paisOrigem = {
     Italian: 'Italy',
     'New Zealander': 'New Zealand',
     Argentine: 'Argentina'
   };
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch(API_STANDING);
     if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
     const data = await response.json();
     const classificacao = data.drivers_championship;
@@ -97,6 +99,23 @@ async function getClassificacao() {
   }
 }
 
+async function getUltimaCorrida() {
+  try {
+    const API_LAST_RACE = 'https://f1api.dev/api/current/last/race';
+    const response = await fetch(API_LAST_RACE);
+    if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+    const d = await response.json();
+    const data = new Date(d.races.date);
+    const dataBR = data.toLocaleDateString('pt-BR');
+    const nome = d.races.raceName;
+    return { dataBR, nome };
+  } catch(error) {
+    console.error("Falha ao buscar dados da API:", error);
+    alert("Não foi possível carregar os dados da API.");
+    return { dataBR: null, nome: null };
+  }
+}
+
 /**
  * Busca os dados da classificação de pilotos da API e preenche a área de texto.
  *
@@ -106,6 +125,9 @@ async function getClassificacao() {
  */
 async function importarDaAPI() {
   jsonPilotos.value = await getClassificacao();
+  const ultimaCorrida = await getUltimaCorrida();
+  dataUltimaCorrida.value = ultimaCorrida.dataBR;
+  localUltimaCorrida.value = ultimaCorrida.nome;
 }
 
 /**
@@ -264,9 +286,11 @@ function simular() {
             <input type="number" class="label-inputs" v-model.number="numSimulacoes" />
           </div>
         </div>
-        <button type="button" class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length">Simular</button>
+        <button type="button" class="click-button" @click.prevent="simular()"
+          :disabled="!tabelaPilotos.length">Simular</button>
       </form>
       <div class="div-container">
+        <p class="ultima-corrida">Última corrida: {{ localUltimaCorrida }} em {{ dataUltimaCorrida }}</p>
         <table v-if="tabelaPilotos.length > 0">
           <thead>
             <tr>
@@ -367,12 +391,12 @@ hr {
 }
 
 .grid-pilotos {
-    width: 100%;
-    flex-wrap: wrap;
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    overflow-x: auto;
+  width: 100%;
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  overflow-x: auto;
 }
 
 .label-inputs {
@@ -387,6 +411,11 @@ hr {
   justify-content: space-evenly;
   align-items: center;
   gap: 10px;
+}
+
+.ultima-corrida {
+  text-align: center;
+  font-style: italic;
 }
 
 table {
@@ -438,217 +467,3 @@ table tbody td {
   }
 }
 </style>
-
-<!-- <style>
-.container {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1em;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.form-json {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  max-width: 668px;
-}
-
-.form-json textarea {
-  height: 18em;
-  width: 100%;
-  resize: vertical;
-  font-size: 1em;
-}
-
-.importar {
-  display: flex;
-  justify-content: space-evenly;
-}
-
-.click-button {
-  height: 2.5em;
-  width: 100%;
-  background-color: rgb(0, 88, 12);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1em;
-  margin-top: 4px;
-  transition: background 0.2s;
-}
-
-.click-button:hover {
-  background-color: rgb(0, 51, 7);
-  cursor: pointer;
-}
-
-.click-button:disabled {
-  background-color: rgb(78, 78, 78);
-  cursor: not-allowed;
-}
-
-.grid-pilotos {
-  margin: 1em 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  width: 100%;
-  font-size: 1em;
-}
-
-.pilotos {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: stretch;
-}
-
-.config {
-  margin-top: 1em;
-  margin-bottom: 1em;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-  width: 100%;
-  font-size: 1em;
-}
-
-.config>div {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 140px;
-}
-
-.diff {
-  margin-left: 5px;
-  font-size: 0.9em;
-  color: rgb(253, 72, 72);
-}
-
-table {
-  width: 100%;
-  margin-top: 2em;
-  border-collapse: collapse;
-  font-size: 1em;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-thead th {
-  background: #222;
-  color: #fff;
-  padding: 10px 6px;
-  white-space: nowrap;
-  text-align: center;
-}
-
-tbody td {
-  background: #111;
-  color: #fff;
-  padding: 8px 4px;
-  white-space: nowrap;
-  text-align: center;
-}
-
-input,
-textarea,
-button {
-  background-color: #181818;
-  color: white;
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 6px 8px;
-  font-size: 1em;
-  box-sizing: border-box;
-}
-
-input:focus,
-textarea:focus {
-  outline: 2px solid #0a8d2b;
-}
-
-a, h1 {
-  color: #0a8d2b;
-}
-
-
-body {
-  background-color: #101010;
-  color: white;
-  font-family: 'Segoe UI', Verdana, Geneva, Tahoma, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-@media (max-width: 700px) {
-  .container {
-    max-width: 90vw;
-    padding: 0.5em;
-  }
-
-  .form-json {
-    max-width: 90vw;
-    padding: 0;
-  }
-
-  .grid-pilotos {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    font-size: 0.95em;
-  }
-
-  .config {
-    gap: 8px;
-    font-size: 0.95em;
-  }
-
-  table {
-    font-size: 0.95em;
-  }
-
-  thead th,
-  tbody td {
-    padding: 6px 2px;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 0.2em;
-  }
-
-  .form-json textarea {
-    height: 8em;
-    font-size: 0.95em;
-  }
-
-  .grid-pilotos {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 4px;
-    font-size: 0.9em;
-  }
-
-  .config {
-    gap: 4px;
-    font-size: 0.9em;
-  }
-
-  table {
-    font-size: 0.9em;
-  }
-
-  thead th,
-  tbody td {
-    padding: 4px 1px;
-  }
-}
-</style> -->
