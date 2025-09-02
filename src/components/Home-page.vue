@@ -59,20 +59,14 @@ const dataSprints = [
 ];
 
 /**
- * Busca a classificação atual do campeonato de pilotos da F1 a partir de uma API externa,
- * formata os dados e os retorna como uma string JSON.
+ * Busca a classificação atual do campeonato de pilotos da F1 a partir de uma API externa.
  *
- * A função realiza as seguintes etapas:
- * 1. Faz uma requisição para a API 'https://f1api.dev/api/current/drivers-championship'.
- * 2. Mapeia a resposta para um formato simplificado contendo nome, pontuação e nacionalidade.
- * 3. Converte nacionalidades específicas (ex: "Italian") para nomes de países (ex: "Italy")
- *    usando um mapa interno para garantir a correta conversão para o código ISO de 2 letras.
- * 4. Converte o array de objetos de pilotos em uma string JSON formatada.
+ * Realiza uma requisição à API, formata os dados para um padrão interno (nome, pontuação, nacionalidade, equipe),
+ * e trata casos específicos de nacionalidade para garantir a correta conversão para o código ISO 3166-1 alfa-2.
  *
- * Em caso de falha na requisição ou no processamento, um erro é registrado no console,
- * um alerta é exibido ao usuário e uma string JSON de um array vazio ("[]") é retornada.
- *
- * @returns {Promise<string>} Uma promessa que resolve para uma string JSON com os dados dos pilotos.
+ * @async
+ * @returns {Promise<string>} Uma promessa que resolve para uma string JSON formatada com os dados dos pilotos.
+ * Em caso de erro, exibe um alerta e retorna uma string de um array JSON vazio ("[]").
  */
 async function getClassificacao() {
   const API_STANDING = 'https://f1api.dev/api/current/drivers-championship';
@@ -104,6 +98,13 @@ async function getClassificacao() {
   }
 }
 
+/**
+ * Busca a data e o nome da última corrida de F1 a partir de uma API externa.
+ *
+ * @async
+ * @returns {Promise<{dataBR: string|null, nome: string|null}>} Uma promessa que resolve para um objeto
+ * contendo a data formatada (DD/MM/AAAA) e o nome da corrida. Em caso de erro, retorna null para ambos os campos.
+ */
 async function getUltimaCorrida() {
   try {
     const API_LAST_RACE = 'https://f1api.dev/api/current/last/race';
@@ -122,11 +123,11 @@ async function getUltimaCorrida() {
 }
 
 /**
- * Busca os dados da classificação de pilotos da API e preenche a área de texto.
+ * Preenche a área de texto e informações da última corrida com dados da API.
  *
- * Esta função assíncrona chama `getClassificacao()` para obter a string JSON
- * dos pilotos e atualiza o valor de `jsonPilotos`, que está vinculado
- * à `<textarea>` na interface do usuário.
+ * Invoca `getClassificacao()` e `getUltimaCorrida()` para obter os dados mais recentes
+ * e atualiza as refs `jsonPilotos`, `dataUltimaCorrida` e `localUltimaCorrida`.
+ * @async
  */
 async function importarDaAPI() {
   jsonPilotos.value = await getClassificacao();
@@ -136,9 +137,11 @@ async function importarDaAPI() {
 }
 
 /**
- * Analisa a string JSON de `jsonPilotos.value`, extrai os primeiros 20 objetos de pilotos,
- * ordena em ordem decrescente pela `pontuacao`, e atribui o resultado a `tabelaPilotos.value`.
- * Se ocorrer falha na análise ou no processamento, exibe um alerta com a mensagem de erro.
+ * Analisa a string JSON da área de texto e atualiza a tabela de pilotos.
+ *
+ * Converte a string da ref `jsonPilotos` para um objeto, extrai os primeiros 20 pilotos,
+ * e atualiza a ref `tabelaPilotos`. A ordenação é feita reativamente pela propriedade computada `pilotosOrdenados`.
+ * Em caso de falha na análise do JSON, exibe um alerta para o usuário.
  */
 function getJSON() {
   try {
@@ -149,10 +152,10 @@ function getJSON() {
 }
 
 /**
- * Retorna a quantidade de datas futuras em relação ao momento atual.
+ * Calcula o número de eventos futuros a partir de uma lista de datas.
  *
- * @param {string[]} datas - Array de strings representando datas.
- * @returns {number} Quantidade de datas que ainda não passaram.
+ * @param {string[]} datas - Um array de strings de data no formato "AAAA-MM-DD".
+ * @returns {number} A quantidade de datas no array que são posteriores à data e hora atuais.
  */
 function datasRestantes(datas) {
   const agora = new Date();
@@ -166,14 +169,14 @@ const corridasRestantes = ref(datasRestantes(dataCorridas));
 const sprintsRestantes = ref(datasRestantes(dataSprints));
 
 /**
- * Simula uma corrida de Fórmula 1 embaralhando a ordem dos pilotos e atribuindo pontos conforme o tipo de corrida.
+ * Simula o resultado de uma única corrida (normal ou sprint) e atribui pontos.
  *
- * @param {Array} pilotos - Array de objetos representando os pilotos.
- * @param {string} [tipo='normal'] - Tipo da corrida ('normal' para corrida-links, qualquer outro valor para sprint).
- * @returns {Object} Um objeto onde as chaves são os nomes dos pilotos e os valores são os pontos acumulados na corrida.
+ * A função embaralha a ordem dos pilotos para determinar as posições finais e distribui
+ * a pontuação correspondente com base no tipo de corrida ('normal' ou 'sprint').
  *
- * O algoritmo embaralha a ordem dos pilotos usando o método de Fisher-Yates e atribui pontos conforme a posição final.
- * Os pontos são definidos pelos arrays 'pontosF1' (corrida normal) ou 'pontosSprint' (corrida sprint).
+ * @param {Array<object>} pilotos - O array de objetos de pilotos a participar da simulação.
+ * @param {string} [tipo='normal'] - O tipo de corrida: 'normal' para um Grande Prêmio ou 'sprint'.
+ * @returns {object} Um objeto que mapeia o nome de cada piloto aos pontos obtidos na corrida.
  */
 function simularCorrida(pilotos, tipo = 'normal') {
   let ordem = pilotos.slice();
@@ -191,15 +194,15 @@ function simularCorrida(pilotos, tipo = 'normal') {
 }
 
 /**
- * Simula uma temporada de corridas atualizando a pontuação de cada piloto com base nos resultados das corridas e sprints.
+ * Simula o restante de uma temporada de F1 com base nos eventos restantes.
  *
- * @param {Array} pilotos - Array de objetos de pilotos, cada um contendo as propriedades 'nome' e 'pontuacao'.
- * @param {number} corridas - Número de corridas a serem simuladas.
- * @param {number} sprints - Número de corridas sprint a serem simuladas.
- * @returns {Object} Um objeto onde as chaves são os nomes dos pilotos e os valores são a pontuação ao final do campeonato.
+ * A partir da pontuação atual, esta função simula todas as corridas e sprints restantes
+ * para calcular a pontuação final de cada piloto ao término da temporada hipotética.
  *
- * A função cria uma cópia temporária das pontuações dos pilotos, simula cada corrida e sprint,
- * e atualiza as pontuações conforme os resultados obtidos pela função `simularCorrida`.
+ * @param {Array<object>} pilotos - O array de pilotos com sua pontuação atual.
+ * @param {number} corridas - O número de Grandes Prêmios restantes a simular.
+ * @param {number} sprints - O número de corridas sprint restantes a simular.
+ * @returns {Array<object>} Um novo array de objetos de piloto com a pontuação final após a simulação.
  */
 function simularTemporada(pilotos, corridas, sprints) {
   let temp = pilotos.map(p => ({
@@ -224,7 +227,11 @@ function simularTemporada(pilotos, corridas, sprints) {
 }
 
 /**
- * Função-links da simulação.
+ * Executa o processo completo de simulação de campeonato múltiplas vezes.
+ *
+ * Roda um número configurável de simulações de temporada (`numSimulacoes`) para calcular
+ * a probabilidade de cada piloto vencer o campeonato. Ao final, atualiza cada piloto
+ * na `tabelaPilotos` com sua respectiva chance de título em porcentagem.
  */
 function simular() {
   let vitorias = {};
