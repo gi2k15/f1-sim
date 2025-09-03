@@ -11,6 +11,7 @@ const jsonPilotos = ref('');
 const numSimulacoes = ref(10000);
 const dataUltimaCorrida = ref('');
 const localUltimaCorrida = ref('');
+const simulacaoConcluida = ref(false); // Adicionado para controlar a animação
 let chances = [];
 
 const pilotosOrdenados = computed(() => {
@@ -115,7 +116,7 @@ async function getUltimaCorrida() {
     const dataBR = data.toLocaleDateString('pt-BR');
     const nome = d.races.raceName;
     return { dataBR, nome };
-  } catch(error) {
+  } catch (error) {
     console.error("Falha ao buscar dados da API:", error);
     alert("Não foi possível carregar os dados da API.");
     return { dataBR: null, nome: null };
@@ -145,6 +146,7 @@ async function importarDaAPI() {
  */
 function getJSON() {
   try {
+    simulacaoConcluida.value = false; // Reseta a animação
     tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
   } catch {
     alert("JSON inválido!");
@@ -234,6 +236,7 @@ function simularTemporada(pilotos, corridas, sprints) {
  * na `tabelaPilotos` com sua respectiva chance de título em porcentagem.
  */
 function simular() {
+  simulacaoConcluida.value = false; // Reseta para re-acionar a animação
   let vitorias = {};
   for (let i = 0; i < numSimulacoes.value; i++) {
     const temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
@@ -248,7 +251,11 @@ function simular() {
   tabelaPilotos.value.forEach(p => {
     const chanceObj = chances.find(c => c.nome === p.nome);
     p.chance = chanceObj ? chanceObj.chance : 0;
-  })
+  });
+  // Adicionado para acionar a animação após um pequeno atraso
+  setTimeout(() => {
+    simulacaoConcluida.value = true;
+  }, 10);
 }
 </script>
 
@@ -292,8 +299,8 @@ function simular() {
         <button type="button" class="click-button" @click.prevent="simular()"
           :disabled="!tabelaPilotos.length">Simular</button>
       </form>
+      <p class="ultima-corrida">Última corrida: {{ localUltimaCorrida }} em {{ dataUltimaCorrida }}</p>
       <div class="div-container">
-        <p class="ultima-corrida">Última corrida: {{ localUltimaCorrida }} em {{ dataUltimaCorrida }}</p>
         <table v-if="tabelaPilotos.length > 0">
           <thead>
             <tr>
@@ -312,7 +319,7 @@ function simular() {
               <td class="middle">{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao -
                 pilotosOrdenados[0].pontuacao : '' }}</span>
               </td>
-              <td class="middle">{{ p.chance }}</td>
+              <td class="middle probabilidade-cell" :class="{ 'fade-in': simulacaoConcluida }" :style="{ 'transition-delay': i * 50 + 'ms' }">{{ p.chance }}</td>
             </tr>
           </tbody>
         </table>
@@ -445,6 +452,15 @@ table tbody td {
   margin-left: 5px;
   font-size: 0.7em;
   color: rgb(255, 72, 72);
+}
+
+.probabilidade-cell {
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.probabilidade-cell.fade-in {
+  opacity: 1;
 }
 
 @media (max-width: 700px) {
