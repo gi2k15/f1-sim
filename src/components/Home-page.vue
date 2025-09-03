@@ -287,16 +287,14 @@ function simular() {
         </svg>
       </a>
     </p>
-    <Transition>
-      <form class="form-json" v-if="!isImportado">
-        <textarea v-model="jsonPilotos" spellcheck="false" :placeholder="jsonExemplo"></textarea>
-        <div class="importar-links">
-          <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
-          <a href="#" @click.prevent="importarDaAPI()">Buscar dados online</a>
-        </div>
-        <button type="button" class="click-button" @click.prevent="getJSON()">Importar</button>
-      </form>
-    </Transition>
+    <form class="form-json" v-if="!isImportado">
+      <textarea v-model="jsonPilotos" spellcheck="false" :placeholder="jsonExemplo"></textarea>
+      <div class="importar-links">
+        <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
+        <a href="#" @click.prevent="importarDaAPI()">Buscar dados online</a>
+      </div>
+      <button type="button" class="click-button" @click.prevent="getJSON()">Importar</button>
+    </form>
     <div v-if="tabelaPilotos.length > 0">
       <form>
         <div class="div-container">
@@ -488,16 +486,6 @@ table tbody td {
 
 .probabilidade-cell.fade-in {
   opacity: 1;
-}
-
-.v-enter-active,
-.v-leave-active {
-  transition: height 0.5s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-  height: 0;
 }
 
 @media (max-width: 700px) {
