@@ -24,27 +24,27 @@ const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
 
 // Exemplo de JSON
 const jsonExemplo = `[
-  { "nome": "Oscar Piastri", "nacionalidade": "AU", "pontuacao": 284 },
-  { "nome": "Lando Norris", "nacionalidade": "GB", "pontuacao": 275 },
-  { "nome": "Max Verstappen", "nacionalidade": "NL", "pontuacao": 187 },
-  { "nome": "George Russell", "nacionalidade": "GB", "pontuacao": 172 },
-  { "nome": "Charles Leclerc", "nacionalidade": "MC", "pontuacao": 151 },
-  { "nome": "Lewis Hamilton", "nacionalidade": "GB", "pontuacao": 109 },
-  { "nome": "Kimi Antonelli", "nacionalidade": "IT", "pontuacao": 64 },
-  { "nome": "Alexander Albon", "nacionalidade": "TH", "pontuacao": 54 },
-  { "nome": "Nico Hulkenberg", "nacionalidade": "DE", "pontuacao": 37 },
-  { "nome": "Esteban Ocon", "nacionalidade": "FR", "pontuacao": 27 },
-  { "nome": "Fernando Alonso", "nacionalidade": "ES", "pontuacao": 26 },
-  { "nome": "Lance Stroll", "nacionalidade": "CA", "pontuacao": 26 },
-  { "nome": "Isack Hadjar", "nacionalidade": "FR", "pontuacao": 22 },
-  { "nome": "Pierre Gasly", "nacionalidade": "FR", "pontuacao": 20 },
-  { "nome": "Liam Lawson", "nacionalidade": "NZ", "pontuacao": 20 },
-  { "nome": "Carlos Sainz", "nacionalidade": "ES", "pontuacao": 16 },
-  { "nome": "Gabriel Bortoleto", "nacionalidade": "BR", "pontuacao": 14 },
-  { "nome": "Yuki Tsunoda", "nacionalidade": "JP", "pontuacao": 10 },
-  { "nome": "Oliver Bearman", "nacionalidade": "GB", "pontuacao": 8 },
-  { "nome": "Franco Colapinto", "nacionalidade": "AR", "pontuacao": 0 },
-  { "nome": "Jack Doohan", "nacionalidade": "AU", "pontuacao": 0 }
+  { "nome": "Oscar Piastri", "pontuacao": 309, "nacionalidade": "AU", "equipe": "McLaren Formula 1 Team" },
+  { "nome": "Lando Norris", "pontuacao": 275, "nacionalidade": "GB", "equipe": "McLaren Formula 1 Team" },
+  { "nome": "Max Verstappen", "pontuacao": 205, "nacionalidade": "NL", "equipe": "Red Bull Racing" },
+  { "nome": "George Russell", "pontuacao": 184, "nacionalidade": "GB", "equipe": "Mercedes Formula 1 Team" },
+  { "nome": "Charles Leclerc", "pontuacao": 151, "nacionalidade": "MC", "equipe": "Scuderia Ferrari" },
+  { "nome": "Lewis Hamilton", "pontuacao": 109, "nacionalidade": "GB", "equipe": "Scuderia Ferrari" },
+  { "nome": "Andrea Kimi Antonelli", "pontuacao": 64, "nacionalidade": "IT", "equipe": "Mercedes Formula 1 Team" },
+  { "nome": "Alex Albon", "pontuacao": 64, "nacionalidade": "TH", "equipe": "Williams Racing" },
+  { "nome": "Nico Hulkenberg", "pontuacao": 37, "nacionalidade": "DE", "equipe": "Sauber F1 Team" },
+  { "nome": "Isack Hadjar", "pontuacao": 37, "nacionalidade": "FR", "equipe": "RB F1 Team" },
+  { "nome": "Lance Stroll", "pontuacao": 32, "nacionalidade": "CA", "equipe": "Aston Martin F1 Team" },
+  { "nome": "Fernando Alonso", "pontuacao": 30, "nacionalidade": "ES", "equipe": "Aston Martin F1 Team" },
+  { "nome": "Esteban Ocon", "pontuacao": 28, "nacionalidade": "FR", "equipe": "Haas F1 Team" },
+  { "nome": "Pierre Gasly", "pontuacao": 20, "nacionalidade": "FR", "equipe": "Alpine F1 Team" },
+  { "nome": "Liam Lawson", "pontuacao": 20, "nacionalidade": "NZ", "equipe": "RB F1 Team" },
+  { "nome": "Oliver Bearman", "pontuacao": 16, "nacionalidade": "GB", "equipe": "Haas F1 Team" },
+  { "nome": "Carlos Sainz", "pontuacao": 16, "nacionalidade": "ES", "equipe": "Williams Racing" },
+  { "nome": "Gabriel Bortoleto", "pontuacao": 14, "nacionalidade": "BR", "equipe": "Sauber F1 Team" },
+  { "nome": "Yuki Tsunoda", "pontuacao": 12, "nacionalidade": "JP", "equipe": "Red Bull Racing" },
+  { "nome": "Franco Colapinto", "pontuacao": 0, "nacionalidade": "AR", "equipe": "Alpine F1 Team" },
+  { "nome": "Jack Doohan", "pontuacao": 0, "nacionalidade": "AU", "equipe": "Alpine F1 Team" }
 ]`;
 
 // Data de todos os grande prêmios
@@ -123,6 +123,18 @@ async function getUltimaCorrida() {
   }
 }
 
+function removerQuebrasEDuplicados(texto) {
+  return texto.replace(/\{([\s\S]*?)\}/g, (match, conteudo) => {
+    // Remove quebras de linha
+    let semQuebras = conteudo.replace(/[\r\n]+/g, ' ');
+    // Remove espaços duplicados
+    let semEspacosDuplicados = semQuebras.replace(/\s{2,}/g, ' ').trim();
+    return `{${semEspacosDuplicados}}`;
+  });
+}
+
+
+
 /**
  * Preenche a área de texto e informações da última corrida com dados da API.
  *
@@ -132,6 +144,7 @@ async function getUltimaCorrida() {
  */
 async function importarDaAPI() {
   jsonPilotos.value = await getClassificacao();
+  jsonPilotos.value = removerQuebrasEDuplicados(jsonPilotos.value);
   const ultimaCorrida = await getUltimaCorrida();
   dataUltimaCorrida.value = ultimaCorrida.dataBR;
   localUltimaCorrida.value = ultimaCorrida.nome;
