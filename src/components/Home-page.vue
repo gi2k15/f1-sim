@@ -509,5 +509,9 @@ table tbody td {
   table {
     width: 700px;
   }
+
+  .form-json textarea {
+    height: 10em;
+  }
 }
 </style>
