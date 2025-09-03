@@ -11,7 +11,8 @@ const jsonPilotos = ref('');
 const numSimulacoes = ref(10000);
 const dataUltimaCorrida = ref('');
 const localUltimaCorrida = ref('');
-const simulacaoConcluida = ref(false); // Adicionado para controlar a animação
+const simulacaoConcluida = ref(false);
+const isImportado = ref(false);
 let chances = [];
 
 const pilotosOrdenados = computed(() => {
@@ -90,7 +91,6 @@ async function getClassificacao() {
         equipe: p.team.teamName
       }
     });
-    // Retorna os dados formatados como uma string JSON.
     return JSON.stringify(mappedData, null, 2);
   } catch (error) {
     console.error("Falha ao buscar dados da API:", error);
@@ -133,8 +133,6 @@ function removerQuebrasEDuplicados(texto) {
   });
 }
 
-
-
 /**
  * Preenche a área de texto e informações da última corrida com dados da API.
  *
@@ -144,8 +142,8 @@ function removerQuebrasEDuplicados(texto) {
  */
 async function importarDaAPI() {
   jsonPilotos.value = await getClassificacao();
-  jsonPilotos.value = removerQuebrasEDuplicados(jsonPilotos.value);
   const ultimaCorrida = await getUltimaCorrida();
+  jsonPilotos.value = removerQuebrasEDuplicados(jsonPilotos.value);
   dataUltimaCorrida.value = ultimaCorrida.dataBR;
   localUltimaCorrida.value = ultimaCorrida.nome;
 }
@@ -161,6 +159,7 @@ function getJSON() {
   try {
     simulacaoConcluida.value = false; // Reseta a animação
     tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
+    isImportado.value = true;
   } catch {
     alert("JSON inválido!");
   }
@@ -275,15 +274,29 @@ function simular() {
 <template>
   <div class="container">
     <h1>Simulador de campeonato de Fórmula 1</h1>
-    <form class="form-json">
-      <label>Tabela JSON dos pilotos</label>
-      <textarea v-model="jsonPilotos" spellcheck="false" :placeholder="jsonExemplo"></textarea>
-      <div class="importar-links">
-        <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
-        <a href="#" @click.prevent="importarDaAPI()">Buscar dados online</a>
-      </div>
-      <button type="button" class="click-button" @click.prevent="getJSON()">Importar</button>
-    </form>
+    <p>
+      <a style="color: white; text-decoration: none;" href="#" @click="isImportado = !isImportado">
+        JSON dos pilotos
+        <svg v-if="!isImportado" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+          style="vertical-align: top; fill: currentColor;">
+          <path d="M12 21l-8-9h16l-8 9z" />
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+          style="vertical-align: bottom; fill: currentColor;">
+          <path d="M12 3l-8 9h16l-8-9z" />
+        </svg>
+      </a>
+    </p>
+    <Transition>
+      <form class="form-json" v-if="!isImportado">
+        <textarea v-model="jsonPilotos" spellcheck="false" :placeholder="jsonExemplo"></textarea>
+        <div class="importar-links">
+          <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
+          <a href="#" @click.prevent="importarDaAPI()">Buscar dados online</a>
+        </div>
+        <button type="button" class="click-button" @click.prevent="getJSON()">Importar</button>
+      </form>
+    </Transition>
     <div v-if="tabelaPilotos.length > 0">
       <form>
         <div class="div-container">
@@ -332,7 +345,8 @@ function simular() {
               <td class="middle">{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao -
                 pilotosOrdenados[0].pontuacao : '' }}</span>
               </td>
-              <td class="middle probabilidade-cell" :class="{ 'fade-in': simulacaoConcluida }" :style="{ 'transition-delay': i * 50 + 'ms' }">{{ p.chance }}</td>
+              <td class="middle probabilidade-cell" :class="{ 'fade-in': simulacaoConcluida }"
+                :style="{ 'transition-delay': i * 50 + 'ms' }">{{ p.chance }}</td>
             </tr>
           </tbody>
         </table>
@@ -474,6 +488,16 @@ table tbody td {
 
 .probabilidade-cell.fade-in {
   opacity: 1;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: height 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  height: 0;
 }
 
 @media (max-width: 700px) {
