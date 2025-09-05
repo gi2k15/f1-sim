@@ -91,7 +91,7 @@
     <div class="faq-item">
       <h2>Os resultados são uma previsão garantida?</h2>
       <p>
-        <strong>Não.</strong> É crucial entender que os resultados são probabilidades estatísticas baseadas em um modelo
+        <strong>Não!</strong> É crucial entender que os resultados são probabilidades estatísticas baseadas em um modelo
         que assume que a vitória em cada corrida é um evento aleatório. Fatores do mundo real como quebras mecânicas,
         acidentes, atualizações de carros, condições climáticas e o desempenho variável dos pilotos não são
         considerados. Portanto, use esta ferramenta como um guia de probabilidades e para entretenimento, não como uma
@@ -104,8 +104,7 @@
 <style scoped>
 .faq-container {
   width: 900px;
-  margin: 2em auto;
-  padding: 20px;
+  margin: 0 auto;
 }
 
 h1 {
