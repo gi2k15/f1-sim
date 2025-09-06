@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import Home from './components/Home-page.vue'
 import FAQ from './components/Faq-page.vue'
+import { Analytics } from '@vercel/analytics/vue'
 
 const routes = {
   '/': Home,
@@ -20,6 +21,7 @@ const currentView = computed(() => {
 </script>
 
 <template>
+  <Analytics />
   <div class="links">
     <a href="#/">Home</a>&nbsp;
     <a href="#/faq">FAQ</a>&nbsp;
