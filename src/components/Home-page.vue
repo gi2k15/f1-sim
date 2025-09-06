@@ -142,6 +142,11 @@ function removerQuebrasEDuplicados(texto) {
   });
 }
 
+/**
+ * Formata uma string para ser usada corretamente em id's de `input` e for de `label`.
+ * @param {string} str - A string a ser convertida
+ * @returns {string} A string formatada.
+ */
 function toLabelFor (str) {
   return str.replace(' ', '-').toLowerCase();
 }
