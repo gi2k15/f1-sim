@@ -46,7 +46,7 @@ const jsonExemplo = `[
   { "nome": "Yuki Tsunoda", "pontuacao": 12, "nacionalidade": "JP", "equipe": "Red Bull Racing" },
   { "nome": "Franco Colapinto", "pontuacao": 0, "nacionalidade": "AR", "equipe": "Alpine F1 Team" },
   { "nome": "Jack Doohan", "pontuacao": 0, "nacionalidade": "AU", "equipe": "Alpine F1 Team" }
-]`;
+]`
 
 // Data de todos os grande prêmios
 const dataCorridas = [
@@ -123,6 +123,15 @@ async function getUltimaCorrida() {
   }
 }
 
+/**
+ * Formata o conteúdo de substrings dentro de chaves em uma string.
+ *
+ * Para cada substring encontrada entre `{` e `}`, esta função remove quebras de linha
+ * e substitui múltiplos espaços por um único espaço, limpando o conteúdo interno.
+ *
+ * @param {string} texto - A string de entrada para processar.
+ * @returns {string} A string formatada com o conteúdo das chaves limpo.
+ */
 function removerQuebrasEDuplicados(texto) {
   return texto.replace(/\{([\s\S]*?)\}/g, (match, conteudo) => {
     // Remove quebras de linha
@@ -131,6 +140,10 @@ function removerQuebrasEDuplicados(texto) {
     let semEspacosDuplicados = semQuebras.replace(/\s{2,}/g, ' ').trim();
     return `{${semEspacosDuplicados}}`;
   });
+}
+
+function toLabelFor (str) {
+  return str.replace(' ', '-').toLowerCase();
 }
 
 /**
@@ -300,8 +313,8 @@ function simular() {
         <div class="div-container">
           <div class="grid-pilotos">
             <div v-for="(p, i) in tabelaPilotos" :key="i" class="label-inputs">
-              <label>{{ p.nome }}</label>
-              <input type="number" :id="p.nome" v-model.number="p.pontuacao" maxlength="3" />
+              <label :for="toLabelFor(p.nome)">{{ p.nome }}</label>
+              <input type="number" :id="toLabelFor(p.nome)" v-model.number="p.pontuacao" maxlength="3" />
             </div>
           </div>
         </div>
@@ -398,6 +411,14 @@ textarea {
   padding: 5px;
   box-sizing: border-box;
   width: 100%;
+}
+
+input:hover,
+input:focus,
+textarea:hover,
+textarea:focus {
+  outline: none;
+  border-color: var(--cor-links);
 }
 
 hr {
