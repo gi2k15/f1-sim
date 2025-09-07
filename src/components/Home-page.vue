@@ -7,46 +7,32 @@ import enLocale from "i18n-iso-countries/langs/en.json";
 countries.registerLocale(enLocale);
 
 const tabelaPilotos = ref([]);
-const jsonPilotos = ref('');
 const numSimulacoes = ref(10000);
 const dataUltimaCorrida = ref('');
 const localUltimaCorrida = ref('');
 const simulacaoConcluida = ref(false);
-const isImportado = ref(false);
 let chances = [];
 
 const pilotosOrdenados = computed(() => {
   const copia = [...tabelaPilotos.value];
-  return copia.sort((a, b) => b.pontuacao - a.pontuacao);
-})
+  const ordenados = copia.sort((a, b) => b.pontuacao - a.pontuacao);
+
+  if (ordenados.length === 0) {
+    return [];
+  }
+
+  // Pega a pontuação do líder para calcular a diferença
+  const pontuacaoLider = ordenados[0].pontuacao;
+
+  // Adiciona a propriedade 'diferenca' a cada piloto
+  return ordenados.map((p, i) => ({
+    ...p, // Mantém todas as propriedades originais do piloto
+    diferenca: i === 0 ? '' : p.pontuacao - pontuacaoLider
+  }));
+});
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const pontosSprint = [8, 7, 6, 5, 4, 3, 2, 1];
-
-// Exemplo de JSON
-const jsonExemplo = `[
-  { "nome": "Oscar Piastri", "pontuacao": 309, "nacionalidade": "AU", "equipe": "McLaren Formula 1 Team" },
-  { "nome": "Lando Norris", "pontuacao": 275, "nacionalidade": "GB", "equipe": "McLaren Formula 1 Team" },
-  { "nome": "Max Verstappen", "pontuacao": 205, "nacionalidade": "NL", "equipe": "Red Bull Racing" },
-  { "nome": "George Russell", "pontuacao": 184, "nacionalidade": "GB", "equipe": "Mercedes Formula 1 Team" },
-  { "nome": "Charles Leclerc", "pontuacao": 151, "nacionalidade": "MC", "equipe": "Scuderia Ferrari" },
-  { "nome": "Lewis Hamilton", "pontuacao": 109, "nacionalidade": "GB", "equipe": "Scuderia Ferrari" },
-  { "nome": "Andrea Kimi Antonelli", "pontuacao": 64, "nacionalidade": "IT", "equipe": "Mercedes Formula 1 Team" },
-  { "nome": "Alex Albon", "pontuacao": 64, "nacionalidade": "TH", "equipe": "Williams Racing" },
-  { "nome": "Nico Hulkenberg", "pontuacao": 37, "nacionalidade": "DE", "equipe": "Sauber F1 Team" },
-  { "nome": "Isack Hadjar", "pontuacao": 37, "nacionalidade": "FR", "equipe": "RB F1 Team" },
-  { "nome": "Lance Stroll", "pontuacao": 32, "nacionalidade": "CA", "equipe": "Aston Martin F1 Team" },
-  { "nome": "Fernando Alonso", "pontuacao": 30, "nacionalidade": "ES", "equipe": "Aston Martin F1 Team" },
-  { "nome": "Esteban Ocon", "pontuacao": 28, "nacionalidade": "FR", "equipe": "Haas F1 Team" },
-  { "nome": "Pierre Gasly", "pontuacao": 20, "nacionalidade": "FR", "equipe": "Alpine F1 Team" },
-  { "nome": "Liam Lawson", "pontuacao": 20, "nacionalidade": "NZ", "equipe": "RB F1 Team" },
-  { "nome": "Oliver Bearman", "pontuacao": 16, "nacionalidade": "GB", "equipe": "Haas F1 Team" },
-  { "nome": "Carlos Sainz", "pontuacao": 16, "nacionalidade": "ES", "equipe": "Williams Racing" },
-  { "nome": "Gabriel Bortoleto", "pontuacao": 14, "nacionalidade": "BR", "equipe": "Sauber F1 Team" },
-  { "nome": "Yuki Tsunoda", "pontuacao": 12, "nacionalidade": "JP", "equipe": "Red Bull Racing" },
-  { "nome": "Franco Colapinto", "pontuacao": 0, "nacionalidade": "AR", "equipe": "Alpine F1 Team" },
-  { "nome": "Jack Doohan", "pontuacao": 0, "nacionalidade": "AU", "equipe": "Alpine F1 Team" }
-]`
 
 // Data de todos os grande prêmios
 const dataCorridas = [
@@ -66,9 +52,8 @@ const dataSprints = [
  * Realiza uma requisição à API, formata os dados para um padrão interno (nome, pontuação, nacionalidade, equipe),
  * e trata casos específicos de nacionalidade para garantir a correta conversão para o código ISO 3166-1 alfa-2.
  *
- * @async
- * @returns {Promise<string>} Uma promessa que resolve para uma string JSON formatada com os dados dos pilotos.
- * Em caso de erro, exibe um alerta e retorna uma string de um array JSON vazio ("[]").
+ * @returns {Promise<Array<object>>} Uma promessa que resolve para um array de objetos de piloto.
+ * Em caso de erro, exibe um alerta e retorna um array vazio.
  */
 async function getClassificacao() {
   const API_STANDING = 'https://f1api.dev/api/current/drivers-championship';
@@ -91,18 +76,17 @@ async function getClassificacao() {
         equipe: p.team.teamName
       }
     });
-    return JSON.stringify(mappedData, null, 2);
+    return mappedData.slice(0, 20);
   } catch (error) {
     console.error("Falha ao buscar dados da API:", error);
     alert("Não foi possível carregar os dados da API.");
-    return "[]"; // Retorna um JSON de array vazio em caso de erro.
+    return []; // Retorna um array vazio em caso de erro.
   }
 }
 
 /**
  * Busca a data e o nome da última corrida de F1 a partir de uma API externa.
  *
- * @async
  * @returns {Promise<{dataBR: string|null, nome: string|null}>} Uma promessa que resolve para um objeto
  * contendo a data formatada (DD/MM/AAAA) e o nome da corrida. Em caso de erro, retorna null para ambos os campos.
  */
@@ -124,25 +108,6 @@ async function getUltimaCorrida() {
 }
 
 /**
- * Formata o conteúdo de substrings dentro de chaves em uma string.
- *
- * Para cada substring encontrada entre `{` e `}`, esta função remove quebras de linha
- * e substitui múltiplos espaços por um único espaço, limpando o conteúdo interno.
- *
- * @param {string} texto - A string de entrada para processar.
- * @returns {string} A string formatada com o conteúdo das chaves limpo.
- */
-function removerQuebrasEDuplicados(texto) {
-  return texto.replace(/\{([\s\S]*?)\}/g, (match, conteudo) => {
-    // Remove quebras de linha
-    let semQuebras = conteudo.replace(/[\r\n]+/g, ' ');
-    // Remove espaços duplicados
-    let semEspacosDuplicados = semQuebras.replace(/\s{2,}/g, ' ').trim();
-    return `{${semEspacosDuplicados}}`;
-  });
-}
-
-/**
  * Formata uma string para ser usada corretamente em id's de `input` e for de `label`.
  * @param {string} str - A string a ser convertida
  * @returns {string} A string formatada.
@@ -154,33 +119,14 @@ function toLabelFor (str) {
 /**
  * Preenche a área de texto e informações da última corrida com dados da API.
  *
- * Invoca `getClassificacao()` e `getUltimaCorrida()` para obter os dados mais recentes
- * e atualiza as refs `jsonPilotos`, `dataUltimaCorrida` e `localUltimaCorrida`.
- * @async
+ * Invoca `getClassificacao()` e `getUltimaCorrida()` para obter os dados mais recentes e atualiza as refs
+ * `tabelaPilotos`, `dataUltimaCorrida` e `localUltimaCorrida`.
  */
 async function importarDaAPI() {
-  jsonPilotos.value = await getClassificacao();
+  tabelaPilotos.value = await getClassificacao();
   const ultimaCorrida = await getUltimaCorrida();
-  jsonPilotos.value = removerQuebrasEDuplicados(jsonPilotos.value);
   dataUltimaCorrida.value = ultimaCorrida.dataBR;
   localUltimaCorrida.value = ultimaCorrida.nome;
-}
-
-/**
- * Analisa a string JSON da área de texto e atualiza a tabela de pilotos.
- *
- * Converte a string da ref `jsonPilotos` para um objeto, extrai os primeiros 20 pilotos,
- * e atualiza a ref `tabelaPilotos`. A ordenação é feita reativamente pela propriedade computada `pilotosOrdenados`.
- * Em caso de falha na análise do JSON, exibe um alerta para o usuário.
- */
-function getJSON() {
-  try {
-    simulacaoConcluida.value = false; // Reseta a animação
-    tabelaPilotos.value = JSON.parse(jsonPilotos.value).slice(0, 20);
-    isImportado.value = true;
-  } catch {
-    alert("JSON inválido!");
-  }
 }
 
 /**
@@ -292,27 +238,7 @@ function simular() {
 <template>
   <div class="container">
     <h1>Simulador de campeonato de Fórmula 1</h1>
-    <p>
-      <a style="color: white; text-decoration: none;" href="#" @click="isImportado = !isImportado">
-        JSON dos pilotos
-        <svg v-if="!isImportado" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
-          style="vertical-align: top; fill: currentColor;">
-          <path d="M12 21l-8-9h16l-8 9z" />
-        </svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
-          style="vertical-align: bottom; fill: currentColor;">
-          <path d="M12 3l-8 9h16l-8-9z" />
-        </svg>
-      </a>
-    </p>
-    <form class="form-json" v-if="!isImportado">
-      <textarea v-model="jsonPilotos" spellcheck="false" :placeholder="jsonExemplo"></textarea>
-      <div class="importar-links">
-        <a href="#" @click.prevent="jsonPilotos = jsonExemplo">Usar exemplo</a>
-        <a href="#" @click.prevent="importarDaAPI()">Buscar dados online</a>
-      </div>
-      <button type="button" class="click-button" @click.prevent="getJSON()">Importar</button>
-    </form>
+    <p><a href="#" @click="importarDaAPI()">Importar pontuação</a></p>
     <div v-if="tabelaPilotos.length > 0">
       <form>
         <div class="div-container">
@@ -358,8 +284,7 @@ function simular() {
               <td>{{ i + 1 }}</td>
               <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
               <td>{{ p.equipe }}</td>
-              <td class="middle">{{ p.pontuacao }}<span class="diff">{{ i !== 0 ? p.pontuacao -
-                pilotosOrdenados[0].pontuacao : '' }}</span>
+              <td class="middle">{{ p.pontuacao }}<span class="diff">{{ p.diferenca }}</span>
               </td>
               <td class="middle probabilidade-cell" :class="{ 'fade-in': simulacaoConcluida }"
                 :style="{ 'transition-delay': i * 50 + 'ms' }">{{ p.chance }}</td>
@@ -387,6 +312,10 @@ body {
   font-family: sans-serif;
 }
 
+h1, p {
+  text-align: center;
+}
+
 a {
   color: var(--cor-links);
 }
@@ -407,8 +336,7 @@ button:hover {
   background-color: var(--cor-botao-hover);
 }
 
-input,
-textarea {
+input {
   background-color: black;
   color: white;
   border-radius: var(--borda-radius);
@@ -419,9 +347,7 @@ textarea {
 }
 
 input:hover,
-input:focus,
-textarea:hover,
-textarea:focus {
+input:focus {
   outline: none;
   border-color: var(--cor-links);
 }
@@ -433,22 +359,6 @@ hr {
 .container {
   width: 900px;
   margin: 0 auto;
-}
-
-.form-json {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-}
-
-.form-json textarea {
-  height: 22rem;
-}
-
-.importar-links {
-  display: flex;
-  justify-content: space-evenly;
 }
 
 .grid-pilotos {
