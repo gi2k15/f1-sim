@@ -79,7 +79,7 @@ async function getClassificacao() {
     return mappedData.slice(0, 20);
   } catch (error) {
     console.error("Falha ao buscar dados da API:", error);
-    alert("Não foi possível carregar os dados da API.");
+    alert("Não foi possível carregar a pontuação da API.");
     return []; // Retorna um array vazio em caso de erro.
   }
 }
