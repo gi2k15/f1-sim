@@ -276,7 +276,7 @@ async function simular() {
       </form>
       <p class="ultima-corrida">Última corrida: {{ localUltimaCorrida }} em {{ dataUltimaCorrida }}</p>
       <div class="div-container">
-        <table v-if="tabelaPilotos.length > 0">
+        <table>
           <thead>
             <tr>
               <th style="text-align: left;">P</th>
