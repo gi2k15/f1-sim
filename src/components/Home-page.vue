@@ -3,8 +3,10 @@ import { ref, computed } from 'vue';
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
+import ptLocale from "i18n-iso-countries/langs/pt.json";
 
 countries.registerLocale(enLocale);
+countries.registerLocale(ptLocale);
 
 const tabelaPilotos = ref([]);
 const numSimulacoes = ref(10000);
@@ -82,6 +84,10 @@ async function getClassificacao() {
   }
 }
 
+function getCountryfromAlpha2Code(code) {
+  return countries.getName(code, 'pt');
+}
+
 /**
  * Busca a data e o nome da última corrida de F1 a partir de uma API externa.
  *
@@ -110,7 +116,7 @@ async function getUltimaCorrida() {
  * @param {string} str - A string a ser convertida
  * @returns {string} A string formatada.
  */
-function toLabelFor (str) {
+function toLabelFor(str) {
   return str.replace(' ', '-').toLowerCase();
 }
 
@@ -270,7 +276,8 @@ async function simular() {
             <input type="number" id="num-simulacoes" v-model.number="numSimulacoes" />
           </div>
         </div>
-        <button type="button" class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length || isSimulating">
+        <button type="button" class="click-button" @click.prevent="simular()"
+          :disabled="!tabelaPilotos.length || isSimulating">
           {{ isSimulating ? 'Processando...' : 'Simular' }}
         </button>
       </form>
@@ -289,7 +296,8 @@ async function simular() {
           <tbody>
             <tr v-for="(p, i) in pilotosOrdenados" :key="i">
               <td>{{ i + 1 }}</td>
-              <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"></span>&nbsp;{{ p.nome }}</td>
+              <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"
+                  :title="getCountryfromAlpha2Code(p.nacionalidade)"></span>&nbsp;{{ p.nome }}</td>
               <td>{{ p.equipe }}</td>
               <td class="middle">{{ p.pontuacao }}<span class="diff">{{ p.diferenca }}</span>
               </td>
@@ -319,7 +327,8 @@ body {
   font-family: sans-serif;
 }
 
-h1, p {
+h1,
+p {
   text-align: center;
 }
 
