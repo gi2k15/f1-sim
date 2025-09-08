@@ -11,19 +11,17 @@ const numSimulacoes = ref(10000);
 const dataUltimaCorrida = ref('');
 const localUltimaCorrida = ref('');
 const simulacaoConcluida = ref(false);
+const isSimulating = ref(false);
 let chances = [];
 
 const pilotosOrdenados = computed(() => {
   const copia = [...tabelaPilotos.value];
   const ordenados = copia.sort((a, b) => b.pontuacao - a.pontuacao);
-
   if (ordenados.length === 0) {
     return [];
   }
-
   // Pega a pontuação do líder para calcular a diferença
   const pontuacaoLider = ordenados[0].pontuacao;
-
   // Adiciona a propriedade 'diferenca' a cada piloto
   return ordenados.map((p, i) => ({
     ...p, // Mantém todas as propriedades originais do piloto
@@ -92,17 +90,18 @@ async function getClassificacao() {
  */
 async function getUltimaCorrida() {
   try {
-    const API_LAST_RACE = 'https://f1api.dev/api/current/last/race';
-    const response = await fetch(API_LAST_RACE);
+    const apiLastRace = 'https://f1api.dev/api/current/last';
+    const response = await fetch(apiLastRace);
     if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
-    const d = await response.json();
-    const data = new Date(d.races.date);
+    const j = await response.json();
+    console.log(j);
+    const data = new Date(j.race[0].schedule.race.date);
     const dataBR = data.toLocaleDateString('pt-BR');
-    const nome = d.races.raceName;
+    const nome = j.race[0].raceName;
     return { dataBR, nome };
   } catch (error) {
     console.error("Falha ao buscar dados da API:", error);
-    alert("Não foi possível carregar os dados da API.");
+    alert("Não foi possível buscar as datas na API.");
     return { dataBR: null, nome: null };
   }
 }
@@ -126,7 +125,7 @@ async function importarDaAPI() {
   tabelaPilotos.value = await getClassificacao();
   const ultimaCorrida = await getUltimaCorrida();
   dataUltimaCorrida.value = ultimaCorrida.dataBR;
-  localUltimaCorrida.value = ultimaCorrida.nome;
+  localUltimaCorrida.value = ultimaCorrida.nome.replace(' 2025', '');
 }
 
 /**
@@ -211,27 +210,35 @@ function simularTemporada(pilotos, corridas, sprints) {
  * a probabilidade de cada piloto vencer o campeonato. Ao final, atualiza cada piloto
  * na `tabelaPilotos` com sua respectiva chance de título em porcentagem.
  */
-function simular() {
+async function simular() {
+  if (isSimulating.value) return; // Impede múltiplos cliques
+  isSimulating.value = true;
   simulacaoConcluida.value = false; // Reseta para re-acionar a animação
-  let vitorias = {};
-  for (let i = 0; i < numSimulacoes.value; i++) {
-    const temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
-    const max = Math.max(...temporada.map(p => p.pontuacao));
-    const campeao = temporada.filter(p => p.pontuacao === max);
-    campeao.forEach(p => vitorias[p.nome] = (vitorias[p.nome] || 0) + 1);
-  };
-  chances = tabelaPilotos.value.map(p => ({
-    nome: p.nome,
-    chance: ((vitorias[p.nome] || 0) / numSimulacoes.value * 100).toFixed(2)
-  }));
-  tabelaPilotos.value.forEach(p => {
-    const chanceObj = chances.find(c => c.nome === p.nome);
-    p.chance = chanceObj ? chanceObj.chance : 0;
-  });
-  // Adicionado para acionar a animação após um pequeno atraso
-  setTimeout(() => {
-    simulacaoConcluida.value = true;
-  }, 10);
+  // Permite que a UI atualize para "Processando..." antes de iniciar o cálculo pesado.
+  await new Promise(resolve => setTimeout(resolve, 0));
+  try {
+    let vitorias = {};
+    for (let i = 0; i < numSimulacoes.value; i++) {
+      const temporada = simularTemporada(tabelaPilotos.value, corridasRestantes.value, sprintsRestantes.value);
+      const max = Math.max(...temporada.map(p => p.pontuacao));
+      const campeao = temporada.filter(p => p.pontuacao === max);
+      campeao.forEach(p => vitorias[p.nome] = (vitorias[p.nome] || 0) + 1);
+    };
+    chances = tabelaPilotos.value.map(p => ({
+      nome: p.nome,
+      chance: ((vitorias[p.nome] || 0) / numSimulacoes.value * 100).toFixed(2)
+    }));
+    tabelaPilotos.value.forEach(p => {
+      const chanceObj = chances.find(c => c.nome === p.nome);
+      p.chance = chanceObj ? chanceObj.chance : "0.00";
+    });
+    // Adicionado para acionar a animação após um pequeno atraso
+    setTimeout(() => {
+      simulacaoConcluida.value = true;
+    }, 10);
+  } finally {
+    isSimulating.value = false; // Garante que o estado volte ao normal, mesmo se houver erro.
+  }
 }
 </script>
 
@@ -264,8 +271,9 @@ function simular() {
             <input type="number" class="label-inputs" v-model.number="numSimulacoes" />
           </div>
         </div>
-        <button type="button" class="click-button" @click.prevent="simular()"
-          :disabled="!tabelaPilotos.length">Simular</button>
+        <button type="button" class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length || isSimulating">
+          {{ isSimulating ? 'Processando...' : 'Simular' }}
+        </button>
       </form>
       <p class="ultima-corrida">Última corrida: {{ localUltimaCorrida }} em {{ dataUltimaCorrida }}</p>
       <div class="div-container">
