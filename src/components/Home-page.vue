@@ -94,7 +94,6 @@ async function getUltimaCorrida() {
     const response = await fetch(apiLastRace);
     if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
     const j = await response.json();
-    console.log(j);
     const data = new Date(j.race[0].schedule.race.date);
     const dataBR = data.toLocaleDateString('pt-BR');
     const nome = j.race[0].raceName;
@@ -258,17 +257,17 @@ async function simular() {
         </div>
         <hr />
         <div class="config">
-          <div>
-            <label>Corridas restantes</label>
-            <input type="number" class="label-inputs" v-model.number="corridasRestantes" />
+          <div class="label-inputs">
+            <label for="corridas-restantes">Corridas restantes</label>
+            <input type="number" id="corridas-restantes" v-model.number="corridasRestantes" />
           </div>
-          <div>
-            <label>Corridas sprint restantes</label>
-            <input type="number" class="label-inputs" v-model.number="sprintsRestantes" />
+          <div class="label-inputs">
+            <label for="sprints-restantes">Corridas sprint restantes</label>
+            <input type="number" id="sprints-restantes" v-model.number="sprintsRestantes" />
           </div>
-          <div>
-            <label>Número de simulações</label>
-            <input type="number" class="label-inputs" v-model.number="numSimulacoes" />
+          <div class="label-inputs">
+            <label for="num-simulacoes">Número de simulações</label>
+            <input type="number" id="num-simulacoes" v-model.number="numSimulacoes" />
           </div>
         </div>
         <button type="button" class="click-button" @click.prevent="simular()" :disabled="!tabelaPilotos.length || isSimulating">
