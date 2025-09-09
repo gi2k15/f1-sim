@@ -161,7 +161,7 @@ const sprintsRestantes = ref(datasRestantes(dataSprints));
  * @returns {object} Um objeto que mapeia o nome de cada piloto aos pontos obtidos na corrida.
  */
 function simularCorrida(pilotos, tipo = 'normal') {
-  let ordem = pilotos.slice();
+  let ordem = [...pilotos];
   // Algoritmo para embaralhar um array de maneira efetiva.
   for (let i = ordem.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
