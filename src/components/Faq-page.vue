@@ -17,11 +17,11 @@
       <p>O processo de simulação é baseado no <a href="https://pt.wikipedia.org/wiki/M%C3%A9todo_de_Monte_Carlo"
           target="_blank" rel="noopener noreferrer">Método de Monte Carlo</a> e segue estas etapas:</p>
       <ol>
-        <li><strong>Importação de Dados:</strong> Você fornece a classificação atual dos pilotos (nome, pontuação,
-          nacionalidade e equipe) em formato JSON.</li>
-        <li><strong>Configuração da Simulação:</strong> O aplicativo determina automaticamente o número de corridas e
-          sprints restantes na temporada de 2025. Você pode ajustar esses números, bem como a quantidade de temporadas a
-          serem simuladas (quanto mais, mais preciso o resultado).</li>
+        <li><strong>Carregamento de Dados:</strong> Ao clicar em "Importar pontuação", o simulador busca a classificação
+          atual dos pilotos e a informação da última corrida diretamente de uma API pública de F1.</li>
+        <li><strong>Configuração da Simulação:</strong> O aplicativo determina automaticamente o número de corridas e sprints
+          restantes na temporada de 2025. Você pode ajustar esses números, bem como a pontuação dos pilotos e a
+          quantidade de temporadas a serem simuladas (quanto mais, mais preciso o resultado).</li>
         <li><strong>Execução da Simulação:</strong> Para cada temporada simulada, o sistema embaralha aleatoriamente os
           pilotos para determinar os vencedores de cada corrida e sprint restante, distribuindo os pontos
           correspondentes.</li>
@@ -32,32 +32,16 @@
     </div>
 
     <div class="faq-item">
-      <h2>Como obtenho os dados dos pilotos no formato JSON?</h2>
-      <p>Existem três maneiras de carregar os dados no simulador:</p>
-      <ul>
-        <li><strong>Buscar dados online:</strong> A maneira mais fácil. Clique em "Buscar dados online" para carregar a
-          classificação mais recente da API <a href="https://f1api.dev/" target="_blank"
-            rel="noopener noreferrer">f1api.dev</a>. A data e o local da última corrida também serão carregados.</li>
-        <li><strong>Usar exemplo:</strong> Clique em "Usar exemplo" para carregar um conjunto de dados de exemplo,
-          permitindo que você teste a ferramenta rapidamente.</li>
-        <li><strong>Manualmente:</strong> Você pode colar seu próprio JSON na área de texto. O formato deve ser um array
-          de objetos, onde cada objeto representa um piloto e contém as chaves <code>nome</code>,
-          <code>pontuacao</code>, <code>nacionalidade</code> (código de 2 letras, ex: "GB") e <code>equipe</code>.</li>
-      </ul>
-      <pre><code>[
-  {
-    "nome": "Lando Norris",
-    "pontuacao": 275,
-    "nacionalidade": "GB",
-    "equipe": "McLaren Formula 1 Team"
-  },
-  {
-    "nome": "Oscar Piastri",
-    "pontuacao": 309,
-    "nacionalidade": "AU",
-    "equipe": "McLaren Formula 1 Team"
-  }
-]</code></pre>
+      <h2>Como os dados dos pilotos são carregados?</h2>
+      <p>
+        A maneira mais fácil e recomendada é clicar em <strong>"Importar pontuação"</strong>. Esta ação carrega
+        automaticamente a classificação mais recente dos pilotos e as informações da última corrida a partir da API <a
+          href="https://f1api.dev/" target="_blank" rel="noopener noreferrer">f1api.dev</a>.
+      </p>
+      <p>
+        Após a importação, você tem total liberdade para <strong>editar manualmente a pontuação</strong> de qualquer
+        piloto diretamente nos campos da tabela, permitindo testar cenários hipotéticos.
+      </p>
     </div>
 
     <div class="faq-item">
@@ -132,20 +116,6 @@ li {
 ol,
 ul {
   padding-left: 20px;
-}
-
-pre {
-  background-color: #181818;
-  border: 1px solid #444;
-  padding: 15px;
-  border-radius: 5px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-code {
-  font-family: 'Courier New', Courier, monospace;
-  color: #eee;
 }
 
 @media (max-width: 700px) {
