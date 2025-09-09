@@ -126,6 +126,7 @@ p,
 li {
   line-height: 1.6;
   color: #ccc;
+  text-align: left;
 }
 
 ol,
