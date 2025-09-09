@@ -26,7 +26,7 @@ importers:
         version: 9.35.0
       '@vitejs/plugin-vue':
         specifier: ^6.0.1
-        version: 6.0.1(vite@7.1.4)(vue@3.5.21)
+        version: 6.0.1(vite@7.1.5)(vue@3.5.21)
       eslint:
         specifier: ^9.35.0
         version: 9.35.0
@@ -38,10 +38,10 @@ importers:
         version: 16.3.0
       vite:
         specifier: ^7.1.4
-        version: 7.1.4
+        version: 7.1.5
       vite-plugin-vue-devtools:
         specifier: ^8.0.1
-        version: 8.0.1(vite@7.1.4)(vue@3.5.21)
+        version: 8.0.1(vite@7.1.5)(vue@3.5.21)
 
 packages:
 
@@ -341,8 +341,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@eslint-community/eslint-utils@4.8.0':
-    resolution: {integrity: sha512-MJQFqrZgcW0UNYLGOuQpey/oTN59vyWwplvCGZztn1cKz9agZPPYpJB7h2OMmuu7VLqkvEjN8feFZJmxNF9D+Q==}
+  '@eslint-community/eslint-utils@4.9.0':
+    resolution: {integrity: sha512-ayVFHdtZ+hsq1t2Dy24wCmGXGe4q9Gu3smhLYALJrr473ZH27MsnSL+LKUlimp4BWJqMDMLmPpx/Q9R3OAlL4g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
@@ -736,8 +736,8 @@ packages:
   diacritics@1.3.0:
     resolution: {integrity: sha512-wlwEkqcsaxvPJML+rDh/2iS824jbREk6DUMUKkEaSlxdYHeS43cClJtsWglvw2RfeXGm6ohKDqsXteJ5sP5enA==}
 
-  electron-to-chromium@1.5.214:
-    resolution: {integrity: sha512-TpvUNdha+X3ybfU78NoQatKvQEm1oq3lf2QbnmCEdw+Bd9RuIAY+hJTvq1avzHM0f7EJfnH3vbCnbzKzisc/9Q==}
+  electron-to-chromium@1.5.215:
+    resolution: {integrity: sha512-TIvGp57UpeNetj/wV/xpFNpWGb0b/ROw372lHPx5Aafx02gjTBtWnEEcaSX3W2dLM3OSdGGyHX/cHl01JQsLaQ==}
 
   entities@4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
@@ -998,8 +998,8 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  magic-string@0.30.18:
-    resolution: {integrity: sha512-yi8swmWbO17qHhwIBNeeZxTceJMeBvWJaId6dyvTSOwTipqeHhMhOrz6513r1sOKnpvQ7zkhlG8tPrpilwTxHQ==}
+  magic-string@0.30.19:
+    resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
 
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
@@ -1240,8 +1240,8 @@ packages:
     peerDependencies:
       vite: ^3.0.0-0 || ^4.0.0-0 || ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0
 
-  vite@7.1.4:
-    resolution: {integrity: sha512-X5QFK4SGynAeeIt+A7ZWnApdUyHYm+pzv/8/A57LqSGcI88U6R6ipOs3uCesdc6yl7nl+zNO0t8LmqAdXcQihw==}
+  vite@7.1.5:
+    resolution: {integrity: sha512-4cKBO9wR75r0BeIWWWId9XK9Lj6La5X846Zw9dFfzMRw38IlTk2iCcUt6hsyiDRcPidc55ZParFYDXi0nXOeLQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -1593,7 +1593,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.9':
     optional: true
 
-  '@eslint-community/eslint-utils@4.8.0(eslint@9.35.0)':
+  '@eslint-community/eslint-utils@4.9.0(eslint@9.35.0)':
     dependencies:
       eslint: 9.35.0
       eslint-visitor-keys: 3.4.3
@@ -1746,10 +1746,10 @@ snapshots:
     optionalDependencies:
       vue: 3.5.21
 
-  '@vitejs/plugin-vue@6.0.1(vite@7.1.4)(vue@3.5.21)':
+  '@vitejs/plugin-vue@6.0.1(vite@7.1.5)(vue@3.5.21)':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-beta.29
-      vite: 7.1.4
+      vite: 7.1.5
       vue: 3.5.21
 
   '@vue/babel-helper-vue-transform-on@1.5.0': {}
@@ -1802,7 +1802,7 @@ snapshots:
       '@vue/compiler-ssr': 3.5.21
       '@vue/shared': 3.5.21
       estree-walker: 2.0.2
-      magic-string: 0.30.18
+      magic-string: 0.30.19
       postcss: 8.5.6
       source-map-js: 1.2.1
 
@@ -1811,14 +1811,14 @@ snapshots:
       '@vue/compiler-dom': 3.5.21
       '@vue/shared': 3.5.21
 
-  '@vue/devtools-core@8.0.1(vite@7.1.4)(vue@3.5.21)':
+  '@vue/devtools-core@8.0.1(vite@7.1.5)(vue@3.5.21)':
     dependencies:
       '@vue/devtools-kit': 8.0.1
       '@vue/devtools-shared': 8.0.1
       mitt: 3.0.1
       nanoid: 5.1.5
       pathe: 2.0.3
-      vite-hot-client: 2.1.0(vite@7.1.4)
+      vite-hot-client: 2.1.0(vite@7.1.5)
       vue: 3.5.21
     transitivePeerDependencies:
       - vite
@@ -1896,7 +1896,7 @@ snapshots:
   browserslist@4.25.4:
     dependencies:
       caniuse-lite: 1.0.30001741
-      electron-to-chromium: 1.5.214
+      electron-to-chromium: 1.5.215
       node-releases: 2.0.20
       update-browserslist-db: 1.1.3(browserslist@4.25.4)
 
@@ -1954,7 +1954,7 @@ snapshots:
 
   diacritics@1.3.0: {}
 
-  electron-to-chromium@1.5.214: {}
+  electron-to-chromium@1.5.215: {}
 
   entities@4.5.0: {}
 
@@ -1995,7 +1995,7 @@ snapshots:
 
   eslint-plugin-vue@10.3.0(eslint@9.35.0)(vue-eslint-parser@10.2.0(eslint@9.35.0)):
     dependencies:
-      '@eslint-community/eslint-utils': 4.8.0(eslint@9.35.0)
+      '@eslint-community/eslint-utils': 4.9.0(eslint@9.35.0)
       eslint: 9.35.0
       natural-compare: 1.4.0
       nth-check: 2.1.1
@@ -2015,7 +2015,7 @@ snapshots:
 
   eslint@9.35.0:
     dependencies:
-      '@eslint-community/eslint-utils': 4.8.0(eslint@9.35.0)
+      '@eslint-community/eslint-utils': 4.9.0(eslint@9.35.0)
       '@eslint-community/regexpp': 4.12.1
       '@eslint/config-array': 0.21.0
       '@eslint/config-helpers': 0.3.1
@@ -2220,7 +2220,7 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  magic-string@0.30.18:
+  magic-string@0.30.19:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
@@ -2415,17 +2415,17 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  vite-dev-rpc@1.1.0(vite@7.1.4):
+  vite-dev-rpc@1.1.0(vite@7.1.5):
     dependencies:
       birpc: 2.5.0
-      vite: 7.1.4
-      vite-hot-client: 2.1.0(vite@7.1.4)
+      vite: 7.1.5
+      vite-hot-client: 2.1.0(vite@7.1.5)
 
-  vite-hot-client@2.1.0(vite@7.1.4):
+  vite-hot-client@2.1.0(vite@7.1.5):
     dependencies:
-      vite: 7.1.4
+      vite: 7.1.5
 
-  vite-plugin-inspect@11.3.3(vite@7.1.4):
+  vite-plugin-inspect@11.3.3(vite@7.1.5):
     dependencies:
       ansis: 4.1.0
       debug: 4.4.1
@@ -2435,27 +2435,27 @@ snapshots:
       perfect-debounce: 2.0.0
       sirv: 3.0.2
       unplugin-utils: 0.3.0
-      vite: 7.1.4
-      vite-dev-rpc: 1.1.0(vite@7.1.4)
+      vite: 7.1.5
+      vite-dev-rpc: 1.1.0(vite@7.1.5)
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-vue-devtools@8.0.1(vite@7.1.4)(vue@3.5.21):
+  vite-plugin-vue-devtools@8.0.1(vite@7.1.5)(vue@3.5.21):
     dependencies:
-      '@vue/devtools-core': 8.0.1(vite@7.1.4)(vue@3.5.21)
+      '@vue/devtools-core': 8.0.1(vite@7.1.5)(vue@3.5.21)
       '@vue/devtools-kit': 8.0.1
       '@vue/devtools-shared': 8.0.1
       execa: 9.6.0
       sirv: 3.0.2
-      vite: 7.1.4
-      vite-plugin-inspect: 11.3.3(vite@7.1.4)
-      vite-plugin-vue-inspector: 5.3.2(vite@7.1.4)
+      vite: 7.1.5
+      vite-plugin-inspect: 11.3.3(vite@7.1.5)
+      vite-plugin-vue-inspector: 5.3.2(vite@7.1.5)
     transitivePeerDependencies:
       - '@nuxt/kit'
       - supports-color
       - vue
 
-  vite-plugin-vue-inspector@5.3.2(vite@7.1.4):
+  vite-plugin-vue-inspector@5.3.2(vite@7.1.5):
     dependencies:
       '@babel/core': 7.28.4
       '@babel/plugin-proposal-decorators': 7.28.0(@babel/core@7.28.4)
@@ -2465,12 +2465,12 @@ snapshots:
       '@vue/babel-plugin-jsx': 1.5.0(@babel/core@7.28.4)
       '@vue/compiler-dom': 3.5.21
       kolorist: 1.8.0
-      magic-string: 0.30.18
-      vite: 7.1.4
+      magic-string: 0.30.19
+      vite: 7.1.5
     transitivePeerDependencies:
       - supports-color
 
-  vite@7.1.4:
+  vite@7.1.5:
     dependencies:
       esbuild: 0.25.9
       fdir: 6.5.0(picomatch@4.0.3)
