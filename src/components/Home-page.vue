@@ -84,10 +84,6 @@ async function getClassificacao() {
   }
 }
 
-function getCountryfromAlpha2Code(code) {
-  return countries.getName(code, 'pt');
-}
-
 /**
  * Busca a data e o nome da última corrida de F1 a partir de uma API externa.
  *
@@ -118,6 +114,15 @@ async function getUltimaCorrida() {
  */
 function toLabelFor(str) {
   return str.replace(' ', '-').toLowerCase();
+}
+
+/**
+ * Converte um código de país ISO 3166-1 alfa-2 para o seu nome correspondente em português.
+ * @param {string} code - O código do país de duas letras (ex: "BR", "GB").
+ * @returns {string} O nome do país em português.
+ */
+function getCountryfromAlpha2Code(code) {
+  return countries.getName(code, 'pt');
 }
 
 /**
@@ -438,6 +443,12 @@ table tbody td {
 
 .probabilidade-cell.fade-in {
   opacity: 1;
+}
+
+.team-logo {
+  height: 1em;
+  vertical-align: middle;
+  margin-right: 0.3em;
 }
 
 @media (max-width: 700px) {
