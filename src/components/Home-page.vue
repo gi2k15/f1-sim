@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue';
-import "/node_modules/flag-icons/css/flag-icons.min.css";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
 import ptLocale from "i18n-iso-countries/langs/pt.json";
+import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 countries.registerLocale(enLocale);
 countries.registerLocale(ptLocale);
@@ -45,6 +45,49 @@ const dataCorridas = [
 const dataSprints = [
   "2025-03-22", "2025-05-03", "2025-07-26", "2025-10-18", "2025-11-08", "2025-11-29"
 ];
+
+const teamLogos = {
+  "McLaren Formula 1 Team": {
+        alt: "McLaren Formula 1 Team",
+        src: "/logos/2025mclarenlogo.avif"
+  },
+  "Red Bull Racing": {
+    alt: "Red Bull Racing",
+    src: "/logos/2025redbullracinglogo.avif"
+  },
+  "Mercedes Formula 1 Team": {
+    alt: "Mercedes Formula 1 Team",
+    src: "/logos/2025mercedeslogo.avif"
+  },
+  "Scuderia Ferrari": {
+    alt: "Scuderia Ferrari",
+    src: "/logos/2025ferrarilogo.avif"
+  },
+  "Williams Racing": {
+    alt: "Williams Racing",
+    src: "/logos/2025williamslogo.avif"
+  },
+  "RB F1 Team": {
+    alt: "RB F1 Team",
+    src: "/logos/2025racingbullslogo.avif"
+  },
+  "Sauber F1 Team": {
+    alt: "Sauber F1 Team",
+    src: "/logos/2025kicksauberlogo.avif"
+  },
+  "Aston Martin F1 Team": {
+    alt: "Aston Martin F1 Team",
+    src: "/logos/2025astonmartinlogo.avif"
+  },
+  "Haas F1 Team": {
+    alt: "Haas F1 Team",
+    src: "/logos/2025haaslogo.avif"
+  },
+  "Alpine F1 Team": {
+    alt: "Alpine F1 Team",
+    src: "/logos/2025alpinelogo.avif"
+  }
+}
 
 /**
  * Busca a classificação atual do campeonato de pilotos da F1 a partir de uma API externa.
