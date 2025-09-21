@@ -48,8 +48,8 @@ const dataSprints = [
 
 const teamLogos = {
   "McLaren Formula 1 Team": {
-        alt: "McLaren Formula 1 Team",
-        src: "/logos/2025mclarenlogo.avif"
+    alt: "McLaren Formula 1 Team",
+    src: "/logos/2025mclarenlogo.avif"
   },
   "Red Bull Racing": {
     alt: "Red Bull Racing",
@@ -346,7 +346,8 @@ async function simular() {
               <td>{{ i + 1 }}</td>
               <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"
                   :title="getCountryfromAlpha2Code(p.nacionalidade)"></span>&nbsp;{{ p.nome }}</td>
-              <td>{{ p.equipe }}</td>
+              <td class="middle"><img class="team-logo" :src="teamLogos[p.equipe].src"
+                  :title="teamLogos[p.equipe].alt" /></td>
               <td class="middle">{{ p.pontuacao }}<span class="diff">{{ p.diferenca }}</span>
               </td>
               <td class="middle probabilidade-cell" :class="{ 'fade-in': simulacaoConcluida }"
@@ -477,6 +478,7 @@ table tbody td {
   margin-left: 5px;
   font-size: 0.7em;
   color: rgb(255, 72, 72);
+  vertical-align: middle;
 }
 
 .probabilidade-cell {
@@ -489,7 +491,7 @@ table tbody td {
 }
 
 .team-logo {
-  height: 1em;
+  height: 1.5em;
   vertical-align: middle;
   margin-right: 0.3em;
 }
