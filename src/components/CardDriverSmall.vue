@@ -14,7 +14,7 @@
     </div>
 
     <div class="icons">
-      <img v-if="teamIcon" class="team" :src="teamIcon" :alt="`Ícone da equipe`" />
+      <img v-if="teamIcon" class="team" :src="teamIcon" :title="teamName" />
       <span v-else class="team placeholder"></span>
 
       <span v-if="countryCode" :class="['fi', 'fi-' + countryCode.toLowerCase()]" class="flag" :title="countryName"></span>
@@ -31,6 +31,7 @@ const props = defineProps({
   points: { type: [Number, String], default: 0 },
   probability: { type: [Number, String], default: 0 },
   teamIcon: { type: String, default: '' },
+  teamName: { type: String, default: '' },
   countryCode: { type: String, default: '' },
   countryName: { type: String, default: '' }
 })

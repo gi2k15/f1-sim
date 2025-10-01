@@ -152,15 +152,6 @@ async function getUltimaCorrida() {
 }
 
 /**
- * Formata uma string para ser usada corretamente em id's de `input` e for de `label`.
- * @param {string} str - A string a ser convertida
- * @returns {string} A string formatada.
- */
-function toLabelFor(str) {
-  return str.replace(' ', '-').toLowerCase();
-}
-
-/**
  * Converte um código de país ISO 3166-1 alfa-2 para o seu nome correspondente em português.
  * @param {string} code - O código do país de duas letras (ex: "BR", "GB").
  * @returns {string} O nome do país em português.
@@ -300,12 +291,13 @@ async function simular() {
   <div class="container">
     <h1>Simulador de campeonato de Fórmula 1</h1>
     <p><a href="#" @click="importarDaAPI()">Importar pontuação</a></p>
-    <p><a href="#" @click="simular()">Simular</a></p>
+    <p><a href="#" @click="simular()" v-if="tabelaPilotos.length > 0">Simular</a></p>
     <div v-if="tabelaPilotos.length > 0" class="tabela-piloto">
       <div class="grid-cards">
-        <CardDriverSmall v-for="(p, i) in pilotosOrdenados" :key="p.nome" :position="i+1"
-          :name="p.nome" :points="p.pontuacao" :probability="p.chance" :teamIcon="teamLogos[p.equipe]?.src"
-          :countryCode="p.nacionalidade" :countryName="getCountryfromAlpha2Code(p.nacionalidade)" />
+        <CardDriverSmall v-for="(p, i) in pilotosOrdenados" :key="p.nome" :position="i + 1" :name="p.nome"
+          :points="p.pontuacao" :probability="p.chance" :teamIcon="teamLogos[p.equipe]?.src"
+          :countryCode="p.nacionalidade" :countryName="getCountryfromAlpha2Code(p.nacionalidade)"
+          :teamName="teamLogos[p.equipe]?.alt" />
       </div>
     </div>
     <!-- <div v-if="tabelaPilotos.length > 0">
@@ -506,12 +498,23 @@ table tbody td {
 }
 
 .grid-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    justify-items: center;
-    gap: 15px;
-    max-width: 600px;
-    margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  justify-items: center;
+  gap: 15px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.grid-cards > * {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+}
+
+.grid-cards > *:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(64, 255, 47, 0.4);
+  filter: brightness(1.1);
 }
 
 @media (max-width: 700px) {
