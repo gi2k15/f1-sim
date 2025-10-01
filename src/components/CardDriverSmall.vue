@@ -5,7 +5,8 @@
     <div class="main">
       <div class="name" :title="name">{{ name }}</div>
       <div class="meta">
-        <span class="points">{{ points }} pts</span>
+        <input type="number" v-model="points">
+        <span class="points">pts</span>
         <span class="prob" :title="formattedProbability">{{ formattedProbability }}</span>
       </div>
       <div class="prob-bar" aria-hidden="true">
@@ -28,12 +29,16 @@ import { computed } from 'vue'
 const props = defineProps({
   position: { type: [Number, String], required: true },
   name: { type: String, required: true },
-  points: { type: [Number, String], default: 0 },
   probability: { type: [Number, String], default: 0 },
   teamIcon: { type: String, default: '' },
   teamName: { type: String, default: '' },
   countryCode: { type: String, default: '' },
   countryName: { type: String, default: '' }
+})
+
+const points = defineModel('points', {
+  type: [Number, String],
+  default: 0
 })
 
 const formattedProbability = computed(() => {

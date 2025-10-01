@@ -300,64 +300,6 @@ async function simular() {
           :teamName="teamLogos[p.equipe]?.alt" />
       </div>
     </div>
-    <!-- <div v-if="tabelaPilotos.length > 0">
-      <form>
-        <div class="div-container">
-          <div class="grid-pilotos">
-            <div v-for="(p, i) in tabelaPilotos" :key="i" class="label-inputs">
-              <label :for="toLabelFor(p.nome)">{{ p.nome }}</label>
-              <input type="number" :id="toLabelFor(p.nome)" v-model.number="p.pontuacao" maxlength="3" />
-            </div>
-          </div>
-        </div>
-        <hr />
-        <div class="config">
-          <div class="label-inputs">
-            <label for="corridas-restantes">Corridas restantes</label>
-            <input type="number" id="corridas-restantes" v-model.number="corridasRestantes" />
-          </div>
-          <div class="label-inputs">
-            <label for="sprints-restantes">Corridas sprint restantes</label>
-            <input type="number" id="sprints-restantes" v-model.number="sprintsRestantes" />
-          </div>
-          <div class="label-inputs">
-            <label for="num-simulacoes">Número de simulações</label>
-            <input type="number" id="num-simulacoes" v-model.number="numSimulacoes" />
-          </div>
-        </div>
-        <button type="button" class="click-button" @click.prevent="simular()"
-          :disabled="!tabelaPilotos.length || isSimulating">
-          {{ isSimulating ? 'Processando...' : 'Simular' }}
-        </button>
-      </form>
-      <p class="ultima-corrida">Última corrida: {{ localUltimaCorrida }} em {{ dataUltimaCorrida }}</p>
-      <div class="div-container">
-        <table>
-          <thead>
-            <tr>
-              <th style="text-align: left;">P</th>
-              <th>Piloto</th>
-              <th>Equipe</th>
-              <th>Pontos</th>
-              <th>Probabilidade (%)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(p, i) in pilotosOrdenados" :key="i">
-              <td>{{ i + 1 }}</td>
-              <td><span :class="'fi fi-' + p.nacionalidade.toLowerCase()"
-                  :title="getCountryfromAlpha2Code(p.nacionalidade)"></span>&nbsp;{{ p.nome }}</td>
-              <td class="middle"><img class="team-logo" :src="teamLogos[p.equipe].src"
-                  :title="teamLogos[p.equipe].alt" /></td>
-              <td class="middle">{{ p.pontuacao }}<span class="diff">{{ p.diferenca }}</span>
-              </td>
-              <td class="middle probabilidade-cell" :class="{ 'fade-in': simulacaoConcluida }"
-                :style="{ 'transition-delay': i * 50 + 'ms' }">{{ p.chance }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div> -->
   </div>
 </template>
 
