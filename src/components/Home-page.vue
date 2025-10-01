@@ -4,6 +4,7 @@ import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
 import ptLocale from "i18n-iso-countries/langs/pt.json";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
+import CardDriverSmall from './CardDriverSmall.vue';
 
 countries.registerLocale(enLocale);
 countries.registerLocale(ptLocale);
@@ -299,7 +300,15 @@ async function simular() {
   <div class="container">
     <h1>Simulador de campeonato de Fórmula 1</h1>
     <p><a href="#" @click="importarDaAPI()">Importar pontuação</a></p>
-    <div v-if="tabelaPilotos.length > 0">
+    <p><a href="#" @click="simular()">Simular</a></p>
+    <div v-if="tabelaPilotos.length > 0" class="tabela-piloto">
+      <div class="grid-cards">
+        <CardDriverSmall v-for="(p, i) in pilotosOrdenados" :key="p.nome" :position="i+1"
+          :name="p.nome" :points="p.pontuacao" :probability="p.chance" :teamIcon="teamLogos[p.equipe]?.src"
+          :countryCode="p.nacionalidade" :countryName="getCountryfromAlpha2Code(p.nacionalidade)" />
+      </div>
+    </div>
+    <!-- <div v-if="tabelaPilotos.length > 0">
       <form>
         <div class="div-container">
           <div class="grid-pilotos">
@@ -356,7 +365,7 @@ async function simular() {
           </tbody>
         </table>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -494,6 +503,15 @@ table tbody td {
   height: 1.5em;
   vertical-align: middle;
   margin-right: 0.3em;
+}
+
+.grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    justify-items: center;
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 @media (max-width: 700px) {
