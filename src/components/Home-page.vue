@@ -10,11 +10,13 @@ countries.registerLocale(enLocale);
 countries.registerLocale(ptLocale);
 
 const tabelaPilotos = ref([]);
-const numSimulacoes = ref(10000);
+const numSimulacoes = defineModel('numSimulacoes', { default: 10000, type: [Number]});
 const dataUltimaCorrida = ref('');
 const localUltimaCorrida = ref('');
 const simulacaoConcluida = ref(false);
 const isSimulating = ref(false);
+const corridasRestantes = defineModel('corridasRestantes')
+const sprintsRestantes = defineModel('sprintsRestantes')
 let chances = [];
 
 const pilotosOrdenados = computed(() => {
@@ -182,8 +184,8 @@ function datasRestantes(datas) {
   }).length;
 }
 
-const corridasRestantes = ref(datasRestantes(dataCorridas));
-const sprintsRestantes = ref(datasRestantes(dataSprints));
+corridasRestantes.value = datasRestantes(dataCorridas);
+sprintsRestantes.value = datasRestantes(dataSprints);
 
 /**
  * Simula o resultado de uma única corrida (normal ou sprint) e atribui pontos.
@@ -286,7 +288,23 @@ async function simular() {
   <div class="container">
     <h1>Simulador de campeonato de Fórmula 1</h1>
     <p><a href="#" @click="importarDaAPI()">Importar pontuação</a></p>
-    <p><a href="#" @click="simular()" v-if="tabelaPilotos.length > 0">Simular</a></p>
+    <div class="config">
+      <div>
+        <label for="corridas-restantes">Corridas restantes</label>
+        <input type="number" id="corridas-restantes" v-model="corridasRestantes">
+      </div>
+      <div>
+        <label for="sprints-restantes">Sprints restantes</label>
+        <input type="number" id="sprints-restantes" v-model="sprintsRestantes">
+      </div>
+      <div>
+        <label for="num-simulacoes">Número de simulações</label>
+        <input type="number" id="num-simulações" v-model="numSimulacoes">
+      </div>
+    </div>
+    <p><a href="#" @click="simular()" v-if="tabelaPilotos.length > 0">
+      {{ isSimulating ? "Simulando..." : "Simular" }}
+    </a></p>
     <div v-if="tabelaPilotos.length > 0" class="tabela-piloto">
       <div class="grid-cards">
         <CardDriverSmall v-for="(p, i) in pilotosOrdenados" :key="p.nome" :position="i + 1" :name="p.nome"
@@ -323,27 +341,12 @@ a {
   color: var(--cor-links);
 }
 
-button {
-  margin: var(--margin-top-botton);
-  height: 3em;
-  background-color: var(--cor-botao);
-  color: white;
-  font-size: large;
-  transition: background 0.3s ease;
-  border: var(--borda);
-  border-radius: var(--borda-radius);
-  width: 100%;
-}
-
-button:hover {
-  background-color: var(--cor-botao-hover);
-}
-
 input {
   background-color: black;
   color: white;
   border-radius: var(--borda-radius);
   border: var(--borda);
+  border-color: var(--cor-links);
   padding: 5px;
   box-sizing: border-box;
   width: 100%;
@@ -392,46 +395,11 @@ hr {
   font-style: italic;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  overflow-x: auto;
-}
-
-table thead th {
-  border-bottom: 2px solid white;
-  padding-bottom: 10px;
-}
-
-table tbody td {
-  height: 1.8em;
-  vertical-align: middle;
-}
-
-.middle {
-  text-align: center;
-}
-
 .diff {
   margin-left: 5px;
   font-size: 0.7em;
   color: rgb(255, 72, 72);
   vertical-align: middle;
-}
-
-.probabilidade-cell {
-  opacity: 0;
-  transition: opacity 0.8s ease-in-out;
-}
-
-.probabilidade-cell.fade-in {
-  opacity: 1;
-}
-
-.team-logo {
-  height: 1.5em;
-  vertical-align: middle;
-  margin-right: 0.3em;
 }
 
 .grid-cards {
@@ -468,16 +436,5 @@ table tbody td {
     overflow-x: auto;
   }
 
-  .grid-pilotos {
-    justify-content: center;
-  }
-
-  table {
-    width: 700px;
-  }
-
-  .form-json textarea {
-    height: 10em;
-  }
 }
 </style>
