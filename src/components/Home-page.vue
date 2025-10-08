@@ -18,18 +18,13 @@ const isSimulating = ref(false);
 let chances = [];
 
 const pilotosOrdenados = computed(() => {
-  const copia = [...tabelaPilotos.value];
-  const ordenados = copia.sort((a, b) => b.pontuacao - a.pontuacao);
-  if (ordenados.length === 0) {
-    return [];
-  }
-  // Pega a pontuação do líder para calcular a diferença
+  const ordenados = [...tabelaPilotos.value].sort((a, b) => b.pontuacao - a.pontuacao);
+  if (ordenados.length === 0) return [];
   const pontuacaoLider = ordenados[0].pontuacao;
-  // Adiciona a propriedade 'diferenca' a cada piloto
-  return ordenados.map((p, i) => ({
-    ...p, // Mantém todas as propriedades originais do piloto
-    diferenca: i === 0 ? '' : p.pontuacao - pontuacaoLider
-  }));
+  ordenados.forEach((p, i) => {
+    p.diferenca = i === 0 ? '' : p.pontuacao - pontuacaoLider;
+  });
+  return ordenados;
 });
 
 const pontosF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
@@ -297,7 +292,7 @@ async function simular() {
         <CardDriverSmall v-for="(p, i) in pilotosOrdenados" :key="p.nome" :position="i + 1" :name="p.nome"
           :points="p.pontuacao" :probability="p.chance" :teamIcon="teamLogos[p.equipe]?.src"
           :countryCode="p.nacionalidade" :countryName="getCountryfromAlpha2Code(p.nacionalidade)"
-          :teamName="teamLogos[p.equipe]?.alt" />
+          :teamName="teamLogos[p.equipe]?.alt" v-model="p.pontuacao" />
       </div>
     </div>
   </div>
