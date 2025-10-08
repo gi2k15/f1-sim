@@ -303,7 +303,7 @@ async function simular() {
       </div>
     </div>
     <p><a href="#" @click="simular()" v-if="tabelaPilotos.length > 0">
-      {{ isSimulating ? "Simulando..." : "Simular" }}
+      {{ isSimulating ? "Simulando..." : `Simular ${numSimulacoes} campeonatos` }}
     </a></p>
     <div v-if="tabelaPilotos.length > 0" class="tabela-piloto">
       <div class="grid-cards">
@@ -346,7 +346,6 @@ input {
   color: white;
   border-radius: var(--borda-radius);
   border: var(--borda);
-  border-color: var(--cor-links);
   padding: 5px;
   box-sizing: border-box;
   width: 100%;
@@ -365,22 +364,6 @@ hr {
 .container {
   width: 900px;
   margin: 0 auto;
-}
-
-.grid-pilotos {
-  width: 100%;
-  flex-wrap: wrap;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  overflow-x: auto;
-}
-
-.label-inputs {
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .config {
@@ -430,11 +413,5 @@ hr {
   .config {
     flex-direction: column;
   }
-
-  .div-container {
-    width: 100%;
-    overflow-x: auto;
-  }
-
 }
 </style>
