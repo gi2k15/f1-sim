@@ -6,7 +6,7 @@
       <div class="name" :title="name">{{ name }}</div>
       <div class="meta">
         <input type="number" v-model="points">
-        <span class="points">{{ points }} pts</span>
+        <span class="points"> pts</span>
         <span class="prob" :title="formattedProbability">{{ formattedProbability }}</span>
       </div>
       <div class="prob-bar" aria-hidden="true">
