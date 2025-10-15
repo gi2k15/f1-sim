@@ -371,6 +371,16 @@ hr {
   justify-content: space-evenly;
   align-items: center;
   gap: 10px;
+  /* border: solid 1px white;
+  border-radius: 5px;
+  padding: 10px 5px; */
+}
+
+.config > div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .ultima-corrida {

@@ -17,8 +17,8 @@
     <div class="icons">
       <img v-if="teamIcon" class="team" :src="teamIcon" :title="teamName" />
       <span v-else class="team placeholder"></span>
-
-      <span v-if="countryCode" :class="['fi', 'fi-' + countryCode.toLowerCase()]" class="flag" :title="countryName"></span>
+      <span v-if="countryCode" :class="['fi', 'fi-' + countryCode.toLowerCase()]" class="flag"
+        :title="countryName"></span>
     </div>
   </article>
 </template>
@@ -65,7 +65,7 @@ const formattedProbability = computed(() => {
   background: linear-gradient(180deg, var(--card-bg), #0b0b0b);
   color: var(--text);
   border-radius: 10px;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.45);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
 }
 
 .pos {
@@ -103,7 +103,7 @@ const formattedProbability = computed(() => {
 
 .prob-bar {
   height: 6px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 6px;
   overflow: hidden;
   margin-top: 6px;
@@ -135,7 +135,7 @@ const formattedProbability = computed(() => {
 .team.placeholder {
   width: 40px;
   height: 40px;
-  background: linear-gradient(180deg,#222,#111);
+  background: linear-gradient(180deg, #222, #111);
   border-radius: 6px;
 }
 
@@ -146,8 +146,19 @@ const formattedProbability = computed(() => {
 }
 
 @media (max-width: 420px) {
-  .f1-card-small { width: 100%; height: 80px; }
-  .pos { font-size: 1.4rem; width: 42px; }
-  .team { width: 36px; height: 36px; }
+  .f1-card-small {
+    width: 100%;
+    height: 80px;
+  }
+
+  .pos {
+    font-size: 1.4rem;
+    width: 42px;
+  }
+
+  .team {
+    width: 36px;
+    height: 36px;
+  }
 }
 </style>
