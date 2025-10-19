@@ -37,7 +37,7 @@ const props = defineProps({
 })
 
 const points = defineModel({
-  type: [Number],
+  type: [Number, String],
   default: 0
 })
 
