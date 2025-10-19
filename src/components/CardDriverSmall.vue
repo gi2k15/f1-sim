@@ -7,8 +7,10 @@
       <div class="meta">
         <input type="number" v-model.lazy="points">
         <span class="points"> pts</span>
+        <div class="main" style="align-items: center;">
         <span class="prob" :title="formattedProbability">{{ formattedProbability }}</span>
         <span class="diff" title="Diferença para o líder / Diferença para o anterior">{{ diffLeader }}/{{ diffPrev }}</span>
+        </div>
       </div>
       <div class="prob-bar" aria-hidden="true">
         <div class="fill" :style="{ width: Math.max(0, Math.min(100, Number(probability || 0))) + '%' }"></div>
@@ -109,7 +111,6 @@ const formattedProbability = computed(() => {
 }
 
 .diff {
-  margin-left: 5px;
   font-size: 0.7rem;
   color: rgb(255, 72, 72);
   vertical-align: middle;

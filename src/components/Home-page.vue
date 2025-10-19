@@ -311,6 +311,7 @@ async function simular() {
         {{ isSimulating ? "Simulando..." : `Simular ${numSimulacoes} campeonatos` }}
       </a></p>
     <div v-if="tabelaPilotos.length > 0" class="tabela-piloto">
+      <p class="ultima-corrida">Última corrida: {{ localUltimaCorrida }} em {{ dataUltimaCorrida }}</p>
       <div class="grid-cards">
         <CardDriverSmall v-for="(p, i) in pilotosOrdenados" :key="p.nome" :position="i + 1" :name="p.nome"
           :points="p.pontuacao" :probability="p.chance" :teamIcon="teamLogos[p.equipe]?.src"
