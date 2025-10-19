@@ -10,7 +10,7 @@ countries.registerLocale(enLocale);
 countries.registerLocale(ptLocale);
 
 const tabelaPilotos = ref([]);
-const numSimulacoes = defineModel('numSimulacoes', { default: 10000, type: [Number]});
+const numSimulacoes = defineModel('numSimulacoes', { default: 10000, type: [Number] });
 const dataUltimaCorrida = ref('');
 const localUltimaCorrida = ref('');
 const simulacaoConcluida = ref(false);
@@ -24,7 +24,12 @@ const pilotosOrdenados = computed(() => {
   if (ordenados.length === 0) return [];
   const pontuacaoLider = ordenados[0].pontuacao;
   ordenados.forEach((p, i) => {
-    p.diferenca = i === 0 ? '' : p.pontuacao - pontuacaoLider;
+    const pontuacaoAtual = typeof p.pontuacao === 'number' ? p.pontuacao : 0;
+    const pontuacaoAnterior = i > 0 && typeof ordenados[i - 1].pontuacao === 'number'
+      ? ordenados[i - 1].pontuacao
+      : 0;
+    p.diferencaLider = i === 0 ? 0 : pontuacaoLider - pontuacaoAtual;
+    p.diferencaAnterior = i === 0 ? 0 : pontuacaoAnterior - pontuacaoAtual;
   });
   return ordenados;
 });
@@ -303,14 +308,15 @@ async function simular() {
       </div>
     </div>
     <p><a href="#" @click="simular()" v-if="tabelaPilotos.length > 0">
-      {{ isSimulating ? "Simulando..." : `Simular ${numSimulacoes} campeonatos` }}
-    </a></p>
+        {{ isSimulating ? "Simulando..." : `Simular ${numSimulacoes} campeonatos` }}
+      </a></p>
     <div v-if="tabelaPilotos.length > 0" class="tabela-piloto">
       <div class="grid-cards">
         <CardDriverSmall v-for="(p, i) in pilotosOrdenados" :key="p.nome" :position="i + 1" :name="p.nome"
           :points="p.pontuacao" :probability="p.chance" :teamIcon="teamLogos[p.equipe]?.src"
           :countryCode="p.nacionalidade" :countryName="getCountryfromAlpha2Code(p.nacionalidade)"
-          :teamName="teamLogos[p.equipe]?.alt" v-model="p.pontuacao" />
+          :teamName="teamLogos[p.equipe]?.alt" :diffLeader="p.diferencaLider" :diffPrev="p.diferencaAnterior"
+          v-model="p.pontuacao" />
       </div>
     </div>
   </div>
@@ -362,7 +368,7 @@ hr {
 }
 
 .container {
-  width: 900px;
+  width: 700px;
   margin: 0 auto;
 }
 
@@ -371,28 +377,23 @@ hr {
   justify-content: space-evenly;
   align-items: center;
   gap: 10px;
-  /* border: solid 1px white;
-  border-radius: 5px;
-  padding: 10px 5px; */
 }
 
-.config > div {
+.config>div {
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 5px;
+}
+
+.config input {
+  width: 6rem;
 }
 
 .ultima-corrida {
   text-align: center;
   font-style: italic;
-}
-
-.diff {
-  margin-left: 5px;
-  font-size: 0.7em;
-  color: rgb(255, 72, 72);
-  vertical-align: middle;
 }
 
 .grid-cards {
@@ -404,12 +405,12 @@ hr {
   margin: 0 auto;
 }
 
-.grid-cards > * {
+.grid-cards>* {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
 }
 
-.grid-cards > *:hover {
+.grid-cards>*:hover {
   transform: scale(1.05);
   box-shadow: 0 0 25px rgba(64, 255, 47, 0.4);
   filter: brightness(1.1);
