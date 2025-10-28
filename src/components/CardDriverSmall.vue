@@ -9,7 +9,7 @@
         <span class="points"> pts</span>
         <div class="main" style="align-items: center;">
         <span class="prob" :title="formattedProbability">{{ formattedProbability }}</span>
-        <span class="diff" title="Diferença para o líder / Diferença para o anterior">{{ diffLeader }}/{{ diffPrev }}</span>
+        <span class="diff" title="Diferença para o anterior / Diferença para o líder">{{ diffPrev }} <span style="color: greenyellow">{{ diffLeader }}</span></span>
         </div>
       </div>
       <div class="prob-bar" aria-hidden="true">
@@ -112,7 +112,7 @@ const formattedProbability = computed(() => {
 
 .diff {
   font-size: 0.7rem;
-  color: rgb(255, 72, 72);
+  color: rgb(255, 71, 71);
   vertical-align: middle;
 }
 
