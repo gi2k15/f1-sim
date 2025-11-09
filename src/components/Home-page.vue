@@ -323,7 +323,7 @@ async function simular() {
   </div>
 </template>
 
-<style>
+<style scoped>
 :root {
   --cor-links: rgb(64, 255, 47);
   --cor-botao: rgb(11, 131, 0);
@@ -331,12 +331,6 @@ async function simular() {
   --borda: 1px solid white;
   --borda-radius: 5px;
   --margin-top-botton: 1em 0;
-}
-
-body {
-  color: white;
-  background-color: black;
-  font-family: sans-serif;
 }
 
 h1,

@@ -35,6 +35,44 @@ body {
   font-family: sans-serif;
 }
 
+:root {
+  --cor-links: rgb(64, 255, 47);
+  --cor-botao: rgb(11, 131, 0);
+  --cor-botao-hover: rgb(7, 87, 0);
+  --borda: 1px solid white;
+  --borda-radius: 5px;
+  --margin-top-botton: 1em 0;
+}
+
+h1,
+p {
+  text-align: center;
+}
+
+a {
+  color: var(--cor-links);
+}
+
+input {
+  background-color: black;
+  color: white;
+  border-radius: var(--borda-radius);
+  border: var(--borda);
+  padding: 5px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+input:hover,
+input:focus {
+  outline: none;
+  border-color: var(--cor-links);
+}
+
+hr {
+  margin: var(--margin-top-botton);
+}
+
 .links {
   padding: 5px;
 }
