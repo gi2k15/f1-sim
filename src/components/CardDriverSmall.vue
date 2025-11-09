@@ -61,7 +61,6 @@ const formattedProbability = computed(() => {
   --muted: #9b9b9b;
 
   width: 300px;
-  height: 86px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -163,7 +162,6 @@ const formattedProbability = computed(() => {
 @media (max-width: 420px) {
   .f1-card-small {
     width: 100%;
-    height: 80px;
   }
 
   .pos {
