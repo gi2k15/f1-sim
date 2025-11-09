@@ -28,7 +28,13 @@ const currentView = computed(() => {
   </div>
 </template>
 
-<style scoped>
+<style>
+body {
+  color: white;
+  background-color: black;
+  font-family: sans-serif;
+}
+
 .links {
   padding: 5px;
 }
