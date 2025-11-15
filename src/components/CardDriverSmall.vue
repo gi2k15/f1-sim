@@ -7,7 +7,7 @@
       <div class="meta">
         <input type="number" v-model.lazy="points">
         <span class="points"> pts</span>
-        <div class="main" style="align-items: center;">
+        <div v-if="props.probability" class="main" style="align-items: center;">
           <span class="prob" :title="formattedProbability">{{ formattedProbability }}</span>
           <span v-show="diffLeader !== 0" class="diff" title="Diferença para o anterior / Diferença para o líder">{{
             diffPrev }} <span style="color: greenyellow">{{ diffLeader }}</span></span>
