@@ -67,10 +67,9 @@ const formattedProbability = computed(() => {
   gap: 10px;
   padding: 10px;
   box-sizing: border-box;
-  background: linear-gradient(180deg, var(--card-bg), #0b0b0b);
+  background: var(--card-bg);
   color: var(--text);
   border-radius: 10px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
 }
 
 .pos {
@@ -126,7 +125,7 @@ const formattedProbability = computed(() => {
 
 .prob-bar .fill {
   height: 100%;
-  background: linear-gradient(90deg, #2ecc71, #e1ad01);
+  background: linear-gradient(90deg, #2ecc71, #e1ad01, #e10600);
   transition: width 600ms ease;
 }
 

@@ -363,14 +363,12 @@ async function simular() {
 }
 
 .grid-cards>* {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
+  transition: all 0.4s cubic-bezier(0.09, 0.96, 0.86, 1);
 }
 
 .grid-cards>*:hover {
   transform: scale(1.05);
   box-shadow: 0 0 25px rgba(64, 255, 47, 0.4);
-  filter: brightness(1.1);
 }
 
 @media (max-width: 700px) {
