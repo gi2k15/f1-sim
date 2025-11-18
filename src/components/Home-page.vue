@@ -13,7 +13,7 @@ const tabelaPilotos = ref([]);
 const numSimulacoes = defineModel('numSimulacoes', { default: 10000, type: [Number] });
 const dataUltimaCorrida = ref('');
 const localUltimaCorrida = ref('');
-const simulacaoConcluida = ref(false);
+const isImporting = ref(false);
 const isSimulating = ref(false);
 const corridasRestantes = defineModel('corridasRestantes')
 const sprintsRestantes = defineModel('sprintsRestantes')
@@ -169,10 +169,16 @@ function getCountryfromAlpha2Code(code) {
  * `tabelaPilotos`, `dataUltimaCorrida` e `localUltimaCorrida`.
  */
 async function importarDaAPI() {
-  tabelaPilotos.value = await getClassificacao();
-  const ultimaCorrida = await getUltimaCorrida();
-  dataUltimaCorrida.value = ultimaCorrida.dataBR;
-  localUltimaCorrida.value = ultimaCorrida.nome.replace(' 2025', '');
+  try {
+    isImporting.value = true;
+    await new Promise(resolve => setTimeout(resolve, 0));
+    tabelaPilotos.value = await getClassificacao();
+    const ultimaCorrida = await getUltimaCorrida();
+    dataUltimaCorrida.value = ultimaCorrida.dataBR;
+    localUltimaCorrida.value = ultimaCorrida.nome.replace(' 2025', '');
+  } finally {
+    isImporting.value = false;
+  }
 }
 
 /**
@@ -260,7 +266,6 @@ function simularTemporada(pilotos, corridas, sprints) {
 async function simular() {
   if (isSimulating.value) return; // Impede múltiplos cliques
   isSimulating.value = true;
-  simulacaoConcluida.value = false; // Reseta para re-acionar a animação
   // Permite que a UI atualize para "Processando..." antes de iniciar o cálculo pesado.
   await new Promise(resolve => setTimeout(resolve, 0));
   try {
@@ -280,9 +285,6 @@ async function simular() {
       p.chance = chanceObj ? chanceObj.chance : "0.00";
     });
     // Adicionado para acionar a animação após um pequeno atraso
-    setTimeout(() => {
-      simulacaoConcluida.value = true;
-    }, 10);
   } finally {
     isSimulating.value = false; // Garante que o estado volte ao normal, mesmo se houver erro.
   }
@@ -292,7 +294,9 @@ async function simular() {
 <template>
   <div class="container">
     <h1>Simulador de campeonato de Fórmula 1</h1>
-    <p><a href="#" @click="importarDaAPI()">Importar pontuação</a></p>
+    <p><a href="#" @click="importarDaAPI()">
+        {{ isImporting ? "Importando..." : "Importar classificação" }}
+      </a></p>
     <div class="config">
       <div>
         <label for="corridas-restantes">Corridas restantes</label>
