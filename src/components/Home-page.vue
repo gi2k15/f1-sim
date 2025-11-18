@@ -304,7 +304,7 @@ async function simular() {
       </div>
       <div>
         <label for="num-simulacoes">Número de simulações</label>
-        <input type="number" id="num-simulações" v-model="numSimulacoes">
+        <input type="number" id="num-simulacoes" v-model="numSimulacoes">
       </div>
     </div>
     <p><a href="#" @click="simular()" v-if="tabelaPilotos.length > 0">
@@ -364,6 +364,7 @@ async function simular() {
 
 .grid-cards>* {
   transition: all 0.4s cubic-bezier(0.09, 0.96, 0.86, 1);
+  position: relative;
 }
 
 .grid-cards>*:hover {

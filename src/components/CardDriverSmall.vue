@@ -8,13 +8,15 @@
         <input type="number" v-model.lazy="points">
         <span class="points"> pts</span>
         <div v-if="props.probability" class="main" style="align-items: center;">
-          <span class="prob" :title="formattedProbability">{{ formattedProbability }}</span>
-          <span v-show="diffLeader !== 0" class="diff" title="Diferença para o anterior / Diferença para o líder">{{
-            diffPrev }} <span style="color: greenyellow">{{ diffLeader }}</span></span>
+          <span class="prob" title="Probabilidade de ser campeão">{{ formattedProbability }}</span>
+          <span v-show="diffLeader !== 0" class="diff" title="Diferença para o anterior">
+            {{ diffPrev }} <span style="color: greenyellow" title="Diferença para o líder">{{ diffLeader }}
+            </span></span>
         </div>
       </div>
-      <div class="prob-bar" aria-hidden="true">
-        <div class="fill" :style="{ width: Math.max(0, Math.min(100, Number(probability || 0))) + '%' }"></div>
+      <div class="prob-bar" aria-hidden="true" :title="formattedProbability">
+        <div class="fill" :title="formattedProbability"
+          :style="{ width: Math.max(0, Math.min(100, Number(probability || 0))) + '%' }"></div>
       </div>
     </div>
 
@@ -113,6 +115,12 @@ const formattedProbability = computed(() => {
   font-size: 0.7rem;
   color: rgb(255, 71, 71);
   vertical-align: middle;
+}
+
+.prob {
+  color: rgb(94 164 215);
+  font-weight: bold;
+  font-size: 1.2em;
 }
 
 .prob-bar {
