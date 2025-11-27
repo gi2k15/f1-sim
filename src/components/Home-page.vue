@@ -3,8 +3,10 @@ import { ref, computed } from 'vue';
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
 import ptLocale from "i18n-iso-countries/langs/pt.json";
-import "/node_modules/flag-icons/css/flag-icons.min.css";
+
 import CardDriverSmall from './CardDriverSmall.vue';
+
+import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 countries.registerLocale(enLocale);
 countries.registerLocale(ptLocale);
@@ -17,6 +19,7 @@ const isImporting = ref(false);
 const isSimulating = ref(false);
 const corridasRestantes = defineModel('corridasRestantes')
 const sprintsRestantes = defineModel('sprintsRestantes')
+const showTooltip = ref(false);
 let chances = [];
 
 const pilotosOrdenados = computed(() => {
@@ -315,7 +318,16 @@ async function simular() {
         {{ isSimulating ? "Simulando..." : `Simular ${numSimulacoes.toLocaleString('pt-BR')} campeonatos` }}
       </a></p>
     <div v-if="tabelaPilotos.length > 0" class="tabela-piloto">
-      <p class="ultima-corrida">Última corrida: {{ localUltimaCorrida }} em {{ dataUltimaCorrida }}</p>
+      <div class="ultima-corrida" v-if="localUltimaCorrida && dataUltimaCorrida">
+        Última corrida: {{ localUltimaCorrida }} em {{ dataUltimaCorrida }}
+        <div class="info-container">
+          <div class="info-icon" @click="showTooltip = !showTooltip">i</div>
+          <div class="info-tooltip" v-if="showTooltip" @click="showTooltip = !showTooltip">
+            A pontuação do campeonato pode levar até dois dias para ser atualizada pela API após a conclusão de um
+            grande prêmio.
+          </div>
+        </div>
+      </div>
       <div class="grid-cards">
         <CardDriverSmall v-for="(p, i) in pilotosOrdenados" :key="p.nome" :position="i + 1" :name="p.nome"
           :points="p.pontuacao" :probability="p.chance" :teamIcon="teamLogos[p.equipe]?.src"
@@ -355,6 +367,40 @@ async function simular() {
 .ultima-corrida {
   text-align: center;
   font-style: italic;
+  margin-bottom: 1em;
+}
+
+.info-container {
+  position: relative;
+  display: inline-block;
+  left: 1em;
+  font-style: normal;
+}
+
+.info-icon {
+  width: 1em;
+  height: 1em;
+  font-style: normal;
+  font-weight: bold;
+  color: #000;
+  background-color: var(--cor-links);
+  border-radius: 50%;
+  width: 1em;
+  height: 1em;
+  cursor: pointer;
+}
+
+.info-tooltip {
+  position: absolute;
+  background-color: #000;
+  border: 2px solid var(--cor-links);
+  padding: 10px;
+  bottom: 1.5em;
+  right: 0px;
+  width: 200px;
+  z-index: 1000;
+  text-align: left;
+  transform: translateX(10px);
 }
 
 .grid-cards {
