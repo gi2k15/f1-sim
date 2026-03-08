@@ -77,10 +77,6 @@ const teamLogos = {
     alt: "RB F1 Team",
     src: "/logos/2025racingbullslogo.avif"
   },
-  "Sauber F1 Team": {
-    alt: "Sauber F1 Team",
-    src: "/logos/2025kicksauberlogo.avif"
-  },
   "Aston Martin F1 Team": {
     alt: "Aston Martin F1 Team",
     src: "/logos/2025astonmartinlogo.avif"
@@ -92,6 +88,14 @@ const teamLogos = {
   "Alpine F1 Team": {
     alt: "Alpine F1 Team",
     src: "/logos/2025alpinelogo.avif"
+  },
+  "Cadillac Formula 1 Team": {
+    alt: "Cadillac Formula 1 Team",
+    src: ''
+  },
+  "Audi Revolut F1 Team": {
+    alt: "Audi Revolut F1 Team",
+    src: ''
   }
 }
 
