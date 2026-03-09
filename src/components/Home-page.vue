@@ -91,11 +91,11 @@ const teamLogos = {
   },
   "Cadillac Formula 1 Team": {
     alt: "Cadillac Formula 1 Team",
-    src: ''
+    src: '/logos/2026cadillaclogo.avif'
   },
   "Audi Revolut F1 Team": {
     alt: "Audi Revolut F1 Team",
-    src: ''
+    src: '/logos/2026audilogo.avif'
   }
 }
 
