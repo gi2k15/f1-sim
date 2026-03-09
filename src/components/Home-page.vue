@@ -129,7 +129,7 @@ async function getClassificacao() {
         equipe: p.team.teamName
       }
     });
-    return mappedData.slice(0, 20);
+    return mappedData;
   } catch (error) {
     console.error("Falha ao buscar dados da API:", error);
     alert("Não foi possível carregar a pontuação da API.");
