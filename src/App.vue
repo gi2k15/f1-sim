@@ -1,18 +1,19 @@
 <template>
   <v-app>
+    <v-app-bar title="F1 Championship Predictor">
+      
+    </v-app-bar>
     <v-main>
-      <HelloWorld />
+      <v-container>
+        <p>Teste</p>
+        <div class="text-center">
+          <v-btn text="Importar pontuação" class="p-center">
+          </v-btn>
+        </div>
+      </v-container>
     </v-main>
-    <v-btn
-      class="ma-2"
-      icon="mdi-theme-light-dark"
-      location="top right"
-      position="absolute"
-      @click="$vuetify.theme.cycle()"
-    />
   </v-app>
 </template>
 
-<script lang="ts" setup>
-  import HelloWorld from '@/components/HelloWorld.vue'
+<script setup>
 </script>
