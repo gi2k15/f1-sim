@@ -1,57 +1,75 @@
-## Simulador de Campeonato de F1
+# f1-sim
 
-Uma ferramenta web para simular o restante da temporada de Fórmula 1 e calcular as probabilidades de cada piloto se tornar campeão.
+Scaffolded with Vuetify CLI.
 
-## Principais Funcionalidades
+## ❗️ Documentation
 
-- **Busca de Dados Automática**: Com um clique, importe a classificação atual dos pilotos diretamente da API [f1api.dev](https://f1api.dev/).
-- **Cálculo Automático do Calendário**: O simulador determina automaticamente o número de corridas e sprints restantes na temporada de 2025.
-- **Simulação por Monte Carlo**: Executa milhares de simulações da temporada para calcular as probabilidades de título de cada piloto com base em um modelo aleatório.
-- **Simulação Configurável**: Permite ajustar manualmente a pontuação dos pilotos, o número de corridas e sprints restantes, e a quantidade de temporadas a serem simuladas.
-- **Tabela de Resultados Detalhada**: Apresenta os resultados em uma tabela ordenada, incluindo nacionalidade, equipe, pontuação, diferença para o líder e a probabilidade de título.
-- **Página de FAQ**: Uma seção dedicada para explicar a metodologia, as fontes de dados e as limitações do simulador.
-- **Design Responsivo**: Interface otimizada para uma experiência de uso agradável tanto em desktops quanto em dispositivos móveis.
+- Primary docs: https://vuetifyjs.com/
+- Getting started guide: https://vuetifyjs.com/en/getting-started/installation/
+- Community support: https://community.vuetifyjs.com/
+- Issue tracker: https://issues.vuetifyjs.com/
 
-## Como Usar
+## 🧱 Stack
 
-1.  Abra o simulador.
-2.  Clique em **"Importar dados online"** para carregar a classificação mais recente. A data e o local da última corrida também serão preenchidos.
-3.  (Opcional) Edite manualmente a pontuação de qualquer piloto ou ajuste os parâmetros da simulação (corridas, sprints, número de simulações) na seção de configuração.
-4.  Clique em **"Simular"** para iniciar o cálculo.
-5.  Analise as probabilidades de título de cada piloto na tabela de resultados.
+- Framework: Vue 3 + Vite
+- UI Library: Vuetify
+- Language: TypeScript
+- Package manager: pnpm
 
-## Tecnologias Utilizadas
+## 🧭 Start Here
 
-- **Vue.js 3** (Composition API)
-- **Vite** como ambiente de desenvolvimento
-- **CSS** puro para estilização
-- **i18n-iso-countries** para mapeamento de nacionalidades
-- **flag-icons** para exibir as bandeiras dos países
+- Main entry: `src/main.ts`
+- Main app component: `src/App.vue`
+- Main styles: `src/styles/`
+- Plugin setup: `src/plugins/`
 
-## Desenvolvimento Local
+## 📁 Project Structure
 
-### Requisitos
+- `src/main.ts` — application entry point
+- `src/App.vue` — root component
+- `src/components/` — reusable Vue components
+- `src/plugins/` — plugin registration and setup
+- `src/styles/` — global styles and theme settings
+- `public/` — static public files
 
-- Node.js
-- pnpm
+## ✨ Enabled Features
 
-### Instalação
+- Base setup
 
-Clone o repositório e instale as dependências:
+## 💿 Install
 
-```sh
+Use your selected package manager (pnpm) to install dependencies:
+
+```bash
 pnpm install
 ```
 
-## Execução
-```sh
+## 🚀 Quick Start
+
+```bash
+pnpm install
 pnpm dev
 ```
 
-## Estrutura do projeto
-- `src/App.vue`: componente principal
-- `src/components/`: componentes de página
-- `public/`: arquivos estáticos
+## 🏗️ Build
 
-## Licença
-MIT
+```bash
+pnpm build
+```
+
+## 🧪 Available Scripts
+
+- `pnpm dev`
+- `pnpm build`
+- `pnpm preview`
+- `pnpm build-only`
+- `pnpm type-check`
+
+## 💪 Support Vuetify Development
+
+This project uses Vuetify - an MIT licensed Open Source project. We are glad to welcome contributors and any support for ongoing development:
+
+- Contribute to Vuetify and ecosystem projects: https://github.com/vuetifyjs
+- Request enterprise support: https://support.vuetifyjs.com/
+- Sponsor on GitHub: https://github.com/sponsors/vuetifyjs
+- Support on Open Collective: https://opencollective.com/vuetify

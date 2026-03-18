@@ -1,35 +1,64 @@
 # Logs
+
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-.DS_Store
-dist
-dist-ssr
-coverage
+# Dependências
+
+node_modules/
+.pnpm-store/
+
+# Build / produção
+
+dist/
+dist-ssr/
 *.local
 
-/cypress/videos/
-/cypress/screenshots/
+# Arquivos de ambiente
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+.env
+.env.*
+!.env.example
+
+# IDEs e editores
+
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
+# Sistema operacional
+
+.DS_Store
+Thumbs.db
+
+# Cache
+
+.cache/
+.temp/
+.eslintcache
+
+# Testes
+
+coverage/
+
+# Arquivos do Vite
+
+vite.config.ts.timestamp-*
+
+# TypeScript
+
 *.tsbuildinfo
 
-# Igonora backups
+# Arquivos temporários
+
+*.tmp
 *.bak
 
-.vercel
