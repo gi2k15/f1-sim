@@ -14,7 +14,7 @@
               >Configurações</v-expansion-panel-title
             >
             <v-expansion-panel-text>
-              <v-row>
+              <v-row class="mt-4">
                 <v-col cols="12" md="4">
                   <v-number-input
                     v-model="raceCount"
@@ -23,7 +23,6 @@
                     label="Número de corridas"
                   />
                 </v-col>
-
                 <v-col cols="12" md="4">
                   <v-number-input
                     v-model="sprintCount"
@@ -32,7 +31,6 @@
                     label="Número de sprints"
                   />
                 </v-col>
-
                 <v-col cols="12" md="4">
                   <v-number-input
                     v-model="simulationCount"
@@ -47,19 +45,27 @@
         </v-expansion-panels>
       </v-col>
     </v-row>
-
     <v-row>
-      <v-col cols="12" class="text-center">
+      <v-col class="text-center">
         <v-btn color="green-darken-4" prepend-icon="mdi-import"
           >Importar pontuação</v-btn
         >
       </v-col>
     </v-row>
   </v-container>
+  <v-container>
+    <v-row>
+      <v-col v-for="n in 22" cols="12" lg="6">
+        <driver-card />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref } from "vue";
+
+import DriverCard from "./DriverCard.vue";
 
 const raceCount = ref(0);
 const sprintCount = ref(0);

@@ -9,6 +9,9 @@
     }
   ],
   "compilerOptions": {
+    "types": [
+      "vuetify"
+    ],
     "strict": true,
     "forceConsistentCasingInFileNames": true
   }

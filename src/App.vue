@@ -10,6 +10,6 @@
   </v-app>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import HomePage from "./components/Home-Page.vue";
 </script>
