@@ -1,11 +1,23 @@
 <template>
+  <v-progress-linear
+    v-if="isImporting"
+    class="mb-10"
+    color="green-darken-3"
+    location="top"
+    indeterminate
+  ></v-progress-linear>
   <v-container class="py-8">
-    <v-progress-linear
-      v-if="isImporting"
-      class="mb-10"
-      indeterminate
-      color="green-darken-3"
-    ></v-progress-linear>
+    <v-tooltip text="Erro ao importar os dados">
+      <template v-slot:activator="{ props }">
+        <v-icon
+          v-if="!isImported"
+          v-bind="props"
+          icon="mdi-alert"
+          color="error"
+          class="mb-1"
+        />
+      </template>
+    </v-tooltip>
     <v-row class="mb-6">
       <v-col cols="12">
         <v-expansion-panels>
