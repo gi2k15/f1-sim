@@ -85,26 +85,30 @@ const simulationCount = ref(10000);
 const driverInfo = ref([]);
 
 async function getDriversChampionship() {
+  const championshipDriversUrl =
+    "https://api.openf1.org/v1/championship_drivers?session_key=11248";
+  const driversUrl = "https://api.openf1.org/v1/drivers?session_key=latest";
   try {
     isImporting.value = true;
-    const [responseChampionship, responseDrivers] = await Promise.all([
-      fetch(
-        "https://api.openf1.org/v1/championship_drivers?session_key=latest",
-      ),
-      fetch("https://api.openf1.org/v1/drivers?session_key=latest"),
-    ]);
-    if (!responseChampionship.ok)
-      throw new Error(
-        `Error while loading championship: ${responseChampionship.statusText}`,
-      );
-    if (!responseDrivers.ok)
-      throw new Error(
-        `Error while loading drivers: ${responseDrivers.statusText}`,
-      );
-    const championship = await responseChampionship.json();
-    const drivers = await responseDrivers.json();
-    console.log(championship);
-    console.log(drivers);
+    const drivers = await fetch(driversUrl)
+      .then((imported) => imported.json())
+      .then((log) => console.log(log));
+    // const [responseChampionship, responseDrivers] = await Promise.all([
+    //   fetch(championshipDriversUrl),
+    //   fetch(driversUrl),
+    // ]);
+    // if (!responseChampionship.ok)
+    //   throw new Error(
+    //     `Error while loading championship: ${responseChampionship.statusText}`,
+    //   );
+    // if (!responseDrivers.ok)
+    //   throw new Error(
+    //     `Error while loading drivers: ${responseDrivers.statusText}`,
+    //   );
+    // const championship = await responseChampionship.json();
+    // const drivers = await responseDrivers.json();
+    // console.log(championship);
+    // console.log(drivers);
     const driverInfo = drivers.map((d) => {
       const driverChampionship = championship.find(
         (p) => p.driver_number === d.driver_number,
@@ -113,7 +117,7 @@ async function getDriversChampionship() {
         position: driverChampionship.position_current,
         name: d.full_name,
         team: d.team_name,
-        points: driverChampionship?.points_current,
+        points: driverChampionship.points_current,
       };
     });
     return driverInfo.sort((a, b) => a.position - b.position);
