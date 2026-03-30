@@ -78,49 +78,33 @@ import { ref, onMounted } from "vue";
 import DriverCard from "./DriverCard.vue";
 
 const isImporting = ref(false);
-const isImported = ref(false);
+const isImported = ref(true);
 const raceCount = ref(0);
 const sprintCount = ref(0);
 const simulationCount = ref(10000);
 const driverInfo = ref([]);
 
 async function getDriversChampionship() {
-  const championshipDriversUrl =
-    "https://api.openf1.org/v1/championship_drivers?session_key=11248";
-  const driversUrl = "https://api.openf1.org/v1/drivers?session_key=latest";
+  const driversUrl = "https://f1api.dev/api/current/drivers-championship";
   try {
     isImporting.value = true;
-    const drivers = await fetch(driversUrl)
-      .then((imported) => imported.json())
-      .then((log) => console.log(log));
-    // const [responseChampionship, responseDrivers] = await Promise.all([
-    //   fetch(championshipDriversUrl),
-    //   fetch(driversUrl),
-    // ]);
-    // if (!responseChampionship.ok)
-    //   throw new Error(
-    //     `Error while loading championship: ${responseChampionship.statusText}`,
-    //   );
-    // if (!responseDrivers.ok)
-    //   throw new Error(
-    //     `Error while loading drivers: ${responseDrivers.statusText}`,
-    //   );
-    // const championship = await responseChampionship.json();
-    // const drivers = await responseDrivers.json();
-    // console.log(championship);
-    // console.log(drivers);
-    const driverInfo = drivers.map((d) => {
-      const driverChampionship = championship.find(
-        (p) => p.driver_number === d.driver_number,
+    const driversResponse = await fetch(driversUrl);
+    if (!driversResponse.ok) {
+      throw new Error(
+        `Erro ao carregar os pilotos: ${driversResponse.statusText}`,
       );
+    }
+    const driversJSON = await driversResponse.json();
+    const championship = driversJSON.drivers_championship;
+    console.log(championship);
+    return championship.map((d) => {
       return {
-        position: driverChampionship.position_current,
-        name: d.full_name,
-        team: d.team_name,
-        points: driverChampionship.points_current,
+        position: d.position,
+        name: `${d.driver.name} ${d.driver.surname}`,
+        team: d.team.name,
+        points: d.points,
       };
     });
-    return driverInfo.sort((a, b) => a.position - b.position);
   } catch (error) {
     console.error(error);
     return false;
@@ -134,6 +118,7 @@ onMounted(async () => {
   if (data !== false) {
     driverInfo.value = data;
     isImported.value = true;
+    console.log(driverInfo.value);
   } else {
     isImported.value = false;
   }

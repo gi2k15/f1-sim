@@ -9,18 +9,10 @@
           <v-card-title> {{ name }} </v-card-title>
           <v-card-subtitle> {{ team }} </v-card-subtitle>
         </v-col>
-        <v-col cols="3">
-          <v-progress-circular
-            model-value="20"
-            class="h-100 w-100"
-            width="7"
-            color="orange"
-            reveal
-            rounded
-          >
-            20%
-          </v-progress-circular>
-        </v-col>
+      </v-row>
+      <v-row>
+        <v-progress-linear model-value="20" color="green-darken-3" rounded>
+        </v-progress-linear>
       </v-row>
       <v-row
         density="default"
