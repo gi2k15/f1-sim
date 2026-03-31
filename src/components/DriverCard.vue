@@ -1,35 +1,33 @@
 <template>
   <v-card>
-    <v-container>
+    <v-container class="pl-4 pr-4">
       <v-row>
-        <v-col class="d-flex flex-grow-0 flex-shrink-1">
-          <div class="text-display-medium text-red-darken-3">
-            {{ position }}
-          </div>
-        </v-col>
         <v-col>
-          <v-card-title> {{ name }} </v-card-title>
-          <v-card-subtitle> {{ team }} </v-card-subtitle>
+          <v-card-title class="pl-0"> name</v-card-title>
+          <v-card-subtitle class="pl-0"> team </v-card-subtitle>
+        </v-col>
+        <v-col class="d-flex flex-grow-0 flex-shrink-1">
+          <div class="text-display-medium text-red-darken-3 pt-2">22</div>
         </v-col>
       </v-row>
       <v-row>
         <v-progress-linear model-value="20" color="green-darken-3" rounded>
         </v-progress-linear>
       </v-row>
-      <v-row
-        density="default"
-        class="text-label-medium font-weight-small text-left text-md-center"
-      >
+      <v-row class="text-label-medium font-weight-small">
         <v-col>Pontos: {{ points }}</v-col>
-        <v-col>Diferença para o anterior: </v-col>
-        <v-col>Diferença para o líder: 100</v-col>
+        <v-col
+          >Diferença para o anterior: <br />
+          200
+        </v-col>
+        <v-col>Diferença para o líder: <br />100</v-col>
       </v-row>
     </v-container>
   </v-card>
 </template>
 
 <script setup>
-import { computed } from "vue";
+// import { computed } from "vue";
 
 const props = defineProps({
   position: { type: [Number, String] },
@@ -55,8 +53,8 @@ const props = defineProps({
 //   default: 0,
 // });
 
-const formattedProbability = computed(() => {
-  const p = Number(props.probability) || 0;
-  return `${Math.max(0, Math.min(100, p))}%`;
-});
+// const formattedProbability = computed(() => {
+//   const p = Number(props.probability) || 0;
+//   return `${Math.max(0, Math.min(100, p))}%`;
+// });
 </script>

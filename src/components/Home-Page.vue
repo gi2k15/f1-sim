@@ -31,7 +31,7 @@
                   <v-number-input
                     v-model="raceCount"
                     :min="0"
-                    control-variant="split"
+                    control-variant="stacked"
                     label="Número de corridas"
                   />
                 </v-col>
@@ -60,7 +60,7 @@
   </v-container>
   <v-container>
     <v-row>
-      <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6">
+      <v-col v-for="d in 20" :key="d" cols="12" sm="6">
         <driver-card
           :position="d.position"
           :name="d.name"
