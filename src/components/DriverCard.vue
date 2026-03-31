@@ -2,8 +2,10 @@
   <v-card>
     <v-container>
       <v-row>
-        <v-col cols="2" class="pt-1 ml-4">
-          <div class="text-display-large text-red-darken-3">{{ position }}</div>
+        <v-col class="d-flex flex-grow-0 flex-shrink-1">
+          <div class="text-display-medium text-red-darken-3">
+            {{ position }}
+          </div>
         </v-col>
         <v-col>
           <v-card-title> {{ name }} </v-card-title>
