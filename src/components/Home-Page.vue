@@ -60,7 +60,7 @@
   </v-container>
   <v-container>
     <v-row>
-      <v-col v-for="d in 20" :key="d" cols="12" sm="6">
+      <v-col v-for="d in driverInfo" :key="d" cols="12" sm="6" md="4">
         <driver-card
           :position="d.position"
           :name="d.name"
@@ -101,7 +101,7 @@ async function getDriversChampionship() {
       return {
         position: d.position,
         name: `${d.driver.name} ${d.driver.surname}`,
-        team: d.team.name,
+        team: d.team.teamName,
         points: d.points,
       };
     });

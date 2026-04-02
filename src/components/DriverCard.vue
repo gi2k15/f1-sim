@@ -1,13 +1,15 @@
 <template>
   <v-card>
     <v-container class="pl-4 pr-4">
-      <v-row>
-        <v-col>
-          <v-card-title class="pl-0"> name</v-card-title>
-          <v-card-subtitle class="pl-0"> team </v-card-subtitle>
+      <v-row class="flex-nowrap align-center">
+        <v-col class="flex-grow-1 min-w-0">
+          <v-card-title class="pl-0"> {{ name }}</v-card-title>
+          <v-card-subtitle class="pl-0"> {{ team }} </v-card-subtitle>
         </v-col>
-        <v-col class="d-flex flex-grow-0 flex-shrink-1">
-          <div class="text-display-medium text-red-darken-3 pt-2">22</div>
+        <v-col class="justify-end text-right">
+          <div class="text-display-medium text-red-darken-3 pt-2">
+            {{ position < 10 ? `0${position}` : position }}
+          </div>
         </v-col>
       </v-row>
       <v-row>
