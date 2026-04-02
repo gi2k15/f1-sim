@@ -58,6 +58,9 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-container class="d-flex justify-center">
+    <v-btn color="green-darken-3" size="x-large" block>Simular</v-btn>
+  </v-container>
   <v-container>
     <v-row>
       <v-col v-for="d in driverInfo" :key="d" cols="12" sm="6" md="4">
