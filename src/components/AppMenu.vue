@@ -1,5 +1,21 @@
+<script setup lang="ts">
+import { useTheme } from "vuetify";
+
+const theme = useTheme();
+</script>
+
 <template>
   <v-app-bar>
     <v-app-bar-title>Quem ganhará a Fórmula 1?</v-app-bar-title>
+    <template v-slot:append>
+      <v-btn
+        :icon="
+          theme.global.current.value.dark
+            ? 'mdi-weather-sunny'
+            : 'mdi-weather-night'
+        "
+        @click="theme.cycle()"
+      ></v-btn>
+    </template>
   </v-app-bar>
 </template>
