@@ -29,7 +29,7 @@
               <v-row class="mt-4">
                 <v-col cols="12" sm="6" md="4">
                   <v-number-input
-                    v-model="raceCount"
+                    v-model="racesRemaining"
                     :min="0"
                     control-variant="stacked"
                     label="Número de corridas"
@@ -88,22 +88,27 @@ const raceCount = ref(0);
 const sprintCount = ref(0);
 const simulationCount = ref(10000);
 const driverInfo = ref([]);
+const racesRemaining = ref(0);
 
 async function getDriversChampionship() {
   const driversUrl = "https://f1api.dev/api/current/drivers-championship";
+  const racesUrl = "https://f1api.dev/api/current/last/race";
   try {
     isImporting.value = true;
     const driversResponse = await fetch(driversUrl);
-    if (!driversResponse.ok) {
-      throw new Error(
-        `Erro ao carregar os pilotos: ${driversResponse.statusText}`,
-      );
+    const racesResponse = await fetch(racesUrl);
+    if (!driversResponse.ok || !racesResponse.ok) {
+      throw new Error(`Error: ${driversResponse.statusText}`);
     }
     const driversJSON = await driversResponse.json();
+    const racesJSON = await racesResponse.json();
     const championship = driversJSON.drivers_championship;
     console.log(championship);
+    const numRaces = racesJSON.total;
+    const currentRace = racesJSON.races.round;
+    const racesRemaining = numRaces - currentRace;
     const leaderPts = championship[0].points;
-    return championship.map((d, i, a) => {
+    const drivers = championship.map((d, i, a) => {
       const previousPts = i > 0 ? a[i - 1].points : d.points;
       const difLeader = leaderPts - d.points;
       const difPrevious = previousPts - d.points;
@@ -116,6 +121,7 @@ async function getDriversChampionship() {
         difPrevious: difPrevious,
       };
     });
+    return { drivers, racesRemaining };
   } catch (error) {
     console.error(error);
     return false;
@@ -127,7 +133,8 @@ async function getDriversChampionship() {
 onMounted(async () => {
   const data = await getDriversChampionship();
   if (data !== false) {
-    driverInfo.value = data;
+    driverInfo.value = data.drivers;
+    racesRemaining.value = data.racesRemaining;
     isImported.value = true;
     console.log(driverInfo.value);
   } else {
