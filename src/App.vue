@@ -1,9 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar>
-      <v-app-bar-title>Quem ganhará a Fórmula 1?</v-app-bar-title>
-    </v-app-bar>
-
+    <AppMenu />
     <v-main>
       <HomePage />
     </v-main>
@@ -11,5 +8,6 @@
 </template>
 
 <script setup>
+import AppMenu from "./components/AppMenu.vue";
 import HomePage from "./components/Home-Page.vue";
 </script>

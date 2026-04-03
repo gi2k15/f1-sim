@@ -20,7 +20,7 @@
         <v-chip density="compact" size="small" base-color="green-accent-3">
           Pontos: {{ points }}
         </v-chip>
-        <v-chip density="compact" size="small" base-color="yellow-accent-3">
+        <v-chip density="compact" size="small" base-color="yellow-accent-4">
           Dif. líder: 100
         </v-chip>
         <v-chip density="compact" size="small" base-color="red-accent-2">
@@ -32,34 +32,10 @@
 </template>
 
 <script setup>
-// import { computed } from "vue";
-
 const props = defineProps({
   position: { type: [Number, String] },
   name: { type: String },
   team: { type: String },
   points: { type: [Number, String] },
 });
-
-// const props = defineProps({
-//   position: { type: [Number, String], required: true },
-//   name: { type: String, required: true },
-//   diffLeader: { type: [Number, String], default: 0 },
-//   diffPrev: { type: [Number, String], default: 0 },
-//   probability: { type: [Number, String], default: 0 },
-//   teamIcon: { type: String, default: "" },
-//   teamName: { type: String, default: "" },
-//   countryCode: { type: String, default: "" },
-//   countryName: { type: String, default: "" },
-// });
-
-// const points = defineModel({
-//   type: [Number, String],
-//   default: 0,
-// });
-
-// const formattedProbability = computed(() => {
-//   const p = Number(props.probability) || 0;
-//   return `${Math.max(0, Math.min(100, p))}%`;
-// });
 </script>
