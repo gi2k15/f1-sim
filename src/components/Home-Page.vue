@@ -69,6 +69,8 @@
           :name="d.name"
           :team="d.team"
           :points="d.points"
+          :difLeader="d.difLeader"
+          :difPrevious="d.difPrevious"
         />
       </v-col>
     </v-row>
@@ -100,12 +102,18 @@ async function getDriversChampionship() {
     const driversJSON = await driversResponse.json();
     const championship = driversJSON.drivers_championship;
     console.log(championship);
-    return championship.map((d) => {
+    const leaderPts = championship[0].points;
+    return championship.map((d, i, a) => {
+      const previousPts = i > 0 ? a[i - 1].points : d.points;
+      const difLeader = leaderPts - d.points;
+      const difPrevious = previousPts - d.points;
       return {
         position: d.position,
         name: `${d.driver.name} ${d.driver.surname}`,
         team: d.team.teamName,
         points: d.points,
+        difLeader: difLeader,
+        difPrevious: difPrevious,
       };
     });
   } catch (error) {

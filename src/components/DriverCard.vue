@@ -17,14 +17,14 @@
         </v-progress-linear>
       </v-row>
       <v-row class="ga-2 justify-space-evenly">
-        <v-chip density="compact" size="small" base-color="green-accent-3">
+        <v-chip density="compact" size="small" base-color="green-darken-1">
           Pontos: {{ points }}
         </v-chip>
-        <v-chip density="compact" size="small" base-color="yellow-accent-4">
-          Dif. líder: 100
+        <v-chip density="compact" size="small" base-color="yellow-darken-3">
+          Dif. líder: {{ difLeader }}
         </v-chip>
-        <v-chip density="compact" size="small" base-color="red-accent-2">
-          Dif. anter.: 100
+        <v-chip density="compact" size="small" base-color="red-darken-1">
+          Dif. anter.: {{ difPrevious }}
         </v-chip>
       </v-row>
     </v-container>
@@ -37,5 +37,7 @@ const props = defineProps({
   name: { type: String },
   team: { type: String },
   points: { type: [Number, String] },
+  difLeader: { type: [Number, String] },
+  difPrevious: { type: [Number, String] },
 });
 </script>
