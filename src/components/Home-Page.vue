@@ -39,7 +39,7 @@
                   <v-number-input
                     v-model="sprintCount"
                     :min="0"
-                    control-variant="split"
+                    control-variant="stacked"
                     label="Número de sprints"
                   />
                 </v-col>
@@ -47,7 +47,7 @@
                   <v-number-input
                     v-model="simulationCount"
                     :min="1"
-                    control-variant="split"
+                    control-variant="stacked"
                     label="Número de simulações"
                   />
                 </v-col>
@@ -63,7 +63,7 @@
   </v-container>
   <v-container>
     <v-row>
-      <v-col v-for="d in driverInfo" :key="d" cols="12" sm="6" md="4">
+      <v-col v-for="d in driverInfo" :key="d" cols="12" sm="6" lg="4">
         <driver-card
           :position="d.position"
           :name="d.name"
