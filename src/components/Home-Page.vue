@@ -84,43 +84,42 @@ import DriverCard from "./DriverCard.vue";
 
 const isImporting = ref(false);
 const isImported = ref(true);
-const raceCount = ref(0);
 const sprintCount = ref(0);
 const simulationCount = ref(10000);
 const driverInfo = ref([]);
 const racesRemaining = ref(0);
+const sprintsRemaining = ref(0);
 
 async function getDriversChampionship() {
-  const driversUrl = "https://f1api.dev/api/current/drivers-championship";
-  const racesUrl = "https://f1api.dev/api/current/last/race";
+  const urls = {
+    drivers: "https://f1api.dev/api/current/drivers-championship",
+    races: "https://f1api.dev/api/current/last/race",
+    sprints: "https://f1api.dev/api/current/last/sprint/race",
+  };
   try {
     isImporting.value = true;
-    const driversResponse = await fetch(driversUrl);
-    const racesResponse = await fetch(racesUrl);
-    if (!driversResponse.ok || !racesResponse.ok) {
-      throw new Error(`Error: ${driversResponse.statusText}`);
+    const [driversResponse, racesResponse, sprintsResponse] = await Promise.all(
+      Object.values(urls).map((url) => fetch(url)),
+    );
+    if (!driversResponse.ok || !racesResponse.ok || !sprintsResponse.ok) {
+      throw new Error("Erro ao buscar dados");
     }
-    const driversJSON = await driversResponse.json();
-    const racesJSON = await racesResponse.json();
+    const [driversJSON, racesJSON, sprintsJSON] = await Promise.all([
+      driversResponse.json(),
+      racesResponse.json(),
+      sprintsResponse.json(),
+    ]);
     const championship = driversJSON.drivers_championship;
-    console.log(championship);
-    const numRaces = racesJSON.total;
-    const currentRace = racesJSON.races.round;
-    const racesRemaining = numRaces - currentRace;
     const leaderPts = championship[0].points;
-    const drivers = championship.map((d, i, a) => {
-      const previousPts = i > 0 ? a[i - 1].points : d.points;
-      const difLeader = leaderPts - d.points;
-      const difPrevious = previousPts - d.points;
-      return {
-        position: d.position,
-        name: `${d.driver.name} ${d.driver.surname}`,
-        team: d.team.teamName,
-        points: d.points,
-        difLeader: difLeader,
-        difPrevious: difPrevious,
-      };
-    });
+    const racesRemaining = racesJSON.total - racesJSON.races.round;
+    const drivers = championship.map((d, i, a) => ({
+      position: d.position,
+      name: `${d.driver.name} ${d.driver.surname}`,
+      team: d.team.teamName,
+      points: d.points,
+      difLeader: leaderPts - d.points,
+      difPrevious: (i > 0 ? a[i - 1].points : d.points) - d.points,
+    }));
     return { drivers, racesRemaining };
   } catch (error) {
     console.error(error);

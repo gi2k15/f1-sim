@@ -13,10 +13,14 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-progress-linear model-value="20" color="green-darken-3" rounded>
+        <v-progress-linear
+          :model-value="probability"
+          color="green-darken-3"
+          rounded
+        >
         </v-progress-linear>
       </v-row>
-      <v-row class="ga-2 justify-space-evenly">
+      <v-row class="ga-2 justify-space-evenly flex-nowrap">
         <v-chip density="compact" size="small" base-color="green-darken-1">
           Pontos: {{ points }}
         </v-chip>
@@ -37,6 +41,7 @@ const props = defineProps({
   name: { type: String },
   team: { type: String },
   points: { type: [Number, String] },
+  probability: { type: [Number, String] },
   difLeader: { type: [Number, String] },
   difPrevious: { type: [Number, String] },
 });
