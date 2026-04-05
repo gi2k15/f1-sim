@@ -14,10 +14,11 @@
       </v-row>
       <v-row>
         <v-progress-linear
-          :model-value="probability"
+          height="20"
+          :model-value="chance"
           color="green-darken-3"
           rounded
-        >
+          ><div class="text-label-medium">{{ chance }}%</div>
         </v-progress-linear>
       </v-row>
       <v-row class="ga-2 justify-space-evenly flex-nowrap">
@@ -41,7 +42,7 @@ const props = defineProps({
   name: { type: String },
   team: { type: String },
   points: { type: [Number, String] },
-  probability: { type: [Number, String] },
+  chance: { type: [Number, String] },
   difLeader: { type: [Number, String] },
   difPrevious: { type: [Number, String] },
 });

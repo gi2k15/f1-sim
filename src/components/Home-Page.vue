@@ -1,12 +1,11 @@
 <template>
   <v-progress-linear
-    v-if="isImporting"
-    class="mb-10"
+    v-show="isImporting"
     color="green-darken-3"
     location="top"
     indeterminate
   ></v-progress-linear>
-  <v-container class="py-8">
+  <v-container class="pt-8">
     <v-tooltip text="Erro ao importar os dados">
       <template v-slot:activator="{ props }">
         <v-icon
@@ -37,7 +36,7 @@
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
                   <v-number-input
-                    v-model="sprintCount"
+                    v-model="sprintsRemaining"
                     :min="0"
                     control-variant="stacked"
                     label="Número de sprints"
@@ -45,7 +44,7 @@
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
                   <v-number-input
-                    v-model="simulationCount"
+                    v-model="numSimulations"
                     :min="1"
                     control-variant="stacked"
                     label="Número de simulações"
@@ -59,7 +58,14 @@
     </v-row>
   </v-container>
   <v-container class="d-flex justify-center">
-    <v-btn color="green-darken-3" size="x-large" block>Simular</v-btn>
+    <v-btn
+      color="green-darken-3"
+      size="x-large"
+      block
+      :loading="isSimulating"
+      @click="simulate()"
+      >Simular</v-btn
+    >
   </v-container>
   <v-container>
     <v-row>
@@ -68,6 +74,7 @@
           :position="d.position"
           :name="d.name"
           :team="d.team"
+          :chance="d.chance"
           :points="d.points"
           :difLeader="d.difLeader"
           :difPrevious="d.difPrevious"
@@ -78,36 +85,104 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 
 import DriverCard from "./DriverCard.vue";
 
+const racePontuation = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+const sprintPontuation = [8, 7, 6, 5, 4, 3, 2, 1];
+
 const isImporting = ref(false);
 const isImported = ref(true);
-const sprintCount = ref(0);
-const simulationCount = ref(10000);
+const isSimulating = ref(false);
 const driverInfo = ref([]);
-const racesRemaining = ref(0);
-const sprintsRemaining = ref(0);
+const racesRemaining = ref(22);
+const numSimulations = ref(10000);
+const sprintsRemaining = ref(5);
+
+function simulateRace(drivers, type = "race") {
+  let order = [...drivers];
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  let result = {};
+  const points = type === "race" ? racePontuation : sprintPontuation;
+  order.forEach((d, i) => {
+    result[d.name] = (result[d.name] || 0) + (points[i] ?? 0);
+  });
+  return result;
+}
+
+function simulateSeason(drivers, numRaces, numSprints) {
+  let temp = drivers.map((d) => ({
+    name: d.name,
+    points: Number(d.points) || 0,
+  }));
+  for (let i = 0; i < numRaces; i++) {
+    const points = simulateRace(temp);
+    temp.forEach((d) => {
+      const value = Number(points[d.name]);
+      d.points += isNaN(value) ? 0 : value;
+    });
+  }
+  for (let i = 0; i < numSprints; i++) {
+    const points = simulateRace(temp, "sprint");
+    temp.forEach((d) => {
+      const value = Number(points[d.name]);
+      d.points += isNaN(value) ? 0 : value;
+    });
+  }
+  return temp;
+}
+
+let chances = [];
+async function simulate() {
+  if (isSimulating.value) return;
+  isSimulating.value = true;
+  await nextTick();
+  try {
+    let wins = {};
+    for (let i = 0; i < numSimulations.value; i++) {
+      const season = simulateSeason(
+        driverInfo.value,
+        racesRemaining.value,
+        sprintsRemaining.value,
+      );
+      const max = Math.max(...season.map((d) => d.points));
+      const champion = season.filter((d) => d.points === max);
+      champion.forEach((d) => (wins[d.name] = (wins[d.name] || 0) + 1));
+      chances = driverInfo.value.map((d) => ({
+        name: d.name,
+        chance: (((wins[d.name] || 0) / numSimulations.value) * 100).toFixed(2),
+      }));
+      driverInfo.value.forEach((d) => {
+        const chanceObj = chances.find((c) => c.name === d.name);
+        d.chance = chanceObj ? chanceObj.chance : "0.00";
+      });
+    }
+    console.log(driverInfo.value);
+  } finally {
+    isSimulating.value = false;
+  }
+}
 
 async function getDriversChampionship() {
   const urls = {
     drivers: "https://f1api.dev/api/current/drivers-championship",
     races: "https://f1api.dev/api/current/last/race",
-    sprints: "https://f1api.dev/api/current/last/sprint/race",
   };
   try {
     isImporting.value = true;
-    const [driversResponse, racesResponse, sprintsResponse] = await Promise.all(
+    const [driversResponse, racesResponse] = await Promise.all(
       Object.values(urls).map((url) => fetch(url)),
     );
-    if (!driversResponse.ok || !racesResponse.ok || !sprintsResponse.ok) {
+    if (!driversResponse.ok || !racesResponse.ok) {
       throw new Error("Erro ao buscar dados");
     }
-    const [driversJSON, racesJSON, sprintsJSON] = await Promise.all([
+    const [driversJSON, racesJSON] = await Promise.all([
       driversResponse.json(),
       racesResponse.json(),
-      sprintsResponse.json(),
     ]);
     const championship = driversJSON.drivers_championship;
     const leaderPts = championship[0].points;
@@ -135,9 +210,9 @@ onMounted(async () => {
     driverInfo.value = data.drivers;
     racesRemaining.value = data.racesRemaining;
     isImported.value = true;
-    console.log(driverInfo.value);
   } else {
     isImported.value = false;
   }
+  console.log("Importação", simulateRace(driverInfo.value));
 });
 </script>
