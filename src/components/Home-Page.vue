@@ -85,12 +85,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 import DriverCard from "./DriverCard.vue";
-
-const racePontuation = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
-const sprintPontuation = [8, 7, 6, 5, 4, 3, 2, 1];
 
 const isImporting = ref(false);
 const isImported = ref(true);
@@ -99,72 +96,25 @@ const driverInfo = ref([]);
 const racesRemaining = ref(22);
 const numSimulations = ref(10000);
 const sprintsRemaining = ref(5);
+const simulationWorker = new Worker(
+  new URL("../workers/simulation.worker.js", import.meta.url),
+  { type: "module" },
+);
 
-function simulateRace(drivers, type = "race") {
-  let order = [...drivers];
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  let result = {};
-  const points = type === "race" ? racePontuation : sprintPontuation;
-  order.forEach((d, i) => {
-    result[d.name] = (result[d.name] || 0) + (points[i] ?? 0);
-  });
-  return result;
-}
-
-function simulateSeason(drivers, numRaces, numSprints) {
-  let temp = drivers.map((d) => ({
-    name: d.name,
-    points: Number(d.points) || 0,
-  }));
-  for (let i = 0; i < numRaces; i++) {
-    const points = simulateRace(temp);
-    temp.forEach((d) => {
-      const value = Number(points[d.name]);
-      d.points += isNaN(value) ? 0 : value;
-    });
-  }
-  for (let i = 0; i < numSprints; i++) {
-    const points = simulateRace(temp, "sprint");
-    temp.forEach((d) => {
-      const value = Number(points[d.name]);
-      d.points += isNaN(value) ? 0 : value;
-    });
-  }
-  return temp;
-}
-
-let chances = [];
-async function simulate() {
+function simulate() {
   if (isSimulating.value) return;
+
   isSimulating.value = true;
-  await nextTick();
-  try {
-    let wins = {};
-    for (let i = 0; i < numSimulations.value; i++) {
-      const season = simulateSeason(
-        driverInfo.value,
-        racesRemaining.value,
-        sprintsRemaining.value,
-      );
-      const max = Math.max(...season.map((d) => d.points));
-      const champion = season.filter((d) => d.points === max);
-      champion.forEach((d) => (wins[d.name] = (wins[d.name] || 0) + 1));
-      chances = driverInfo.value.map((d) => ({
-        name: d.name,
-        chance: (((wins[d.name] || 0) / numSimulations.value) * 100).toFixed(2),
-      }));
-      driverInfo.value.forEach((d) => {
-        const chanceObj = chances.find((c) => c.name === d.name);
-        d.chance = chanceObj ? chanceObj.chance : "0.00";
-      });
-    }
-    console.log(driverInfo.value);
-  } finally {
-    isSimulating.value = false;
-  }
+
+  simulationWorker.postMessage({
+    driverInfo: driverInfo.value.map((driver) => ({
+      name: driver.name,
+      points: driver.points,
+    })),
+    racesRemaining: racesRemaining.value,
+    sprintsRemaining: sprintsRemaining.value,
+    numSimulations: numSimulations.value,
+  });
 }
 
 async function getDriversChampionship() {
@@ -205,6 +155,22 @@ async function getDriversChampionship() {
 }
 
 onMounted(async () => {
+  simulationWorker.onmessage = (event) => {
+    const { chances } = event.data;
+
+    driverInfo.value.forEach((driver) => {
+      const chanceObj = chances.find((chance) => chance.name === driver.name);
+      driver.chance = chanceObj ? chanceObj.chance : "0.00";
+    });
+
+    isSimulating.value = false;
+  };
+
+  simulationWorker.onerror = (error) => {
+    console.error(error);
+    isSimulating.value = false;
+  };
+
   const data = await getDriversChampionship();
   if (data !== false) {
     driverInfo.value = data.drivers;
@@ -213,6 +179,9 @@ onMounted(async () => {
   } else {
     isImported.value = false;
   }
-  console.log("Importação", simulateRace(driverInfo.value));
+});
+
+onBeforeUnmount(() => {
+  simulationWorker.terminate();
 });
 </script>
