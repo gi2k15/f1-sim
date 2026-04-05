@@ -68,20 +68,22 @@
     >
   </v-container>
   <v-container>
-    <v-row>
-      <v-col v-for="d in driverInfo" :key="d" cols="12" sm="6" lg="4">
-        <driver-card
-          :position="d.position"
-          :name="d.name"
-          :team="d.team"
-          :chance="d.chance"
-          :points="d.points"
-          :difLeader="d.difLeader"
-          :difPrevious="d.difPrevious"
-          :isLoading="isSimulating"
-        />
-      </v-col>
-    </v-row>
+    <v-skeleton-loader :index="i" :loading="isImporting" type="text">
+      <v-row>
+        <v-col v-for="d in driverInfo" :key="d" cols="12" sm="6" lg="4">
+          <driver-card
+            :position="d.position"
+            :name="d.name"
+            :team="d.team"
+            :chance="d.chance"
+            :points="d.points"
+            :difLeader="d.difLeader"
+            :difPrevious="d.difPrevious"
+            :isSimulating
+          />
+        </v-col>
+      </v-row>
+    </v-skeleton-loader>
   </v-container>
 </template>
 

@@ -14,13 +14,13 @@
       </v-row>
       <v-row>
         <v-progress-linear
-          v-if="chance || isLoading"
+          v-if="chance || isSimulating"
           height="20"
           color="green-darken-3"
           rounded
           :model-value="chance"
-          :indeterminate="isLoading"
-          ><div v-show="!isLoading" class="text-label-large">{{ chance }}</div>
+          :indeterminate="isSimulating"
+          ><div v-show="!isSimulating">{{ chance }}</div>
         </v-progress-linear>
       </v-row>
       <v-row class="ga-2 justify-space-evenly flex-nowrap">
@@ -47,6 +47,6 @@ const props = defineProps({
   chance: { type: [Number, String] },
   difLeader: { type: [Number, String] },
   difPrevious: { type: [Number, String] },
-  isLoading: { type: Boolean },
+  isSimulating: { type: Boolean },
 });
 </script>
