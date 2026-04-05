@@ -78,6 +78,7 @@
           :points="d.points"
           :difLeader="d.difLeader"
           :difPrevious="d.difPrevious"
+          :isLoading="isSimulating"
         />
       </v-col>
     </v-row>
