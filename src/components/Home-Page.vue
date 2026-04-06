@@ -67,23 +67,28 @@
       >Simular</v-btn
     >
   </v-container>
-  <v-container>
-    <v-skeleton-loader :index="i" :loading="isImporting" type="text">
-      <v-row>
-        <v-col v-for="d in driverInfo" :key="d" cols="12" sm="6" lg="4">
-          <driver-card
-            :position="d.position"
-            :name="d.name"
-            :team="d.team"
-            :chance="d.chance"
-            :points="d.points"
-            :difLeader="d.difLeader"
-            :difPrevious="d.difPrevious"
-            :isSimulating
-          />
-        </v-col>
-      </v-row>
-    </v-skeleton-loader>
+  <v-container v-if="isImporting">
+    <v-row>
+      <v-col v-for="n in 3" :key="n" cols="12" sm="6" lg="4">
+        <v-skeleton-loader type="sentences, chip@3" height="180" />
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container v-else>
+    <v-row>
+      <v-col v-for="d in driverInfo" :key="d" cols="12" sm="6" lg="4">
+        <driver-card
+          :position="d.position"
+          :name="d.name"
+          :team="d.team"
+          :chance="d.chance"
+          :points="d.points"
+          :difLeader="d.difLeader"
+          :difPrevious="d.difPrevious"
+          :isSimulating
+        />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -165,7 +170,6 @@ onMounted(async () => {
       const chanceObj = chances.find((chance) => chance.name === driver.name);
       driver.chance = chanceObj ? chanceObj.chance : "0.00";
     });
-
     isSimulating.value = false;
   };
 
