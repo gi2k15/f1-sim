@@ -14,13 +14,12 @@
       </v-row>
       <v-row>
         <v-progress-linear
-          v-if="chance || isSimulating"
           height="20"
           color="green-darken-3"
           rounded
           :model-value="chance"
           :indeterminate="isSimulating"
-          ><div v-show="!isSimulating">{{ chance }}%</div>
+          ><div v-show="chance && !isSimulating">{{ chance }}%</div>
         </v-progress-linear>
       </v-row>
       <v-row class="ga-2 justify-space-evenly flex-nowrap">
