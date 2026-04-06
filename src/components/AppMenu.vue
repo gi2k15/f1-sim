@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { useTheme } from "vuetify";
 
 const theme = useTheme();
@@ -6,6 +6,7 @@ const theme = useTheme();
 
 <template>
   <v-app-bar>
+    <v-app-bar-nav-icon> </v-app-bar-nav-icon>
     <v-app-bar-title>Quem ganhará a Fórmula 1?</v-app-bar-title>
     <template v-slot:append>
       <v-btn
