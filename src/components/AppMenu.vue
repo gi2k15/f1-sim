@@ -17,7 +17,8 @@ const theme = useTheme();
         "
         @click="theme.cycle()"
       ></v-btn>
-      <v-btn icon="mdi-home" to="/"></v-btn>
+      <v-btn icon="mdi-home" to="/" />
+      <v-btn icon="mdi-frequently-asked-questions" to="/faq" />
     </template>
   </v-app-bar>
 </template>
