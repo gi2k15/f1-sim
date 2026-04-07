@@ -1,13 +1,12 @@
 <template>
   <v-app>
-    <AppMenu />
+    <Menu />
     <v-main>
-      <HomePage />
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script setup>
-import AppMenu from "./components/AppMenu.vue";
-import HomePage from "./pages/Home.vue";
+import Menu from "@/components/AppMenu.vue";
 </script>
