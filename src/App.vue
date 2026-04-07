@@ -9,5 +9,5 @@
 
 <script setup>
 import AppMenu from "./components/AppMenu.vue";
-import HomePage from "./components/Home-Page.vue";
+import HomePage from "./pages/Home.vue";
 </script>

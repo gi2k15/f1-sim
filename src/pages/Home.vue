@@ -95,7 +95,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
-import DriverCard from "./DriverCard.vue";
+import DriverCard from "@/components/DriverCard.vue";
 
 const isImporting = ref(false);
 const isImported = ref(true);

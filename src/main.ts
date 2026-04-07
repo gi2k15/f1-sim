@@ -11,7 +11,7 @@ import { createApp } from "vue";
 import { registerPlugins } from "@/plugins";
 
 // Components
-import App from "./App.vue";
+import App from "@/App.vue";
 
 // Styles
 import "unfonts.css";
