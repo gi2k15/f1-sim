@@ -1,75 +1,77 @@
 # f1-sim
 
-Scaffolded with Vuetify CLI.
+Simulador que estima a chance de cada piloto ser campeao ao final da temporada atual da Formula 1.
 
-## ❗️ Documentation
+O projeto usa simulacoes de Monte Carlo para executar varias "temporadas alternativas" a partir da classificacao atual e, com isso, calcular a probabilidade de titulo de cada piloto.
 
-- Primary docs: https://vuetifyjs.com/
-- Getting started guide: https://vuetifyjs.com/en/getting-started/installation/
-- Community support: https://community.vuetifyjs.com/
-- Issue tracker: https://issues.vuetifyjs.com/
+## O que o projeto faz
 
-## 🧱 Stack
+Ao abrir a aplicacao, o app busca a classificacao atual de pilotos e usa esses dados para simular o restante do campeonato. O resultado aparece como uma chance percentual de titulo para cada piloto.
 
-- Framework: Vue 3 + Vite
-- UI Library: Vuetify
-- Language: TypeScript
-- Package manager: pnpm
+Essa estimativa e baseada no estado atual da temporada e no numero de corridas, sprints e simulacoes configurado pelo usuario.
 
-## 🧭 Start Here
+## De onde vem os dados
 
-- Main entry: `src/main.ts`
-- Main app component: `src/App.vue`
-- Main styles: `src/styles/`
-- Plugin setup: `src/plugins/`
+Os dados sao buscados da API publica `f1api.dev`:
 
-## 📁 Project Structure
+- classificacao atual de pilotos, incluindo pontos, posicao e equipe
+- ultimo GP do ano, usado para calcular quantas etapas ainda faltam
 
-- `src/main.ts` — application entry point
-- `src/App.vue` — root component
-- `src/components/` — reusable Vue components
-- `src/plugins/` — plugin registration and setup
-- `src/styles/` — global styles and theme settings
-- `public/` — static public files
+Se a importacao falhar, a interface exibe um indicativo de erro no topo da pagina principal.
 
-## ✨ Enabled Features
+## O que significam as configuracoes
 
-- Base setup
+- `Numero de corridas`: quantas corridas restantes serao simuladas
+- `Numero de sprints`: quantas sprints restantes serao simuladas
+- `Numero de simulacoes`: quantas temporadas alternativas serao executadas
 
-## 💿 Install
+Quanto maior o numero de simulacoes, mais estavel tende a ser o resultado. Em compensacao, o processamento pode levar mais tempo.
 
-Use your selected package manager (pnpm) to install dependencies:
+## Como interpretar a chance (%)
+
+A chance representa a fracao de simulacoes em que um piloto terminou como campeao, multiplicada por 100.
+
+Exemplo: `23,50%` significa que, dentro do modelo atual, o piloto foi campeao em aproximadamente `23,5%` das temporadas simuladas.
+
+## Limitacoes
+
+Esta e uma estimativa simples e voltada para visualizacao. O modelo nao considera fatores como:
+
+- ritmo de corrida
+- confiabilidade
+- penalidades
+- abandonos
+- posicao de grid
+- caracteristicas de cada pista
+
+Use o resultado como uma referencia divertida, nao como previsao oficial.
+
+## Stack
+
+- Vue 3
+- Vite
+- Vuetify
+- TypeScript
+- pnpm
+
+## Como rodar
+
+Instale as dependencias:
 
 ```bash
 pnpm install
 ```
 
-## 🚀 Quick Start
+Inicie o ambiente de desenvolvimento:
 
 ```bash
-pnpm install
 pnpm dev
 ```
 
-## 🏗️ Build
+## Scripts
 
-```bash
-pnpm build
-```
-
-## 🧪 Available Scripts
-
-- `pnpm dev`
-- `pnpm build`
-- `pnpm preview`
-- `pnpm build-only`
-- `pnpm type-check`
-
-## 💪 Support Vuetify Development
-
-This project uses Vuetify - an MIT licensed Open Source project. We are glad to welcome contributors and any support for ongoing development:
-
-- Contribute to Vuetify and ecosystem projects: https://github.com/vuetifyjs
-- Request enterprise support: https://support.vuetifyjs.com/
-- Sponsor on GitHub: https://github.com/sponsors/vuetifyjs
-- Support on Open Collective: https://opencollective.com/vuetify
+- `pnpm dev`: inicia o servidor de desenvolvimento
+- `pnpm build`: executa a checagem de tipos e gera a build de producao
+- `pnpm build-only`: gera a build sem rodar `type-check`
+- `pnpm preview`: abre a build localmente para validacao
+- `pnpm type-check`: executa a checagem de tipos com `vue-tsc`

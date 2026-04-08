@@ -1,9 +1,3 @@
-<script setup>
-import { useTheme } from "vuetify";
-
-const theme = useTheme();
-</script>
-
 <template>
   <v-app-bar>
     <v-app-bar-nav-icon> </v-app-bar-nav-icon>
@@ -17,8 +11,12 @@ const theme = useTheme();
         "
         @click="theme.cycle()"
       ></v-btn>
-      <v-btn icon="mdi-home" to="/" />
-      <v-btn icon="mdi-frequently-asked-questions" to="/faq" />
     </template>
   </v-app-bar>
 </template>
+
+<script setup>
+import { useTheme } from "vuetify";
+
+const theme = useTheme();
+</script>
