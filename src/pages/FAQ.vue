@@ -43,7 +43,10 @@
                   O último GP do ano, para calcular quantas etapas faltam.
                 </li>
               </ul>
-              Esses dados vêm da API pública <code>f1api.dev</code>.
+              Esses dados vêm da API pública <code>f1api.dev</code>. Ela pode
+              levar alguns dias para atualizar as informações, então tenha isso
+              em mente quando for fazer simulações em dias de corrida ou nos
+              dias seguintes.
             </v-expansion-panel-text>
           </v-expansion-panel>
 
