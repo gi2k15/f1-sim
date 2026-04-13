@@ -6,17 +6,13 @@
     indeterminate
   ></v-progress-linear>
   <v-container class="pt-8">
-    <v-tooltip text="Erro ao importar os dados">
-      <template v-slot:activator="{ props }">
-        <v-icon
-          v-if="!isImported"
-          v-bind="props"
-          icon="mdi-alert"
-          color="error"
-          class="mb-1"
-        />
-      </template>
-    </v-tooltip>
+    <v-icon
+      v-if="!isImported"
+      v-tooltip="'Erro ao importar os dados'"
+      icon="mdi-alert"
+      color="error"
+      class="mb-1"
+    />
     <v-row class="mb-6">
       <v-col cols="12">
         <v-expansion-panels>
@@ -69,7 +65,7 @@
   </v-container>
   <v-container v-if="isImporting">
     <v-row>
-      <v-col v-for="n in 3" :key="n" cols="12" sm="6" lg="4">
+      <v-col v-for="n in 2" :key="n" cols="12" sm="6" lg="4">
         <v-skeleton-loader type="sentences, chip@3" height="180" />
       </v-col>
     </v-row>
@@ -133,9 +129,8 @@ async function getDriversChampionship() {
   };
   try {
     isImporting.value = true;
-    const [standingsResponse, seasonResponse, lastRaceResponse] = await Promise.all(
-      Object.values(urls).map((url) => fetch(url)),
-    );
+    const [standingsResponse, seasonResponse, lastRaceResponse] =
+      await Promise.all(Object.values(urls).map((url) => fetch(url)));
     if (!standingsResponse.ok || !seasonResponse.ok || !lastRaceResponse.ok) {
       throw new Error("Erro ao buscar dados");
     }
@@ -149,13 +144,17 @@ async function getDriversChampionship() {
       throw new Error("Dados do campeonato de pilotos indisponíveis");
     }
     const leaderPts = Number(championship[0]?.points ?? 0);
-    const seasonTotalRaces = Number(seasonJSON?.total ?? seasonJSON?.races?.length ?? 0);
+    const seasonTotalRaces = Number(
+      seasonJSON?.total ?? seasonJSON?.races?.length ?? 0,
+    );
     const lastCompletedRound = Number(lastRaceJSON?.round ?? 0);
     const remainingRaces = Math.max(0, seasonTotalRaces - lastCompletedRound);
 
     const drivers = championship.map((d, i, a) => {
       const points = Number(d?.points ?? 0);
-      const previousPoints = Number(i > 0 ? a[i - 1]?.points : d?.points ?? 0);
+      const previousPoints = Number(
+        i > 0 ? a[i - 1]?.points : (d?.points ?? 0),
+      );
       return {
         position: d.position,
         name: `${d?.driver?.name ?? ""} ${d?.driver?.surname ?? ""}`.trim(),
