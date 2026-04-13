@@ -76,7 +76,7 @@
   </v-container>
   <v-container v-else>
     <v-row>
-      <v-col v-for="d in driverInfo" :key="d" cols="12" sm="6" lg="4">
+      <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6" lg="4">
         <driver-card
           :position="d.position"
           :name="d.name"
@@ -85,7 +85,7 @@
           :points="d.points"
           :difLeader="d.difLeader"
           :difPrevious="d.difPrevious"
-          :isSimulating
+          :isSimulating="isSimulating"
         />
       </v-col>
     </v-row>
