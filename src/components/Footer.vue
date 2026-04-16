@@ -5,13 +5,13 @@
   >
     <v-btn
       icon="mdi-github"
-      v-tooltip="'GitHub'"
+      v-tooltip:top="'GitHub'"
       href="https://github.com/gi2k15/f1-sim"
       target="_blank"
     />
     <v-btn
       icon="mdi-license"
-      v-tooltip="'Licença'"
+      v-tooltip:top="'Licença'"
       href="https://www.gnu.org/licenses/lgpl-3.0.html"
       target="_blank"
     >
