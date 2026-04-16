@@ -1,11 +1,21 @@
 <template>
-  <v-footer class="d-flex align-center justify-center">
+  <v-footer
+    :height="60"
+    class="footer-bar d-flex justify-center align-center pa-0"
+  >
     <v-btn
       icon="mdi-github"
       v-tooltip="'GitHub'"
       href="https://github.com/gi2k15/f1-sim"
       target="_blank"
-      max-height="50px"
     />
   </v-footer>
 </template>
+
+<style scoped>
+.footer-bar {
+  height: 60px !important;
+  min-height: 60px !important;
+  max-height: 60px !important;
+}
+</style>
