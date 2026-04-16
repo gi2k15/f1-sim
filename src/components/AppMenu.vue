@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar>
+  <v-app-bar scroll-behavior="collapse">
     <v-app-bar-nav-icon @click="$emit('openDrawer')"> </v-app-bar-nav-icon>
     <v-app-bar-title>Quem leva a F1?</v-app-bar-title>
     <template v-slot:append>

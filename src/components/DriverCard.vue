@@ -22,14 +22,14 @@
           ><div v-show="chance && !isSimulating">{{ chance }}%</div>
         </v-progress-linear>
       </v-row>
-      <v-row class="ga-2 justify-space-evenly flex-nowrap">
-        <v-chip density="compact" size="small" base-color="green-darken-1" variant="outlined">
+      <v-row class="ga-2 justify-space-between flex-nowrap">
+        <v-chip size="small" base-color="green-darken-1" variant="tonal">
           Pontos: {{ points }}
         </v-chip>
-        <v-chip density="compact" size="small" base-color="yellow-darken-3" variant="outlined">
+        <v-chip size="small" base-color="yellow-darken-3" variant="tonal">
           Dif. líder: {{ difLeader }}
         </v-chip>
-        <v-chip density="compact" size="small" base-color="purple-lighten-2" variant="outlined">
+        <v-chip size="small" base-color="purple-lighten-2" variant="tonal">
           Dif. anter.: {{ difPrevious }}
         </v-chip>
       </v-row>
