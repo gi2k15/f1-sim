@@ -3,7 +3,9 @@
     <v-container class="pl-4 pr-4">
       <v-row class="flex-nowrap align-center">
         <v-col class="text-truncate">
-          <v-card-title class="pl-0"> {{ name }}</v-card-title>
+          <v-card-title class="pl-0" :style="`color: ${equipColors[teamId]}`">
+            <div>{{ name }}</div></v-card-title
+          >
           <v-card-subtitle class="pl-0 mt-n2"> {{ team }} </v-card-subtitle>
         </v-col>
         <v-col class="justify-end text-right" cols="auto">
@@ -42,10 +44,25 @@ const props = defineProps({
   position: { type: [Number, String] },
   name: { type: String },
   team: { type: String },
+  teamId: { type: String },
   points: { type: [Number, String] },
   chance: { type: [Number, String] },
   difLeader: { type: [Number, String] },
   difPrevious: { type: [Number, String] },
   isSimulating: { type: Boolean },
 });
+
+const equipColors = {
+  mercedes: "#27F4D2",
+  ferrari: "#E8002D",
+  mclaren: "#FF8000",
+  haas: "#DEE1E2",
+  alpine: "#00A1E8",
+  red_bull: "#3671C6",
+  rb: "#6692FF",
+  audi: "#FF2D00",
+  williams: "#1868DB",
+  cadillac: "#AAAAAD",
+  aston_martin: "#229971",
+};
 </script>
