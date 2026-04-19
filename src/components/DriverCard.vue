@@ -6,7 +6,9 @@
           <v-card-title class="pl-0" :style="`color: ${equipColors[teamId]}`">
             <div>{{ name }}</div></v-card-title
           >
-          <v-card-subtitle class="pl-0 mt-n2"> {{ team }} </v-card-subtitle>
+          <v-card-subtitle class="pl-0 mt-n2 text-grey-lighten-1">
+            {{ team }}
+          </v-card-subtitle>
         </v-col>
         <v-col class="justify-end text-right" cols="auto">
           <div class="text-display-medium text-red-darken-3 pt-2">
