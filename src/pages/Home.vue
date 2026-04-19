@@ -5,7 +5,7 @@
     location="top"
     indeterminate
   ></v-progress-linear>
-  <v-container class="pt-8">
+  <v-container class="pt-8 home-content-width">
     <v-icon
       v-if="!isImported"
       v-tooltip="'Erro ao importar os dados'"
@@ -53,7 +53,7 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-container class="d-flex justify-center">
+  <v-container class="d-flex justify-center home-content-width">
     <v-btn
       color="green-darken-3"
       size="x-large"
@@ -63,16 +63,16 @@
       >Simular</v-btn
     >
   </v-container>
-  <v-container v-if="isImporting">
+  <v-container v-if="isImporting" class="home-content-width">
     <v-row>
       <v-col v-for="n in 2" :key="n" cols="12" sm="6" lg="4">
         <v-skeleton-loader type="sentences, chip@3" height="180" />
       </v-col>
     </v-row>
   </v-container>
-  <v-container v-else>
+  <v-container v-else class="home-content-width">
     <v-row>
-      <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6" lg="4">
+      <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6">
         <driver-card
           :position="d.position"
           :name="d.name"
@@ -209,3 +209,9 @@ onBeforeUnmount(() => {
   simulationWorker.terminate();
 });
 </script>
+
+<style scoped>
+.home-content-width {
+  max-width: 960px;
+}
+</style>
