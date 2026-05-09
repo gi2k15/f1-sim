@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pt-8" max-width="1000">
+  <v-container class="pt-8" max-width="960">
     <v-row class="mb-6">
       <v-col cols="12">
         <h1 class="text-h4 font-weight-bold mb-2">FAQ</h1>
@@ -102,5 +102,3 @@
     </v-row>
   </v-container>
 </template>
-
-<script setup lang="ts"></script>

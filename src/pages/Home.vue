@@ -5,7 +5,7 @@
     location="top"
     indeterminate
   ></v-progress-linear>
-  <v-container class="pt-8">
+  <v-container class="pt-8 home-content-width">
     <v-icon
       v-if="!isImported"
       v-tooltip="'Erro ao importar os dados'"
@@ -53,7 +53,7 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-container class="d-flex justify-center">
+  <v-container class="d-flex justify-center home-content-width">
     <v-btn
       color="green-darken-3"
       size="x-large"
@@ -63,20 +63,21 @@
       >Simular</v-btn
     >
   </v-container>
-  <v-container v-if="isImporting">
+  <v-container v-if="isImporting" class="home-content-width">
     <v-row>
       <v-col v-for="n in 2" :key="n" cols="12" sm="6" lg="4">
         <v-skeleton-loader type="sentences, chip@3" height="180" />
       </v-col>
     </v-row>
   </v-container>
-  <v-container v-else>
+  <v-container v-else class="home-content-width">
     <v-row>
-      <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6" lg="4">
+      <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6">
         <driver-card
           :position="d.position"
           :name="d.name"
           :team="d.team"
+          :teamId="d.teamId"
           :chance="d.chance"
           :points="d.points"
           :difLeader="d.difLeader"
@@ -122,7 +123,7 @@ function simulate() {
 }
 
 async function getDriversChampionship() {
-  const urls = {
+  const URLS = {
     standings: "https://f1api.dev/api/current/drivers-championship",
     season: "https://f1api.dev/api/current",
     lastRace: "https://f1api.dev/api/current/last",
@@ -130,7 +131,7 @@ async function getDriversChampionship() {
   try {
     isImporting.value = true;
     const [standingsResponse, seasonResponse, lastRaceResponse] =
-      await Promise.all(Object.values(urls).map((url) => fetch(url)));
+      await Promise.all(Object.values(URLS).map((url) => fetch(url)));
     if (!standingsResponse.ok || !seasonResponse.ok || !lastRaceResponse.ok) {
       throw new Error("Erro ao buscar dados");
     }
@@ -150,6 +151,9 @@ async function getDriversChampionship() {
     const lastCompletedRound = Number(lastRaceJSON?.round ?? 0);
     const remainingRaces = Math.max(0, seasonTotalRaces - lastCompletedRound);
 
+    //DEBUG
+    console.log(championship);
+
     const drivers = championship.map((d, i, a) => {
       const points = Number(d?.points ?? 0);
       const previousPoints = Number(
@@ -159,6 +163,7 @@ async function getDriversChampionship() {
         position: d.position,
         name: `${d?.driver?.name ?? ""} ${d?.driver?.surname ?? ""}`.trim(),
         team: d?.team?.teamName ?? "",
+        teamId: d?.team?.teamId ?? "",
         points,
         difLeader: leaderPts - points,
         difPrevious: previousPoints - points,
@@ -204,3 +209,9 @@ onBeforeUnmount(() => {
   simulationWorker.terminate();
 });
 </script>
+
+<style scoped>
+.home-content-width {
+  max-width: 960px;
+}
+</style>
