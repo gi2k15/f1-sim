@@ -65,7 +65,7 @@
   </v-container>
   <v-container v-if="isImporting" class="home-content-width">
     <v-row>
-      <v-col v-for="n in 2" :key="n" cols="12" sm="6" lg="4">
+      <v-col v-for="n in 2" :key="n" cols="12" sm="6">
         <v-skeleton-loader type="sentences, chip@3" height="180" />
       </v-col>
     </v-row>
