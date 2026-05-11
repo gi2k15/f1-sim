@@ -2,7 +2,7 @@
   <v-container class="mt-10 fill-height">
     <v-row class="flex-column">
       <v-col
-        ><div class="text-display-large text-center">
+        ><div class="text-display-medium text-lg-display-large text-center">
           ☕ OBRIGADO! ☕
         </div></v-col
       >
