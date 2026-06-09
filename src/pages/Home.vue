@@ -71,6 +71,9 @@
     </v-row>
   </v-container>
   <v-container v-else class="home-content-width">
+    <div class="text-center font-italic mb-6">
+      Última corrida: {{ raceName }}
+    </div>
     <v-row>
       <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6">
         <driver-card
@@ -101,6 +104,7 @@ const driverInfo = ref([]);
 const racesRemaining = ref(22);
 const numSimulations = ref(10000);
 const sprintsRemaining = ref(5);
+const raceName = ref("");
 const simulationWorker = new Worker(
   new URL("../workers/simulation.worker.js", import.meta.url),
   { type: "module" },
@@ -150,9 +154,7 @@ async function getDriversChampionship() {
     );
     const lastCompletedRound = Number(lastRaceJSON?.round ?? 0);
     const remainingRaces = Math.max(0, seasonTotalRaces - lastCompletedRound);
-
-    //DEBUG
-    console.log(championship);
+    const raceName = lastRaceJSON?.race[0]?.raceName ?? "sem nome";
 
     const drivers = championship.map((d, i, a) => {
       const points = Number(d?.points ?? 0);
@@ -170,7 +172,7 @@ async function getDriversChampionship() {
       };
     });
 
-    return { drivers, racesRemaining: remainingRaces };
+    return { drivers, remainingRaces, raceName };
   } catch (error) {
     console.error(error);
     return false;
@@ -199,6 +201,7 @@ onMounted(async () => {
   if (data !== false) {
     driverInfo.value = data.drivers;
     racesRemaining.value = data.racesRemaining;
+    raceName.value = data.raceName;
     isImported.value = true;
   } else {
     isImported.value = false;
