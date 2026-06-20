@@ -27,7 +27,7 @@
                     v-model="racesRemaining"
                     :min="0"
                     control-variant="stacked"
-                    label="Número de corridas"
+                    label="Corridas restantes"
                   />
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
@@ -35,7 +35,7 @@
                     v-model="sprintsRemaining"
                     :min="0"
                     control-variant="stacked"
-                    label="Número de sprints"
+                    label="Sprints restantes"
                   />
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
