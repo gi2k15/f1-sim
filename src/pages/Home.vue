@@ -155,7 +155,6 @@ function gpsRemaining(dateList) {
     const isDateEarlier = Temporal.PlainDate.compare(today, raceDate);
     return isDateEarlier === -1;
   });
-  console.log(datesRemaining);
   return datesRemaining.length;
 }
 
