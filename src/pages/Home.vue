@@ -97,6 +97,44 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 
 import DriverCard from "@/components/DriverCard.vue";
 
+// Datas dos Grandes Prêmios (corridas principais)
+const grandPrix2026 = [
+  "2026-03-08", // Austrália
+  "2026-03-15", // China
+  "2026-03-29", // Japão
+  "2026-04-12", // Bahrein
+  "2026-04-19", // Arábia Saudita
+  "2026-05-03", // Miami
+  "2026-05-24", // Canadá
+  "2026-06-07", // Mônaco
+  "2026-06-14", // Barcelona-Catalunha
+  "2026-06-28", // Áustria
+  "2026-07-05", // Grã-Bretanha
+  "2026-07-19", // Bélgica
+  "2026-07-26", // Hungria
+  "2026-08-23", // Países Baixos
+  "2026-09-06", // Itália
+  "2026-09-13", // Espanha (Madri)
+  "2026-09-26", // Azerbaijão
+  "2026-10-11", // Singapura
+  "2026-10-25", // Estados Unidos (Austin)
+  "2026-11-01", // México
+  "2026-11-08", // Brasil
+  "2026-11-21", // Las Vegas
+  "2026-11-29", // Catar
+  "2026-12-06", // Abu Dhabi
+];
+
+// Datas das corridas Sprint
+const sprintRaces2026 = [
+  "2026-03-14", // China
+  "2026-05-02", // Miami
+  "2026-05-23", // Canadá
+  "2026-07-04", // Grã-Bretanha
+  "2026-08-22", // Países Baixos
+  "2026-10-10", // Singapura
+];
+
 const isImporting = ref(false);
 const isImported = ref(true);
 const isSimulating = ref(false);
@@ -109,6 +147,17 @@ const simulationWorker = new Worker(
   new URL("../workers/simulation.worker.js", import.meta.url),
   { type: "module" },
 );
+
+function gpsRemaining(dateList) {
+  const today = Temporal.Now.plainDateISO();
+  const datesRemaining = dateList.filter((d) => {
+    const raceDate = Temporal.PlainDate.from(d);
+    const isDateEarlier = Temporal.PlainDate.compare(today, raceDate);
+    return isDateEarlier === -1;
+  });
+  console.log(datesRemaining);
+  return datesRemaining.length;
+}
 
 function simulate() {
   if (isSimulating.value) return;
@@ -149,11 +198,6 @@ async function getDriversChampionship() {
       throw new Error("Dados do campeonato de pilotos indisponíveis");
     }
     const leaderPts = Number(championship[0]?.points ?? 0);
-    const seasonTotalRaces = Number(
-      seasonJSON?.total ?? seasonJSON?.races?.length ?? 0,
-    );
-    const lastCompletedRound = Number(lastRaceJSON?.round ?? 0);
-    const remainingRaces = Math.max(0, seasonTotalRaces - lastCompletedRound);
     const raceName = lastRaceJSON?.race[0]?.raceName ?? "sem nome";
 
     const drivers = championship.map((d, i, a) => {
@@ -172,7 +216,7 @@ async function getDriversChampionship() {
       };
     });
 
-    return { drivers, remainingRaces, raceName };
+    return { drivers, raceName };
   } catch (error) {
     console.error(error);
     return false;
@@ -200,7 +244,8 @@ onMounted(async () => {
   const data = await getDriversChampionship();
   if (data !== false) {
     driverInfo.value = data.drivers;
-    racesRemaining.value = data.racesRemaining;
+    racesRemaining.value = gpsRemaining(grandPrix2026);
+    sprintsRemaining.value = gpsRemaining(sprintRaces2026);
     raceName.value = data.raceName;
     isImported.value = true;
   } else {
