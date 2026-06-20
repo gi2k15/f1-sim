@@ -1,12 +1,12 @@
 <template>
-  <v-card>
+  <v-card class="driver-card">
     <v-container class="pl-4 pr-4">
       <v-row class="flex-nowrap align-center">
         <v-col class="text-truncate">
           <v-card-title class="pl-0" :style="`color: ${equipColors[teamId]}`">
             <div>{{ name }}</div></v-card-title
           >
-          <v-card-subtitle class="pl-0 mt-n2 text-grey-lighten-1">
+          <v-card-subtitle class="pl-0 mt-n2">
             {{ team }}
           </v-card-subtitle>
         </v-col>
@@ -68,3 +68,9 @@ const equipColors = {
   aston_martin: "#229971",
 };
 </script>
+
+<style scoped>
+.driver-card:hover {
+  outline: 2px solid #2e7d32;
+}
+</style>
