@@ -10,6 +10,7 @@
       </router-view>
     </v-main>
     <FooterBar />
+    <ScrollToTop />
   </v-app>
 </template>
 
@@ -17,6 +18,8 @@
 import AppMenu from "@/components/AppMenu.vue";
 import NavBar from "@/components/NavBar.vue";
 import FooterBar from "@/components/Footer.vue";
+import ScrollToTop from "@/components/ScrollToTop.vue";
 
 const isOpened = defineModel({ type: Boolean, default: false });
 </script>
+
