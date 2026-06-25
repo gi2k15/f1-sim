@@ -27,13 +27,25 @@
         </v-progress-linear>
       </v-row>
       <v-row class="ga-2 justify-space-between flex-nowrap">
-        <v-chip base-color="green-darken-1" variant="tonal">
+        <v-chip
+          base-color="green-darken-1"
+          variant="tonal"
+          class="font-weight-bold"
+        >
           Pontos: {{ points }}
         </v-chip>
-        <v-chip base-color="yellow-darken-3" variant="tonal">
+        <v-chip
+          base-color="yellow-darken-3"
+          variant="tonal"
+          class="font-weight-bold"
+        >
           Dif. líder: {{ difLeader }}
         </v-chip>
-        <v-chip base-color="purple-lighten-2" variant="tonal">
+        <v-chip
+          base-color="purple-lighten-2"
+          variant="tonal"
+          class="font-weight-bold"
+        >
           Dif. anter.: {{ difPrevious }}
         </v-chip>
       </v-row>
