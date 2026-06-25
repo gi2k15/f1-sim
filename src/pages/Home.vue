@@ -96,44 +96,7 @@
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
 import DriverCard from "@/components/DriverCard.vue";
-
-// Datas dos Grandes Prêmios (corridas principais)
-const grandPrix2026 = [
-  "2026-03-08", // Austrália
-  "2026-03-15", // China
-  "2026-03-29", // Japão
-  "2026-04-12", // Bahrein
-  "2026-04-19", // Arábia Saudita
-  "2026-05-03", // Miami
-  "2026-05-24", // Canadá
-  "2026-06-07", // Mônaco
-  "2026-06-14", // Barcelona-Catalunha
-  "2026-06-28", // Áustria
-  "2026-07-05", // Grã-Bretanha
-  "2026-07-19", // Bélgica
-  "2026-07-26", // Hungria
-  "2026-08-23", // Países Baixos
-  "2026-09-06", // Itália
-  "2026-09-13", // Espanha (Madri)
-  "2026-09-26", // Azerbaijão
-  "2026-10-11", // Singapura
-  "2026-10-25", // Estados Unidos (Austin)
-  "2026-11-01", // México
-  "2026-11-08", // Brasil
-  "2026-11-21", // Las Vegas
-  "2026-11-29", // Catar
-  "2026-12-06", // Abu Dhabi
-];
-
-// Datas das corridas Sprint
-const sprintRaces2026 = [
-  "2026-03-14", // China
-  "2026-05-02", // Miami
-  "2026-05-23", // Canadá
-  "2026-07-04", // Grã-Bretanha
-  "2026-08-22", // Países Baixos
-  "2026-10-10", // Singapura
-];
+import { grandPrix2026, sprintRaces2026 } from "@/constants/races";
 
 const isImporting = ref(false);
 const isImported = ref(true);
@@ -160,9 +123,7 @@ function gpsRemaining(dateList) {
 
 function simulate() {
   if (isSimulating.value) return;
-
   isSimulating.value = true;
-
   simulationWorker.postMessage({
     driverInfo: driverInfo.value.map((driver) => ({
       name: driver.name,
@@ -177,19 +138,18 @@ function simulate() {
 async function getDriversChampionship() {
   const URLS = {
     standings: "https://f1api.dev/api/current/drivers-championship",
-    season: "https://f1api.dev/api/current",
     lastRace: "https://f1api.dev/api/current/last",
   };
   try {
     isImporting.value = true;
-    const [standingsResponse, seasonResponse, lastRaceResponse] =
-      await Promise.all(Object.values(URLS).map((url) => fetch(url)));
-    if (!standingsResponse.ok || !seasonResponse.ok || !lastRaceResponse.ok) {
+    const [standingsResponse, lastRaceResponse] = await Promise.all(
+      Object.values(URLS).map((url) => fetch(url)),
+    );
+    if (!standingsResponse.ok || !lastRaceResponse.ok) {
       throw new Error("Erro ao buscar dados");
     }
-    const [standingsJSON, seasonJSON, lastRaceJSON] = await Promise.all([
+    const [standingsJSON, lastRaceJSON] = await Promise.all([
       standingsResponse.json(),
-      seasonResponse.json(),
       lastRaceResponse.json(),
     ]);
     const championship = standingsJSON?.drivers_championship;
