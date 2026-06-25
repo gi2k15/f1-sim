@@ -2,7 +2,7 @@
 
 Simulador que estima a chance de cada piloto ser campeão ao final da temporada atual da Fórmula 1.
 
-O projeto usa simulações de Monte Carlo para executar várias "temporadas alternativas" a partir da classificação atual e, com isso, calcular a probabilidade de título de cada piloto.
+O projeto usa [simulações de Monte Carlo](https://pt.wikipedia.org/wiki/M%C3%A9todo_de_Monte_Carlo) para executar várias "temporadas alternativas" a partir da classificação atual e, com isso, calcular a probabilidade de título de cada piloto.
 
 - [Quem leva a F1?](#quem-leva-a-f1)
   - [O que o projeto faz](#o-que-o-projeto-faz)
