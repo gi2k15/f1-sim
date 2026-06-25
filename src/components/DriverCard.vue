@@ -5,7 +5,7 @@
         <v-col class="text-truncate">
           <v-card-title
             class="pl-0 font-weight-medium"
-            :style="`color: ${equipColors[teamId]}`"
+            :style="{ color: driverColor }"
           >
             <div>{{ name }}</div></v-card-title
           >
@@ -57,6 +57,9 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
+import { useTheme } from "vuetify";
+
 const props = defineProps({
   position: { type: [Number, String] },
   name: { type: String },
@@ -69,19 +72,43 @@ const props = defineProps({
   isSimulating: { type: Boolean },
 });
 
-const equipColors = {
-  mercedes: "#27F4D2",
-  ferrari: "#E8002D",
-  mclaren: "#FF8000",
-  haas: "#DEE1E2",
-  alpine: "#00A1E8",
-  red_bull: "#3671C6",
-  rb: "#6692FF",
-  audi: "#FF2D00",
-  williams: "#1868DB",
-  cadillac: "#AAAAAD",
-  aston_martin: "#229971",
+const theme = useTheme();
+
+const lightTeamColors = {
+  mercedes: "#007C70",
+  ferrari: "#D9002A",
+  mclaren: "#B85C00",
+  haas: "#5F666A",
+  alpine: "#0077B6",
+  red_bull: "#2454A6",
+  rb: "#3F65D9",
+  audi: "#D92B00",
+  williams: "#1454B8",
+  cadillac: "#66666B",
+  aston_martin: "#13795B",
 };
+
+const darkTeamColors = {
+  mercedes: "#42F5D7",
+  ferrari: "rgb(255 54 84)",
+  mclaren: "#FF9A3D",
+  haas: "#F1F3F4",
+  alpine: "#4CC8FF",
+  red_bull: "#78A7FF",
+  rb: "#94B4FF",
+  audi: "#FF573D",
+  williams: "#6EA2FF",
+  cadillac: "#D0D0D4",
+  aston_martin: "#45C49A",
+};
+
+const driverColor = computed(() => {
+  const colors = theme.global.current.value.dark
+    ? darkTeamColors
+    : lightTeamColors;
+
+  return colors[props.teamId] ?? "rgb(var(--v-theme-on-surface))";
+});
 </script>
 
 <style scoped>
