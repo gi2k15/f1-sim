@@ -3,7 +3,10 @@
     <v-container class="pl-4 pr-4">
       <v-row class="flex-nowrap align-center">
         <v-col class="text-truncate">
-          <v-card-title class="pl-0" :style="`color: ${equipColors[teamId]}`">
+          <v-card-title
+            class="pl-0 font-weight-medium"
+            :style="`color: ${equipColors[teamId]}`"
+          >
             <div>{{ name }}</div></v-card-title
           >
           <v-card-subtitle class="pl-0 mt-n2">
