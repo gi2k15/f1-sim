@@ -112,7 +112,12 @@ const driverColor = computed(() => {
 </script>
 
 <style scoped>
+.driver-card {
+  outline: 2px solid transparent;
+  transition: all 0.15s ease-in-out;
+}
 .driver-card:hover {
   outline: 2px solid #2e7d32;
+  transform: scale(1.02);
 }
 </style>
