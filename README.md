@@ -13,6 +13,7 @@ O projeto usa [simulações de Monte Carlo](https://pt.wikipedia.org/wiki/M%C3%A
   - [Stack](#stack)
   - [Como rodar](#como-rodar)
   - [Scripts](#scripts)
+  - [Aviso legal](#aviso-legal)
 
 ## O que o projeto faz
 
@@ -85,3 +86,9 @@ pnpm dev
 - `pnpm build-only`: gera a build sem rodar `type-check`
 - `pnpm preview`: abre a build localmente para validação
 - `pnpm type-check`: executa a checagem de tipos com `vue-tsc`
+
+## Aviso legal
+
+Este é um projeto independente, não oficial e sem afiliação, endosso ou patrocínio da Formula One Management, Formula One Licensing BV, FIA, equipes, pilotos ou demais entidades relacionadas ao Campeonato Mundial de Fórmula 1.
+
+Fórmula 1, F1, nomes de Grandes Prêmios, equipes, pilotos, marcas, logotipos e demais propriedades intelectuais mencionadas pertencem aos seus respectivos titulares. Todos os direitos autorais, marcas registradas e direitos relacionados são reservados aos seus proprietários.
