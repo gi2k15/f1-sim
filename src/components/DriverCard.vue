@@ -33,21 +33,21 @@
         <v-chip
           base-color="green-darken-1"
           variant="tonal"
-          class="font-weight-bold"
+          class="font-weight-bold text-md-label-large text-sm-label-small"
         >
           Pontos: {{ points }}
         </v-chip>
         <v-chip
           base-color="yellow-darken-3"
           variant="tonal"
-          class="font-weight-bold"
+          class="font-weight-bold text-md-label-large text-sm-label-small"
         >
           Dif. líder: {{ difLeader }}
         </v-chip>
         <v-chip
           base-color="purple-lighten-2"
           variant="tonal"
-          class="font-weight-bold"
+          class="font-weight-bold text-md-label-large text-sm-label-small"
         >
           Dif. anter.: {{ difPrevious }}
         </v-chip>
