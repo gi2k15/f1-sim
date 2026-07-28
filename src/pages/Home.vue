@@ -139,19 +139,26 @@ async function getDriversChampionship() {
   const URLS = {
     standings: "https://f1api.dev/api/current/drivers-championship",
     lastRace: "https://f1api.dev/api/current/last",
+    races: "https://f1api.dev/api/current",
   };
   try {
     isImporting.value = true;
-    const [standingsResponse, lastRaceResponse] = await Promise.all(
-      Object.values(URLS).map((url) => fetch(url)),
-    );
-    if (!standingsResponse.ok || !lastRaceResponse.ok) {
+    const [standingsResponse, lastRaceResponse, racesResponse] =
+      await Promise.all(Object.values(URLS).map((url) => fetch(url)));
+    if (!standingsResponse.ok || !lastRaceResponse.ok || !racesResponse.ok) {
       throw new Error("Erro ao buscar dados");
     }
-    const [standingsJSON, lastRaceJSON] = await Promise.all([
+    const [standingsJSON, lastRaceJSON, racesJSON] = await Promise.all([
       standingsResponse.json(),
       lastRaceResponse.json(),
+      racesResponse.json(),
     ]);
+    // Datas
+    const races = racesJSON?.races ?? [];
+    const raceDates = races.map((r) => r.schedule.race.date);
+    const sprintDates = races
+      .filter((f) => f.schedule.sprintRace.date !== null)
+      .map((r) => r.schedule.sprintRace.date);
     const championship = standingsJSON?.drivers_championship;
     if (!Array.isArray(championship) || championship.length === 0) {
       throw new Error("Dados do campeonato de pilotos indisponíveis");
@@ -175,7 +182,7 @@ async function getDriversChampionship() {
       };
     });
 
-    return { drivers, raceName };
+    return { drivers, raceName, raceDates, sprintDates };
   } catch (error) {
     console.error(error);
     return false;
@@ -203,8 +210,8 @@ onMounted(async () => {
   const data = await getDriversChampionship();
   if (data !== false) {
     driverInfo.value = data.drivers;
-    racesRemaining.value = gpsRemaining(grandPrix2026);
-    sprintsRemaining.value = gpsRemaining(sprintRaces2026);
+    racesRemaining.value = gpsRemaining(data.raceDates);
+    sprintsRemaining.value = gpsRemaining(data.sprintDates);
     raceName.value = data.raceName;
     isImported.value = true;
   } else {
