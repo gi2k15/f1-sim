@@ -44,6 +44,7 @@
                     :min="1"
                     control-variant="stacked"
                     label="Número de simulações"
+                    :step="5000"
                   />
                 </v-col>
               </v-row>
@@ -154,7 +155,10 @@ async function getDriversChampionship() {
       racesResponse.json(),
     ]);
     // Datas
-    const races = racesJSON?.races ?? [];
+    const races = racesJSON?.races;
+    if (!Array.isArray(races) || races.length === 0) {
+      throw new Error("Datas das corridas indisponíveis");
+    }
     const raceDates = races.map((r) => r.schedule.race.date);
     const sprintDates = races
       .filter((f) => f.schedule.sprintRace.date !== null)
