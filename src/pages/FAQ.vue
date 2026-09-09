@@ -34,19 +34,21 @@
               >De onde vêm os dados?</v-expansion-panel-title
             >
             <v-expansion-panel-text>
-              Ao abrir a página principal, o app busca:
+              Ao abrir a página principal, o app obtém:
               <ul class="pl-6 mt-2">
                 <li>
-                  A classificação atual de pilotos (pontos, posição, equipe).
+                  A classificação atual de pilotos (pontos, posição, equipe) e o
+                  nome da última corrida através da API pública <code>f1api.dev</code>.
                 </li>
                 <li>
-                  O último GP do ano, para calcular quantas etapas faltam.
+                  O número de corridas e sprints restantes, calculados a partir do
+                  calendário oficial de 2026 e da data atual (podendo também ser
+                  ajustados livremente nas opções).
                 </li>
               </ul>
-              Esses dados vêm da API pública <code>f1api.dev</code>. Ela pode
-              levar alguns dias para atualizar as informações, então tenha isso
-              em mente quando for fazer simulações em dias de corrida ou nos
-              dias seguintes.
+              A API pode levar alguns dias para atualizar as informações após uma
+              etapa, então tenha isso em mente ao simular logo após um fim de
+              semana de corrida.
             </v-expansion-panel-text>
           </v-expansion-panel>
 
