@@ -26,7 +26,7 @@
           rounded
           :model-value="chance"
           :indeterminate="isSimulating"
-          ><div v-show="chance && !isSimulating">{{ chance }}%</div>
+          ><div v-show="chance && !isSimulating" class="text-label-large">{{ chance }}%</div>
         </v-progress-linear>
       </v-row>
       <v-row class="ga-2 justify-space-between flex-nowrap">
