@@ -54,6 +54,7 @@ self.onmessage = (event) => {
     numSimulations,
   } = event.data;
   const wins = {};
+  const decimals = numSimulations < 100000 ? 2 : 3;
 
   for (let i = 0; i < numSimulations; i += 1) {
     const season = simulateSeason(
@@ -72,7 +73,7 @@ self.onmessage = (event) => {
   self.postMessage({
     chances: driverInfo.map((driver) => ({
       name: driver.name,
-      chance: (((wins[driver.name] || 0) / numSimulations) * 100).toFixed(2),
+      chance: (((wins[driver.name] || 0) / numSimulations) * 100).toFixed(decimals),
     })),
   });
 };
