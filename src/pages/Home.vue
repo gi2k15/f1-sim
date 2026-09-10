@@ -71,9 +71,11 @@
     </v-row>
   </v-container>
   <v-container v-else class="home-content-width">
-    <v-row class="align-center justify-center"
-      ><v-col
-        ><v-chip>Última corrida: {{ raceName }}</v-chip></v-col
+    <v-row
+      ><v-col class="d-flex justify-center"
+        ><v-chip variant="outlined"
+          >Última corrida: {{ raceName }}</v-chip
+        ></v-col
       ></v-row
     >
     <v-row>
