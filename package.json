@@ -34,10 +34,5 @@
     "unplugin-fonts": {
       "vite": "^8.0.0"
     }
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher"
-    ]
   }
 }

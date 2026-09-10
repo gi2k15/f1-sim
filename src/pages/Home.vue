@@ -71,9 +71,11 @@
     </v-row>
   </v-container>
   <v-container v-else class="home-content-width">
-    <div class="text-center font-italic mb-6">
-      Última corrida: {{ raceName }}
-    </div>
+    <v-row class="align-center justify-center"
+      ><v-col
+        ><v-chip>Última corrida: {{ raceName }}</v-chip></v-col
+      ></v-row
+    >
     <v-row>
       <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6">
         <driver-card
