@@ -19,7 +19,7 @@
     </div>
     <v-divider thickness="1" width="50px" class="my-2"> </v-divider>
     <div
-      class="text-body-small text-center font-weight-regular opacity-60 w-75"
+      class="text-body-small text-justify font-weight-regular opacity-60 w-75"
     >
       Este é um projeto independente, não oficial e sem afiliação, endosso ou
       patrocínio da Formula One Management, Formula One Licensing BV, FIA,

@@ -112,13 +112,13 @@ const simulationWorker = new Worker(
 );
 
 function gpsRemaining(dateList) {
-  const today = Temporal.Now.plainDateISO();
-  const datesRemaining = dateList.filter((d) => {
-    const raceDate = Temporal.PlainDate.from(d);
-    const isDateEarlier = Temporal.PlainDate.compare(today, raceDate);
-    return isDateEarlier === -1;
-  });
-  return datesRemaining.length;
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const today = `${year}-${month}-${day}`;
+
+  return dateList.filter((d) => d >= today).length;
 }
 
 function simulate() {
@@ -186,11 +186,12 @@ async function getDriversChampionship() {
 
 onMounted(async () => {
   simulationWorker.onmessage = (event) => {
-    const { chances } = event.data;
+    const { chances = [], decimals = 2 } = event.data;
+    const defaultChance = (0).toFixed(decimals);
 
     driverInfo.value.forEach((driver) => {
       const chanceObj = chances.find((chance) => chance.name === driver.name);
-      driver.chance = chanceObj ? chanceObj.chance : "0.00";
+      driver.chance = chanceObj ? chanceObj.chance : defaultChance;
     });
     isSimulating.value = false;
   };

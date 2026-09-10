@@ -26,28 +26,28 @@
           rounded
           :model-value="chance"
           :indeterminate="isSimulating"
-          ><div v-show="chance && !isSimulating">{{ chance }}%</div>
+          ><div v-show="chance && !isSimulating" class="text-label-large">{{ chance }}%</div>
         </v-progress-linear>
       </v-row>
       <v-row class="ga-2 justify-space-between flex-nowrap">
         <v-chip
           base-color="green-darken-1"
           variant="tonal"
-          class="font-weight-bold"
+          class="text-label-medium"
         >
           Pontos: {{ points }}
         </v-chip>
         <v-chip
           base-color="yellow-darken-3"
           variant="tonal"
-          class="font-weight-bold"
+          class="text-label-medium"
         >
           Dif. líder: {{ difLeader }}
         </v-chip>
         <v-chip
           base-color="purple-lighten-2"
           variant="tonal"
-          class="font-weight-bold"
+          class="text-label-medium"
         >
           Dif. anter.: {{ difPrevious }}
         </v-chip>

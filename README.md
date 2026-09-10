@@ -23,10 +23,12 @@ Essa estimativa é baseada no estado atual da temporada e no número de corridas
 
 ## De onde vem os dados
 
-Os dados são buscados da API pública `f1api.dev`:
+Os dados da temporada são obtidos da API pública `f1api.dev`:
 
 - classificação atual de pilotos, incluindo pontos, posição e equipe
-- último GP do ano, usado para calcular quantas etapas ainda faltam
+- nome da última corrida disputada
+
+As etapas restantes (corridas principais e sprints) são calculadas automaticamente comparando o calendário oficial de 2026 com a data atual (podendo também ser ajustadas manualmente na interface).
 
 Se a importação falhar, a interface exibe um indicativo de erro no topo da página principal.
 
@@ -36,11 +38,11 @@ Se a importação falhar, a interface exibe um indicativo de erro no topo da pá
 - `Número de sprints`: quantas sprints restantes serão simuladas
 - `Número de simulações`: quantas temporadas alternativas serão executadas
 
-Quanto maior o número de simulações, mais estável tende a ser o resultado. Em compensação, o processamento pode levar mais tempo.
+Quanto maior o número de simulações, mais estável tende a ser o resultado. Em compensação, o processamento pode levar mais tempo. A partir de 100.000 simulações, a exibição adota 3 casas decimais de precisão.
 
 ## Como interpretar a chance (%)
 
-A chance representa a fração de simulações em que um piloto terminou como campeão, multiplicada por 100.
+A chance representa a fração de simulações em que um piloto terminou como campeão, multiplicada por 100. Em caso de empate em pontos ao final da temporada simulada, aplica-se o critério de desempate da F1 (maior número de vitórias em GPs).
 
 Exemplo: `23,50%` significa que, dentro do modelo atual, o piloto foi campeão em aproximadamente `23,5%` das temporadas simuladas.
 
