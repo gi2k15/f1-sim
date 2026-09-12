@@ -44,6 +44,7 @@
                     :min="1"
                     control-variant="stacked"
                     label="Número de simulações"
+                    :step="10000"
                   />
                 </v-col>
               </v-row>
