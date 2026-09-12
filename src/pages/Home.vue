@@ -72,9 +72,13 @@
     </v-row>
   </v-container>
   <v-container v-else class="home-content-width">
-    <div class="text-center font-italic mb-6">
-      Última corrida: {{ raceName }}
-    </div>
+    <v-row
+      ><v-col class="d-flex justify-center"
+        ><v-chip variant="outlined"
+          >Última corrida: {{ raceName }}</v-chip
+        ></v-col
+      ></v-row
+    >
     <v-row>
       <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6">
         <driver-card
@@ -104,7 +108,7 @@ const isImported = ref(true);
 const isSimulating = ref(false);
 const driverInfo = ref([]);
 const racesRemaining = ref(22);
-const numSimulations = ref(10000);
+const numSimulations = ref(100000);
 const sprintsRemaining = ref(5);
 const raceName = ref("");
 const simulationWorker = new Worker(

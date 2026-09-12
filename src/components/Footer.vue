@@ -1,6 +1,6 @@
 <template>
   <v-footer
-    class="footer-bar d-flex flex-column justify-center align-center ga-3"
+    class="footer-bar flex-grow-0 d-flex flex-column justify-center align-center ga-3"
   >
     <div class="d-flex ga-3">
       <v-btn
@@ -33,9 +33,7 @@
 </template>
 
 <style scoped>
-/* .footer-bar {
-  height: 200px !important;
-  min-height: 200px !important;
-  max-height: 200px !important;
-} */
+.footer-bar {
+  flex-grow: 0 !important;
+}
 </style>
