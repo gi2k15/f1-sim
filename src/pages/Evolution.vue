@@ -236,7 +236,7 @@
                         Chance Atual (%)
                       </th>
                       <th class="text-right font-weight-bold">
-                        Evolução vs Início
+                        Evolução vs Etapa Anterior
                       </th>
                     </tr>
                   </thead>
@@ -301,7 +301,7 @@
                                   : 'mdi-minus'
                             "
                           />
-                          {{ Math.abs(driver.deltaChance).toFixed(1) }}%
+                          {{ driver.deltaChance > 0 ? '+' : '' }}{{ driver.deltaChance.toFixed(1) }}%
                         </v-chip>
                       </td>
                     </tr>
@@ -354,14 +354,17 @@ const rankedDrivers = computed(() => {
   if (simulatedStages.value.length === 0) return [];
   const latestStage =
     simulatedStages.value[simulatedStages.value.length - 1];
-  const initialStage = simulatedStages.value[0];
+  const previousStage =
+    simulatedStages.value.length > 1
+      ? simulatedStages.value[simulatedStages.value.length - 2]
+      : simulatedStages.value[0];
 
   return latestStage.drivers
     .map((d) => {
       const latestChance =
         latestStage.chances.find((c) => c.name === d.name)?.chance ?? 0;
-      const initialChance =
-        initialStage?.chances.find((c) => c.name === d.name)?.chance ?? 0;
+      const previousChance =
+        previousStage?.chances.find((c) => c.name === d.name)?.chance ?? 0;
 
       return {
         name: d.name,
@@ -369,8 +372,8 @@ const rankedDrivers = computed(() => {
         teamId: d.teamId,
         points: d.points,
         latestChance,
-        initialChance,
-        deltaChance: Number((latestChance - initialChance).toFixed(2)),
+        previousChance,
+        deltaChance: Number((latestChance - previousChance).toFixed(2)),
       };
     })
     .sort((a, b) => {
