@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pt-8" max-width="1100">
+  <v-container class="pt-4">
     <!-- Cabeçalho -->
     <v-row class="mb-4">
       <v-col cols="12">

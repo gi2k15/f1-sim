@@ -5,202 +5,226 @@
     location="top"
     indeterminate
   ></v-progress-linear>
-  <v-container class="pt-8 home-content-width">
-    <v-icon
-      v-if="!isImported"
-      v-tooltip="'Erro ao importar os dados'"
-      icon="mdi-alert"
-      color="error"
-      class="mb-1"
-    />
-    <v-row class="mb-6">
-      <v-col cols="12">
-        <v-expansion-panels>
-          <v-expansion-panel>
-            <v-expansion-panel-title class="text-title-medium"
-              >Configurações</v-expansion-panel-title
-            >
-            <v-expansion-panel-text>
-              <v-row class="mt-4">
-                <v-col cols="12" sm="6" md="4">
-                  <v-number-input
-                    v-model="racesRemaining"
-                    :min="0"
-                    control-variant="stacked"
-                    label="Corridas restantes"
-                  />
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-number-input
-                    v-model="sprintsRemaining"
-                    :min="0"
-                    control-variant="stacked"
-                    label="Sprints restantes"
-                  />
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-number-input
-                    v-model="numSimulations"
-                    :min="1"
-                    control-variant="stacked"
-                    label="Número de simulações"
-                    :step="10000"
-                  />
-                </v-col>
-              </v-row>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
-      </v-col>
-    </v-row>
-  </v-container>
-  <v-container class="d-flex justify-center home-content-width">
-    <v-btn
+  <v-container class="pt-4 pb-0">
+    <v-tabs
+      v-model="activeTab"
       color="green-darken-3"
-      size="x-large"
-      block
-      :loading="isSimulating"
-      @click="simulate()"
-      >Simular</v-btn
+      align-tabs="center"
+      density="comfortable"
     >
+      <v-tab value="simulation" prepend-icon="mdi-racing-helmet">
+        Simulação
+      </v-tab>
+      <v-tab value="evolution" prepend-icon="mdi-chart-timeline-variant-shimmer">
+        Evolução
+      </v-tab>
+    </v-tabs>
   </v-container>
-  <v-container v-if="isImporting" class="home-content-width">
-    <v-row>
-      <v-col v-for="n in 6" :key="n" cols="12" sm="6" md="4">
-        <v-skeleton-loader type="sentences, chip@3" height="180" />
-      </v-col>
-    </v-row>
-  </v-container>
-  <v-container v-else class="home-content-width">
-    <v-row class="mb-2">
-      <v-col
-        cols="12"
-        class="d-flex align-center justify-center flex-wrap ga-2 text-caption text-medium-emphasis text-center"
-      >
-        <div class="d-flex align-center ga-1">
-          <v-icon icon="mdi-flag-checkered" size="small" />
-          <span>
-            Última corrida:
-            <strong class="text-high-emphasis">{{
-              lastOccurredRaceName || raceName
-            }}</strong>
-            <span v-if="lastOccurredRaceDate" class="text-medium-emphasis">
-              ({{ formatDateBR(lastOccurredRaceDate) }})
-            </span>
-          </span>
-        </div>
-        <template
-          v-if="
-            lastScoredRaceName &&
-            lastScoredRaceName !== (lastOccurredRaceName || raceName)
-          "
-        >
-          <span class="text-disabled">•</span>
-          <div class="d-flex align-center ga-1">
-            <v-icon icon="mdi-counter" size="small" />
-            <span>
-              Pontuação até:
-              <strong class="text-high-emphasis">{{
-                lastScoredRaceName
-              }}</strong>
-            </span>
-          </div>
-        </template>
-      </v-col>
 
-      <v-col v-if="hasEditedPoints" cols="12" class="pt-0">
-        <v-alert
-          type="info"
-          variant="tonal"
-          density="compact"
-          icon="mdi-pencil-box-outline"
-          class="text-caption"
-        >
-          <div
-            class="d-flex align-center justify-space-between w-100 flex-wrap ga-2"
-          >
-            <span>
-              Pontuações personalizadas ativas. Clique em
-              <strong>Simular</strong> para atualizar as probabilidades.
-            </span>
-            <v-btn
-              size="small"
-              variant="outlined"
-              color="amber-lighten-2"
-              prepend-icon="mdi-restore"
-              @click="resetAllPoints"
-            >
-              Restaurar original
-            </v-btn>
-          </div>
-        </v-alert>
-      </v-col>
-
-      <v-col v-if="apiPointsStatus === 'pending'" cols="12" class="pt-0">
-        <v-alert
-          type="warning"
-          variant="tonal"
-          density="compact"
-          icon="mdi-clock-alert-outline"
-          class="text-caption"
-        >
-          <div>
-            <strong
-              >A pontuação da API ainda não foi atualizada para o resultado mais
-              recente!</strong
-            >
-          </div>
-          <div class="mt-1">
-            O <strong>{{ lastOccurredRaceName || raceName }}</strong> já
-            ocorreu, mas a classificação oficial na API ainda não computou essa
-            etapa. A pontuação exibida abaixo corresponde ao
-            <strong>{{ lastScoredRaceName }}</strong
-            >. O número de corridas restantes já foi atualizado para
-            <strong>{{ racesRemaining }}</strong
-            ><span v-if="sprintsRemaining > 0">
-              (e <strong>{{ sprintsRemaining }}</strong> sprint restante)</span
-            >.
-            <div class="mt-1">
-              Você pode atualizar manualmente a pontuação dos pilotos, basta
-              clicar nela.
-            </div>
-          </div>
-        </v-alert>
-      </v-col>
-
-      <v-col v-else-if="apiPointsStatus === 'updated'" cols="12" class="pt-0">
-        <v-alert
-          type="success"
-          variant="tonal"
-          density="compact"
-          icon="mdi-check-decagram-outline"
-          class="text-caption"
-        >
-          <strong>Pontuação da API atualizada!</strong> A classificação já
-          inclui o resultado mais recente do
-          <strong>{{ lastOccurredRaceName || raceName }}</strong
-          >.
-        </v-alert>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6" md="4">
-        <driver-card
-          :position="d.position"
-          :name="d.name"
-          :team="d.team"
-          :teamId="d.teamId"
-          :chance="d.chance"
-          :points="d.points"
-          :difLeader="d.difLeader"
-          :difPrevious="d.difPrevious"
-          :isSimulating="isSimulating"
-          :isEdited="isDriverEdited(d.name)"
-          @edit-points="openEditPoints(d)"
+  <v-tabs-window v-model="activeTab">
+    <v-tabs-window-item value="simulation">
+      <v-container class="pt-6">
+        <v-icon
+          v-if="!isImported"
+          v-tooltip="'Erro ao importar os dados'"
+          icon="mdi-alert"
+          color="error"
+          class="mb-1"
         />
-      </v-col>
-    </v-row>
-  </v-container>
+        <v-row class="mb-6">
+          <v-col cols="12">
+            <v-expansion-panels>
+              <v-expansion-panel>
+                <v-expansion-panel-title class="text-title-medium"
+                  >Configurações</v-expansion-panel-title
+                >
+                <v-expansion-panel-text>
+                  <v-row class="mt-4">
+                    <v-col cols="12" sm="6" md="4">
+                      <v-number-input
+                        v-model="racesRemaining"
+                        :min="0"
+                        control-variant="stacked"
+                        label="Corridas restantes"
+                      />
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-number-input
+                        v-model="sprintsRemaining"
+                        :min="0"
+                        control-variant="stacked"
+                        label="Sprints restantes"
+                      />
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-number-input
+                        v-model="numSimulations"
+                        :min="1"
+                        control-variant="stacked"
+                        label="Número de simulações"
+                        :step="10000"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container class="d-flex justify-center pt-0">
+        <v-btn
+          color="green-darken-3"
+          size="x-large"
+          block
+          :loading="isSimulating"
+          @click="simulate()"
+          >Simular</v-btn
+        >
+      </v-container>
+      <v-container v-if="isImporting">
+        <v-row>
+          <v-col v-for="n in 6" :key="n" cols="12" sm="6" md="4">
+            <v-skeleton-loader type="sentences, chip@3" height="180" />
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container v-else>
+        <v-row class="mb-2">
+          <v-col
+            cols="12"
+            class="d-flex align-center justify-center flex-wrap ga-2 text-caption text-medium-emphasis text-center"
+          >
+            <div class="d-flex align-center ga-1">
+              <v-icon icon="mdi-flag-checkered" size="small" />
+              <span>
+                Última corrida:
+                <strong class="text-high-emphasis">{{
+                  lastOccurredRaceName || raceName
+                }}</strong>
+                <span v-if="lastOccurredRaceDate" class="text-medium-emphasis">
+                  ({{ formatDateBR(lastOccurredRaceDate) }})
+                </span>
+              </span>
+            </div>
+            <template
+              v-if="
+                lastScoredRaceName &&
+                lastScoredRaceName !== (lastOccurredRaceName || raceName)
+              "
+            >
+              <span class="text-disabled">•</span>
+              <div class="d-flex align-center ga-1">
+                <v-icon icon="mdi-counter" size="small" />
+                <span>
+                  Pontuação até:
+                  <strong class="text-high-emphasis">{{
+                    lastScoredRaceName
+                  }}</strong>
+                </span>
+              </div>
+            </template>
+          </v-col>
+
+          <v-col v-if="hasEditedPoints" cols="12" class="pt-0">
+            <v-alert
+              type="info"
+              variant="tonal"
+              density="compact"
+              icon="mdi-pencil-box-outline"
+              class="text-caption"
+            >
+              <div
+                class="d-flex align-center justify-space-between w-100 flex-wrap ga-2"
+              >
+                <span>
+                  Pontuações personalizadas ativas. Clique em
+                  <strong>Simular</strong> para atualizar as probabilidades.
+                </span>
+                <v-btn
+                  size="small"
+                  variant="outlined"
+                  color="amber-lighten-2"
+                  prepend-icon="mdi-restore"
+                  @click="resetAllPoints"
+                >
+                  Restaurar original
+                </v-btn>
+              </div>
+            </v-alert>
+          </v-col>
+
+          <v-col v-if="apiPointsStatus === 'pending'" cols="12" class="pt-0">
+            <v-alert
+              type="warning"
+              variant="tonal"
+              density="compact"
+              icon="mdi-clock-alert-outline"
+              class="text-caption"
+            >
+              <div>
+                <strong
+                  >A pontuação da API ainda não foi atualizada para o resultado mais
+                  recente!</strong
+                >
+              </div>
+              <div class="mt-1">
+                O <strong>{{ lastOccurredRaceName || raceName }}</strong> já
+                ocorreu, mas a classificação oficial na API ainda não computou essa
+                etapa. A pontuação exibida abaixo corresponde ao
+                <strong>{{ lastScoredRaceName }}</strong
+                >. O número de corridas restantes já foi atualizado para
+                <strong>{{ racesRemaining }}</strong
+                ><span v-if="sprintsRemaining > 0">
+                  (e <strong>{{ sprintsRemaining }}</strong> sprint restante)</span
+                >.
+                <div class="mt-1">
+                  Você pode atualizar manualmente a pontuação dos pilotos, basta
+                  clicar nela.
+                </div>
+              </div>
+            </v-alert>
+          </v-col>
+
+          <v-col v-else-if="apiPointsStatus === 'updated'" cols="12" class="pt-0">
+            <v-alert
+              type="success"
+              variant="tonal"
+              density="compact"
+              icon="mdi-check-decagram-outline"
+              class="text-caption"
+            >
+              <strong>Pontuação da API atualizada!</strong> A classificação já
+              inclui o resultado mais recente do
+              <strong>{{ lastOccurredRaceName || raceName }}</strong
+              >.
+            </v-alert>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6" md="4">
+            <driver-card
+              :position="d.position"
+              :name="d.name"
+              :team="d.team"
+              :teamId="d.teamId"
+              :chance="d.chance"
+              :points="d.points"
+              :difLeader="d.difLeader"
+              :difPrevious="d.difPrevious"
+              :isSimulating="isSimulating"
+              :isEdited="isDriverEdited(d.name)"
+              @edit-points="openEditPoints(d)"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-tabs-window-item>
+
+    <v-tabs-window-item value="evolution">
+      <EvolutionView />
+    </v-tabs-window-item>
+  </v-tabs-window>
 
   <v-dialog v-model="editDialog" max-width="420">
     <v-card v-if="editingDriver" rounded="lg">
@@ -295,10 +319,44 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import DriverCard from "@/components/DriverCard.vue";
+import EvolutionView from "@/pages/Evolution.vue";
 import { grandPrix2026, sprintRaces2026 } from "@/constants/races";
+
+const route = useRoute();
+const router = useRouter();
+
+const activeTab = ref(
+  route.query.tab === "evolucao" || route.query.tab === "evolution"
+    ? "evolution"
+    : "simulation",
+);
+
+watch(
+  () => route.query.tab,
+  (newTab) => {
+    if (newTab === "evolucao" || newTab === "evolution") {
+      activeTab.value = "evolution";
+    } else if (newTab === "simulacao" || newTab === "simulation" || !newTab) {
+      activeTab.value = "simulation";
+    }
+  },
+);
+
+watch(activeTab, (newTab) => {
+  const currentTabQuery = route.query.tab;
+  if (newTab === "evolution" && currentTabQuery !== "evolucao") {
+    const nextQuery = { ...route.query, tab: "evolucao" };
+    router.replace({ query: nextQuery });
+  } else if (newTab === "simulation" && currentTabQuery) {
+    const nextQuery = { ...route.query };
+    delete nextQuery.tab;
+    router.replace({ query: nextQuery });
+  }
+});
 
 const isImporting = ref(false);
 const isImported = ref(true);
@@ -737,8 +795,3 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
-.home-content-width {
-  /* max-width: 960px; */
-}
-</style>

@@ -7,7 +7,7 @@ import Evolution from "@/pages/Evolution.vue";
 
 const routes = [
   { path: "/", component: Home },
-  { path: "/evolucao", component: Evolution },
+  { path: "/evolucao", redirect: "/?tab=evolucao" },
   { path: "/faq", component: FAQ },
   { path: "/cafe", component: Coffee },
 ];
