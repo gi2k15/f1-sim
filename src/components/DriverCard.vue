@@ -29,13 +29,14 @@
           ><div v-show="chance && !isSimulating" class="text-label-large">{{ chance }}%</div>
         </v-progress-linear>
       </v-row>
-      <v-row class="ga-2 justify-space-between flex-nowrap">
+      <v-row class="ga-2 justify-space-between flex-wrap">
         <v-tooltip text="Clique para editar os pontos" location="top">
           <template #activator="{ props: tooltipProps }">
             <v-chip
               v-bind="tooltipProps"
               :base-color="isEdited ? 'amber-darken-2' : 'green-darken-1'"
               variant="tonal"
+              size="small"
               class="text-label-medium points-chip cursor-pointer"
               append-icon="mdi-pencil"
               @click.stop="$emit('edit-points')"
@@ -53,6 +54,7 @@
         <v-chip
           base-color="yellow-darken-3"
           variant="tonal"
+          size="small"
           class="text-label-medium"
         >
           Dif. líder: {{ difLeader }}
@@ -60,6 +62,7 @@
         <v-chip
           base-color="purple-lighten-2"
           variant="tonal"
+          size="small"
           class="text-label-medium"
         >
           Dif. anter.: {{ difPrevious }}

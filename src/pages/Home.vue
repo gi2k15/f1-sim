@@ -66,7 +66,7 @@
   </v-container>
   <v-container v-if="isImporting" class="home-content-width">
     <v-row>
-      <v-col v-for="n in 2" :key="n" cols="12" sm="6">
+      <v-col v-for="n in 6" :key="n" cols="12" sm="6" md="4">
         <v-skeleton-loader type="sentences, chip@3" height="180" />
       </v-col>
     </v-row>
@@ -81,7 +81,9 @@
           <v-icon icon="mdi-flag-checkered" size="small" />
           <span>
             Última corrida:
-            <strong class="text-high-emphasis">{{ lastOccurredRaceName || raceName }}</strong>
+            <strong class="text-high-emphasis">{{
+              lastOccurredRaceName || raceName
+            }}</strong>
             <span v-if="lastOccurredRaceDate" class="text-medium-emphasis">
               ({{ formatDateBR(lastOccurredRaceDate) }})
             </span>
@@ -98,7 +100,9 @@
             <v-icon icon="mdi-counter" size="small" />
             <span>
               Pontuação até:
-              <strong class="text-high-emphasis">{{ lastScoredRaceName }}</strong>
+              <strong class="text-high-emphasis">{{
+                lastScoredRaceName
+              }}</strong>
             </span>
           </div>
         </template>
@@ -132,11 +136,7 @@
         </v-alert>
       </v-col>
 
-      <v-col
-        v-if="apiPointsStatus === 'pending'"
-        cols="12"
-        class="pt-0"
-      >
+      <v-col v-if="apiPointsStatus === 'pending'" cols="12" class="pt-0">
         <v-alert
           type="warning"
           variant="tonal"
@@ -145,21 +145,30 @@
           class="text-caption"
         >
           <div>
-            <strong>A pontuação da API ainda não foi atualizada para o resultado mais recente!</strong>
+            <strong
+              >A pontuação da API ainda não foi atualizada para o resultado mais
+              recente!</strong
+            >
           </div>
           <div class="mt-1">
-            O <strong>{{ lastOccurredRaceName || raceName }}</strong> já ocorreu, mas a classificação oficial na API ainda não computou essa etapa.
-            A pontuação exibida abaixo corresponde ao <strong>{{ lastScoredRaceName }}</strong>.
-            O número de corridas restantes já foi atualizado para <strong>{{ racesRemaining }}</strong><span v-if="sprintsRemaining > 0"> (e <strong>{{ sprintsRemaining }}</strong> sprint restante)</span>.
+            O <strong>{{ lastOccurredRaceName || raceName }}</strong> já
+            ocorreu, mas a classificação oficial na API ainda não computou essa
+            etapa. A pontuação exibida abaixo corresponde ao
+            <strong>{{ lastScoredRaceName }}</strong
+            >. O número de corridas restantes já foi atualizado para
+            <strong>{{ racesRemaining }}</strong
+            ><span v-if="sprintsRemaining > 0">
+              (e <strong>{{ sprintsRemaining }}</strong> sprint restante)</span
+            >.
+            <div class="mt-1">
+              Você pode atualizar manualmente a pontuação dos pilotos, basta
+              clicar nela.
+            </div>
           </div>
         </v-alert>
       </v-col>
 
-      <v-col
-        v-else-if="apiPointsStatus === 'updated'"
-        cols="12"
-        class="pt-0"
-      >
+      <v-col v-else-if="apiPointsStatus === 'updated'" cols="12" class="pt-0">
         <v-alert
           type="success"
           variant="tonal"
@@ -167,12 +176,15 @@
           icon="mdi-check-decagram-outline"
           class="text-caption"
         >
-          <strong>Pontuação da API atualizada!</strong> A classificação já inclui o resultado mais recente do <strong>{{ lastOccurredRaceName || raceName }}</strong>.
+          <strong>Pontuação da API atualizada!</strong> A classificação já
+          inclui o resultado mais recente do
+          <strong>{{ lastOccurredRaceName || raceName }}</strong
+          >.
         </v-alert>
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6">
+      <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6" md="4">
         <driver-card
           :position="d.position"
           :name="d.name"
@@ -707,8 +719,7 @@ onMounted(async () => {
 
     if (data.lastScoredRace) {
       lastScoredRaceName.value = data.lastScoredRace.raceName;
-      lastScoredRaceDate.value =
-        data.lastScoredRace.schedule?.race?.date || "";
+      lastScoredRaceDate.value = data.lastScoredRace.schedule?.race?.date || "";
     } else {
       lastScoredRaceName.value = data.raceName;
       lastScoredRaceDate.value = data.raceDate;
@@ -728,6 +739,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .home-content-width {
-  max-width: 960px;
+  /* max-width: 960px; */
 }
 </style>
