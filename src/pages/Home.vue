@@ -150,7 +150,7 @@
           <div class="mt-1">
             O <strong>{{ lastOccurredRaceName || raceName }}</strong> já ocorreu, mas a classificação oficial na API ainda não computou essa etapa.
             A pontuação exibida abaixo corresponde ao <strong>{{ lastScoredRaceName }}</strong>.
-            O número de corridas restantes já foi atualizado para <strong>{{ racesRemaining }}</strong>.
+            O número de corridas restantes já foi atualizado para <strong>{{ racesRemaining }}</strong><span v-if="sprintsRemaining > 0"> (e <strong>{{ sprintsRemaining }}</strong> sprint restante)</span>.
           </div>
         </v-alert>
       </v-col>
@@ -527,48 +527,82 @@ async function getDriversChampionship() {
     });
 
     const now = new Date();
-    let calculatedRacesRemaining = null;
-    let calculatedSprintsRemaining = null;
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const today = `${year}-${month}-${day}`;
+
+    const allRaces = Array.isArray(seasonJSON?.races) ? seasonJSON.races : [];
+
+    // Verifica se há corrida principal ou sprint da API hoje e se já ocorreu
+    const todayApiRace =
+      allRaces.find((r) => r.schedule?.race?.date === today) ||
+      (lastRaceJSON?.race?.[0]?.schedule?.race?.date === today
+        ? lastRaceJSON.race[0]
+        : null);
+
+    const todayRaceOccurred = todayApiRace
+      ? hasRaceOccurred(todayApiRace, now)
+      : now.getUTCHours() >= 16;
+
+    const todayApiSprint =
+      allRaces.find((r) => r.schedule?.sprintRace?.date === today) ||
+      (lastRaceJSON?.race?.[0]?.schedule?.sprintRace?.date === today
+        ? lastRaceJSON.race[0]
+        : null);
+
+    const todaySprintOccurred = todayApiSprint
+      ? hasSprintOccurred(todayApiSprint, now)
+      : now.getUTCHours() >= 16;
+
+    // O calendário canônico do campeonato é definido por grandPrix2026 e sprintRaces2026
+    const calculatedRacesRemaining = grandPrix2026.filter((d) => {
+      if (d > today) return true;
+      if (d === today) return !todayRaceOccurred;
+      return false;
+    }).length;
+
+    const calculatedSprintsRemaining = sprintRaces2026.filter((d) => {
+      if (d > today) return true;
+      if (d === today) return !todaySprintOccurred;
+      return false;
+    }).length;
+
     let mostRecentOccurred = null;
     let lastScored = null;
     let isPointsUpdated = true;
     let status = "ok";
 
-    const allRaces = Array.isArray(seasonJSON?.races) ? seasonJSON.races : [];
-
     if (allRaces.length > 0) {
       const occurred = allRaces.filter((r) => hasRaceOccurred(r, now));
-      const remaining = allRaces.filter((r) => !hasRaceOccurred(r, now));
-      const remainingSprints = allRaces.filter(
-        (r) => r.schedule?.sprintRace?.date && !hasSprintOccurred(r, now),
-      );
-
-      calculatedRacesRemaining = remaining.length;
-      calculatedSprintsRemaining = remainingSprints.length;
-
       mostRecentOccurred = occurred[occurred.length - 1] || null;
       lastScored =
         allRaces
           .filter((r) => r.winner !== null && r.winner !== undefined)
           .pop() || null;
-
-      if (mostRecentOccurred) {
-        const isLatestScored =
-          lastScored && lastScored.round >= mostRecentOccurred.round;
-        isPointsUpdated = !!isLatestScored;
-
-        const days = daysSince(mostRecentOccurred.schedule?.race?.date);
-        if (!isPointsUpdated) {
-          status = "pending";
-        } else if (days <= 4) {
-          status = "updated";
-        } else {
-          status = "ok";
-        }
+    } else if (lastRaceJSON?.race?.[0]) {
+      const race = lastRaceJSON.race[0];
+      if (hasRaceOccurred(race, now)) {
+        mostRecentOccurred = race;
       }
-    } else {
-      calculatedRacesRemaining = gpsRemainingFallback(grandPrix2026);
-      calculatedSprintsRemaining = gpsRemainingFallback(sprintRaces2026);
+      if (race.winner !== null && race.winner !== undefined) {
+        lastScored = race;
+      }
+    }
+
+    if (mostRecentOccurred) {
+      const isLatestScored =
+        lastScored && lastScored.round >= mostRecentOccurred.round;
+      isPointsUpdated = !!isLatestScored;
+
+      const days = daysSince(mostRecentOccurred.schedule?.race?.date);
+      if (!isPointsUpdated) {
+        status = "pending";
+      } else if (days <= 4) {
+        status = "updated";
+      } else {
+        status = "ok";
+      }
     }
 
     return {
