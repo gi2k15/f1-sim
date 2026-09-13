@@ -3,6 +3,11 @@
     <v-list nav>
       <v-list-item prepend-icon="mdi-home" title="Início" to="/" />
       <v-list-item
+        prepend-icon="mdi-chart-timeline-variant-shimmer"
+        title="Evolução"
+        to="/evolucao"
+      />
+      <v-list-item
         prepend-icon="mdi-frequently-asked-questions"
         title="FAQ"
         to="/faq"

@@ -1,18 +1,15 @@
 const racePontuation = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const sprintPontuation = [8, 7, 6, 5, 4, 3, 2, 1];
 
-self.onmessage = (event) => {
-  const {
-    driverInfo = [],
-    racesRemaining = 0,
-    sprintsRemaining = 0,
-    numSimulations = 10000,
-  } = event.data;
-
+function simulateSingle({
+  driverInfo = [],
+  racesRemaining = 0,
+  sprintsRemaining = 0,
+  numSimulations = 10000,
+}) {
   const numDrivers = driverInfo.length;
   if (numDrivers === 0) {
-    self.postMessage({ chances: [], decimals: 2 });
-    return;
+    return { chances: [], decimals: 2 };
   }
 
   const decimals = numSimulations < 100000 ? 2 : 3;
@@ -100,12 +97,79 @@ self.onmessage = (event) => {
     championWins[championIdx] += 1;
   }
 
-  self.postMessage({
+  return {
     chances: driverInfo.map((driver, index) => ({
       name: driver.name,
-      chance: (((championWins[index] || 0) / numSimulations) * 100).toFixed(decimals),
+      chance: Number(
+        (((championWins[index] || 0) / numSimulations) * 100).toFixed(decimals),
+      ),
     })),
     decimals,
+  };
+}
+
+self.onmessage = (event) => {
+  // Suporte a múltiplas etapas para a página de evolução
+  if (event.data?.mode === "multiStage") {
+    const { stages = [], numSimulations = 10000 } = event.data;
+    const stagesResult = [];
+
+    for (let i = 0; i < stages.length; i += 1) {
+      const stage = stages[i];
+      const res = simulateSingle({
+        driverInfo: stage.drivers,
+        racesRemaining: stage.racesRemaining,
+        sprintsRemaining: stage.sprintsRemaining,
+        numSimulations,
+      });
+
+      stagesResult.push({
+        round: stage.round,
+        raceName: stage.raceName,
+        shortName: stage.shortName,
+        date: stage.date,
+        hasSprint: stage.hasSprint,
+        racesRemaining: stage.racesRemaining,
+        sprintsRemaining: stage.sprintsRemaining,
+        chances: res.chances,
+        drivers: stage.drivers,
+      });
+
+      self.postMessage({
+        type: "stageProgress",
+        completed: i + 1,
+        total: stages.length,
+        currentStage: stage.shortName,
+      });
+    }
+
+    self.postMessage({
+      type: "multiStageComplete",
+      stagesResult,
+    });
+    return;
+  }
+
+  // Comportamento original para a página inicial (Home.vue)
+  const {
+    driverInfo = [],
+    racesRemaining = 0,
+    sprintsRemaining = 0,
+    numSimulations = 10000,
+  } = event.data;
+
+  const res = simulateSingle({
+    driverInfo,
+    racesRemaining,
+    sprintsRemaining,
+    numSimulations,
+  });
+
+  self.postMessage({
+    chances: res.chances.map((c) => ({
+      name: c.name,
+      chance: c.chance.toFixed(res.decimals),
+    })),
+    decimals: res.decimals,
   });
 };
-

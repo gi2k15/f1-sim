@@ -3,9 +3,11 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/pages/Home.vue";
 import FAQ from "@/pages/FAQ.vue";
 import Coffee from "@/pages/Coffee.vue";
+import Evolution from "@/pages/Evolution.vue";
 
 const routes = [
   { path: "/", component: Home },
+  { path: "/evolucao", component: Evolution },
   { path: "/faq", component: FAQ },
   { path: "/cafe", component: Coffee },
 ];

@@ -471,7 +471,28 @@ function simulate() {
   });
 }
 
-async function getDriversChampionship() {
+const HOME_CACHE_KEY = "f1_sim_home_championship_v2";
+const HOME_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hora
+
+async function getDriversChampionship(forceRefresh = false) {
+  if (!forceRefresh) {
+    try {
+      const cached = localStorage.getItem(HOME_CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (
+          parsed &&
+          Date.now() - parsed.timestamp < HOME_CACHE_TTL_MS &&
+          parsed.data
+        ) {
+          return parsed.data;
+        }
+      }
+    } catch (e) {
+      console.warn("Falha ao ler cache da Home:", e);
+    }
+  }
+
   const URLS = {
     standings: "https://f1api.dev/api/current/drivers-championship",
     lastRace: "https://f1api.dev/api/current/last",
@@ -605,7 +626,7 @@ async function getDriversChampionship() {
       }
     }
 
-    return {
+    const result = {
       drivers,
       raceName: fallbackRaceName,
       raceDate: fallbackRaceDate,
@@ -616,8 +637,27 @@ async function getDriversChampionship() {
       apiPointsStatus: status,
       isApiPointsUpdated: isPointsUpdated,
     };
+
+    try {
+      localStorage.setItem(
+        HOME_CACHE_KEY,
+        JSON.stringify({ timestamp: Date.now(), data: result }),
+      );
+    } catch (err) {
+      console.warn("Falha ao salvar cache da Home:", err);
+    }
+
+    return result;
   } catch (error) {
     console.error(error);
+    // Tenta retornar do cache se houver falha de rede
+    try {
+      const cached = localStorage.getItem(HOME_CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.data) return parsed.data;
+      }
+    } catch (_) {}
     return false;
   } finally {
     isImporting.value = false;
