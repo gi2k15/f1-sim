@@ -72,13 +72,34 @@
     </v-row>
   </v-container>
   <v-container v-else class="home-content-width">
-    <v-row
-      ><v-col class="d-flex justify-center"
-        ><v-chip variant="outlined"
-          >Última corrida: {{ raceName }}</v-chip
-        ></v-col
-      ></v-row
-    >
+    <v-row class="mb-2">
+      <v-col
+        cols="12"
+        class="d-flex align-center justify-center ga-2 text-caption text-medium-emphasis text-center"
+      >
+        <v-icon icon="mdi-flag-checkered" size="small" />
+        <span>
+          Última corrida:
+          <strong class="text-high-emphasis">{{ raceName }}</strong>
+        </span>
+      </v-col>
+
+      <v-col
+        v-if="raceDate && !isTwoDaysAfterLastRace(raceDate)"
+        cols="12"
+        class="pt-0"
+      >
+        <v-alert
+          type="warning"
+          variant="tonal"
+          density="compact"
+          icon="mdi-alert-circle-outline"
+          class="text-caption"
+        >
+          A pontuação pode não ter sido atualizada ainda pela API!
+        </v-alert>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col v-for="d in driverInfo" :key="d.name" cols="12" sm="6">
         <driver-card
@@ -111,10 +132,41 @@ const racesRemaining = ref(22);
 const numSimulations = ref(100000);
 const sprintsRemaining = ref(5);
 const raceName = ref("");
+const raceDate = ref("");
 const simulationWorker = new Worker(
   new URL("../workers/simulation.worker.js", import.meta.url),
   { type: "module" },
 );
+
+function isTwoDaysAfterLastRace(lastRaceDate) {
+  let date = lastRaceDate;
+
+  if (!date) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const today = `${year}-${month}-${day}`;
+
+    const pastGps = grandPrix2026.filter((d) => d <= today);
+    date = pastGps[pastGps.length - 1];
+  }
+
+  if (!date) return false;
+
+  const raceDate =
+    date instanceof Date
+      ? new Date(date.getFullYear(), date.getMonth(), date.getDate())
+      : new Date(`${String(date).split("T")[0]}T00:00:00`);
+
+  raceDate.setDate(raceDate.getDate() + 2);
+  raceDate.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return today >= raceDate;
+}
 
 function gpsRemaining(dateList) {
   const now = new Date();
@@ -163,6 +215,7 @@ async function getDriversChampionship() {
     }
     const leaderPts = Number(championship[0]?.points ?? 0);
     const raceName = lastRaceJSON?.race[0]?.raceName ?? "sem nome";
+    const raceDate = lastRaceJSON?.race[0]?.schedule?.race?.date ?? "";
 
     const drivers = championship.map((d, i, a) => {
       const points = Number(d?.points ?? 0);
@@ -180,7 +233,7 @@ async function getDriversChampionship() {
       };
     });
 
-    return { drivers, raceName };
+    return { drivers, raceName, raceDate };
   } catch (error) {
     console.error(error);
     return false;
@@ -212,6 +265,7 @@ onMounted(async () => {
     racesRemaining.value = gpsRemaining(grandPrix2026);
     sprintsRemaining.value = gpsRemaining(sprintRaces2026);
     raceName.value = data.raceName;
+    raceDate.value = data.raceDate;
     isImported.value = true;
   } else {
     isImported.value = false;
