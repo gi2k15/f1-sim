@@ -92,10 +92,7 @@
             <v-card-text class="py-3">
               <v-row align="center" justify="space-between">
                 <v-col cols="12" md="5" class="py-1">
-                  <v-sheet
-                    color="transparent"
-                    class="d-flex align-center ga-2"
-                  >
+                  <v-sheet color="transparent" class="d-flex align-center ga-2">
                     <v-icon
                       icon="mdi-filter-variant"
                       size="small"
@@ -135,22 +132,22 @@
               <v-divider class="my-3" />
 
               <!-- Chips de seleção individual de pilotos com as cores das escuderias -->
-              <v-chip-group
-                v-model="selectedIndices"
-                multiple
-                column
-              >
+              <v-chip-group v-model="selectedIndices" multiple column>
                 <v-chip
                   v-for="(driver, idx) in rankedDrivers"
                   :key="driver.name"
                   filter
                   :color="driverTeamColor(driver)"
-                  :variant="selectedIndices.includes(idx) ? 'tonal' : 'outlined'"
+                  :variant="
+                    selectedIndices.includes(idx) ? 'tonal' : 'outlined'
+                  "
                   size="small"
                   class="font-weight-medium ma-1"
                   :style="{
                     borderColor: driverTeamColor(driver),
-                    borderWidth: selectedIndices.includes(idx) ? '1.5px' : '1px',
+                    borderWidth: selectedIndices.includes(idx)
+                      ? '1.5px'
+                      : '1px',
                     opacity: selectedIndices.includes(idx) ? 1 : 0.65,
                   }"
                 >
@@ -196,7 +193,9 @@
               </v-chip>
             </v-card-title>
 
-            <v-card-subtitle class="px-2 pb-4 text-caption text-medium-emphasis">
+            <v-card-subtitle
+              class="px-2 pb-4 text-caption text-medium-emphasis"
+            >
               Passe o cursor sobre as etapas para visualizar a pontuação e
               probabilidade acumulada de cada piloto.
             </v-card-subtitle>
@@ -253,22 +252,10 @@
                         class="font-weight-bold"
                         :style="{ color: driverTeamColor(driver) }"
                       >
-                        <v-icon
-                          icon="mdi-circle-medium"
-                          size="small"
-                          :color="driverTeamColor(driver)"
-                          class="mr-1"
-                        />
                         {{ driver.name }}
                       </td>
-                      <td>
-                        <v-chip
-                          size="x-small"
-                          variant="tonal"
-                          :color="driverTeamColor(driver)"
-                        >
-                          {{ driver.team }}
-                        </v-chip>
+                      <td :style="{ color: driverTeamColor(driver) }">
+                        {{ driver.team }}
                       </td>
                       <td class="text-right font-weight-medium">
                         {{ driver.points }}
@@ -281,7 +268,7 @@
                       </td>
                       <td class="text-right">
                         <v-chip
-                          size="x-small"
+                          size="small"
                           :color="
                             driver.deltaChance > 0
                               ? 'success'
@@ -289,7 +276,7 @@
                                 ? 'error'
                                 : 'default'
                           "
-                          variant="tonal"
+                          variant="flat"
                         >
                           <v-icon
                             size="x-small"
@@ -301,7 +288,8 @@
                                   : 'mdi-minus'
                             "
                           />
-                          {{ driver.deltaChance > 0 ? '+' : '' }}{{ driver.deltaChance.toFixed(1) }}%
+                          {{ driver.deltaChance > 0 ? "+" : ""
+                          }}{{ driver.deltaChance.toFixed(1) }}%
                         </v-chip>
                       </td>
                     </tr>
@@ -352,8 +340,7 @@ function driverTeamColor(driver: {
 // Ranking dos pilotos baseado na última etapa simulada
 const rankedDrivers = computed(() => {
   if (simulatedStages.value.length === 0) return [];
-  const latestStage =
-    simulatedStages.value[simulatedStages.value.length - 1];
+  const latestStage = simulatedStages.value[simulatedStages.value.length - 1];
   const previousStage =
     simulatedStages.value.length > 1
       ? simulatedStages.value[simulatedStages.value.length - 2]
@@ -382,9 +369,7 @@ const rankedDrivers = computed(() => {
     });
 });
 
-const allDriverNames = computed(() =>
-  rankedDrivers.value.map((d) => d.name),
-);
+const allDriverNames = computed(() => rankedDrivers.value.map((d) => d.name));
 
 // Pilotos ativos no gráfico com base nos chips selecionados
 const activeDrivers = computed(() => {
@@ -463,9 +448,7 @@ async function reloadData(forceRefresh = false) {
     worker.onmessage = (e) => {
       const data = e.data;
       if (data.type === "stageProgress") {
-        const progress = Math.floor(
-          75 + (data.completed / data.total) * 23,
-        );
+        const progress = Math.floor(75 + (data.completed / data.total) * 23);
         loadingPercent.value = Math.min(98, progress);
         loadingStatusText.value = `Simulando etapa ${data.completed} de ${data.total} (${data.currentStage})...`;
       } else if (data.type === "multiStageComplete") {
