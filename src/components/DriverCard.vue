@@ -15,7 +15,7 @@
         </v-col>
         <v-col class="justify-end text-right" cols="auto">
           <div class="text-display-medium text-red-darken-3 pt-2">
-            {{ position < 10 ? `0${position}` : position }}
+            {{ String(position).padStart(2, "0") }}
           </div>
         </v-col>
       </v-row>
