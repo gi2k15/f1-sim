@@ -30,13 +30,26 @@
         </v-progress-linear>
       </v-row>
       <v-row class="ga-2 justify-space-between flex-nowrap">
-        <v-chip
-          base-color="green-darken-1"
-          variant="tonal"
-          class="text-label-medium"
-        >
-          Pontos: {{ points }}
-        </v-chip>
+        <v-tooltip text="Clique para editar os pontos" location="top">
+          <template #activator="{ props: tooltipProps }">
+            <v-chip
+              v-bind="tooltipProps"
+              :base-color="isEdited ? 'amber-darken-2' : 'green-darken-1'"
+              variant="tonal"
+              class="text-label-medium points-chip cursor-pointer"
+              append-icon="mdi-pencil"
+              @click.stop="$emit('edit-points')"
+            >
+              Pontos: {{ points }}
+              <v-icon
+                v-if="isEdited"
+                icon="mdi-asterisk"
+                size="x-small"
+                class="ml-1 text-amber-accent-2"
+              />
+            </v-chip>
+          </template>
+        </v-tooltip>
         <v-chip
           base-color="yellow-darken-3"
           variant="tonal"
@@ -70,7 +83,10 @@ const props = defineProps({
   difLeader: { type: [Number, String] },
   difPrevious: { type: [Number, String] },
   isSimulating: { type: Boolean },
+  isEdited: { type: Boolean, default: false },
 });
+
+defineEmits(["edit-points"]);
 
 const theme = useTheme();
 
@@ -119,5 +135,14 @@ const driverColor = computed(() => {
 .driver-card:hover {
   outline: 2px solid #2e7d32;
   transform: scale(1.02);
+}
+
+.points-chip {
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+.points-chip:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
 }
 </style>
