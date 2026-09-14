@@ -34,6 +34,42 @@
       </v-col>
     </v-row>
 
+    <!-- Alertas de Atualização Automática -->
+    <v-row v-if="isAutoUpdating" class="mb-4">
+      <v-col cols="12">
+        <v-alert
+          type="info"
+          variant="tonal"
+          density="compact"
+          icon="mdi-sync"
+          rounded="lg"
+          class="text-caption"
+        >
+          <div class="d-flex align-center justify-space-between flex-wrap ga-2">
+            <span>{{ autoUpdateMessage }}</span>
+            <v-progress-circular indeterminate size="18" width="2" color="info" />
+          </div>
+        </v-alert>
+      </v-col>
+    </v-row>
+
+    <v-row v-if="showAutoUpdatedAlert" class="mb-4">
+      <v-col cols="12">
+        <v-alert
+          type="success"
+          variant="tonal"
+          density="compact"
+          icon="mdi-check-decagram-outline"
+          rounded="lg"
+          closable
+          class="text-caption"
+          @click:close="showAutoUpdatedAlert = false"
+        >
+          {{ autoUpdatedAlertMessage }}
+        </v-alert>
+      </v-col>
+    </v-row>
+
     <!-- Barra de progresso e status de carregamento -->
     <v-row v-if="isLoading" class="mb-6">
       <v-col cols="12">
@@ -312,6 +348,8 @@ import ChampionshipLineChart, {
 } from "@/components/ChampionshipLineChart.vue";
 import {
   fetchChampionshipHistory,
+  checkChampionshipOutdated,
+  formatStageShortName,
   type ChampionshipStage,
 } from "@/services/championshipHistory";
 import { getTeamColor } from "@/constants/teamColors";
@@ -323,11 +361,26 @@ const loadingPercent = ref(10);
 const loadingStatusText = ref("Iniciando...");
 const errorMessage = ref("");
 
+const isAutoUpdating = ref(false);
+const autoUpdateMessage = ref("Verificando se há novas etapas...");
+const showAutoUpdatedAlert = ref(false);
+const autoUpdatedAlertMessage = ref("");
+let autoUpdateTimer: any = null;
+
 const filterMode = ref<"top3" | "top5" | "top10" | "all">("top5");
 const selectedIndices = ref<number[]>([]);
 const simulatedStages = ref<StageData[]>([]);
 
 let worker: Worker | null = null;
+
+function notifyAutoUpdated(msg: string) {
+  autoUpdatedAlertMessage.value = msg;
+  showAutoUpdatedAlert.value = true;
+  if (autoUpdateTimer) clearTimeout(autoUpdateTimer);
+  autoUpdateTimer = setTimeout(() => {
+    showAutoUpdatedAlert.value = false;
+  }, 6000);
+}
 
 function driverTeamColor(driver: {
   name: string;
@@ -394,49 +447,8 @@ function onFilterModeChange(val: "top3" | "top5" | "top10" | "all") {
   );
 }
 
-async function reloadData(forceRefresh = false) {
-  if (forceRefresh) {
-    localStorage.removeItem("f1_sim_championship_history_2026_v2");
-    localStorage.removeItem("f1_sim_stages_simulated_cache_v2");
-  }
-
-  isLoading.value = true;
-  errorMessage.value = "";
-  loadingPercent.value = 15;
-  loadingStatusText.value = "Obtendo dados das corridas...";
-
-  try {
-    // Verificar se já temos simulações salvas em cache
-    if (!forceRefresh) {
-      const cachedSim = localStorage.getItem(
-        "f1_sim_stages_simulated_cache_v2",
-      );
-      if (cachedSim) {
-        try {
-          const parsed = JSON.parse(cachedSim);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            simulatedStages.value = parsed;
-            onFilterModeChange(filterMode.value);
-            isLoading.value = false;
-            return;
-          }
-        } catch (e) {
-          console.warn("Cache de simulação inválido:", e);
-        }
-      }
-    }
-
-    const stages: ChampionshipStage[] = await fetchChampionshipHistory(
-      (step, pct) => {
-        loadingStatusText.value = step;
-        loadingPercent.value = Math.min(70, Math.floor(15 + pct * 0.5));
-      },
-    );
-
-    loadingStatusText.value = "Executando simulação Monte Carlo por etapa...";
-    loadingPercent.value = 75;
-
-    // Executar simulações no Web Worker
+function runWorkerSimulation(stagesToRun: ChampionshipStage[]): Promise<StageData[]> {
+  return new Promise((resolve, reject) => {
     if (worker) {
       worker.terminate();
     }
@@ -452,35 +464,161 @@ async function reloadData(forceRefresh = false) {
         loadingPercent.value = Math.min(98, progress);
         loadingStatusText.value = `Simulando etapa ${data.completed} de ${data.total} (${data.currentStage})...`;
       } else if (data.type === "multiStageComplete") {
-        simulatedStages.value = data.stagesResult;
-        loadingPercent.value = 100;
-        loadingStatusText.value = "Pronto!";
-
-        try {
-          localStorage.setItem(
-            "f1_sim_stages_simulated_cache_v2",
-            JSON.stringify(data.stagesResult),
-          );
-        } catch (err) {
-          console.warn("Falha ao salvar cache de simulação:", err);
-        }
-
-        onFilterModeChange(filterMode.value);
-        isLoading.value = false;
+        resolve(data.stagesResult);
       }
     };
 
     worker.onerror = (err) => {
-      console.error(err);
-      errorMessage.value = "Ocorreu um erro ao processar a simulação.";
-      isLoading.value = false;
+      reject(err);
     };
 
     worker.postMessage({
       mode: "multiStage",
-      stages,
+      stages: stagesToRun,
       numSimulations: 10000,
     });
+  });
+}
+
+// Verifica em segundo plano se o campeonato tem novas etapas ou pontuações na API
+async function checkAndSyncIfOutdated(currentStages: StageData[]) {
+  if (currentStages.length === 0) return;
+  const lastStage = currentStages[currentStages.length - 1];
+  const lastRound = lastStage.round;
+  const leaderPoints = lastStage.drivers?.[0]?.points;
+
+  try {
+    const outdatedCheck = await checkChampionshipOutdated(lastRound, leaderPoints);
+    if (!outdatedCheck.isOutdated) {
+      return;
+    }
+
+    isAutoUpdating.value = true;
+    autoUpdateMessage.value =
+      outdatedCheck.reason ||
+      "Nova etapa ou pontuação detectada na API. Atualizando gráfico...";
+
+    // Buscar histórico atualizado da API
+    const freshStages = await fetchChampionshipHistory();
+
+    // Identificar se há etapas novas para simular
+    const stagesToSimulate = freshStages.filter(
+      (fs) => !currentStages.some((cs) => cs.round === fs.round),
+    );
+
+    let finalStages: StageData[] = [];
+
+    if (stagesToSimulate.length > 0) {
+      // Simula apenas as novas etapas incrementais
+      const newSimulated = await runWorkerSimulation(stagesToSimulate);
+      finalStages = [...currentStages, ...newSimulated];
+    } else {
+      // Se não há novas etapas mas os pontos foram corrigidos/atualizados na última
+      finalStages = await runWorkerSimulation(freshStages);
+    }
+
+    // Padroniza os nomes para garantir apenas o nome do país
+    finalStages = finalStages.map((s) => ({
+      ...s,
+      shortName: formatStageShortName(s.round, s),
+    }));
+
+    simulatedStages.value = finalStages;
+
+    try {
+      localStorage.setItem(
+        "f1_sim_stages_simulated_cache_v2",
+        JSON.stringify(finalStages),
+      );
+    } catch (e) {
+      console.warn("Falha ao salvar cache atualizado:", e);
+    }
+
+    onFilterModeChange(filterMode.value);
+    const latestStage = finalStages[finalStages.length - 1];
+    notifyAutoUpdated(
+      `Gráfico atualizado automaticamente com os dados da etapa (${latestStage.shortName})!`,
+    );
+  } catch (err) {
+    console.warn("Erro na sincronização automática em segundo plano:", err);
+  } finally {
+    isAutoUpdating.value = false;
+  }
+}
+
+async function reloadData(forceRefresh = false) {
+  if (forceRefresh) {
+    localStorage.removeItem("f1_sim_championship_history_2026_v2");
+    localStorage.removeItem("f1_sim_stages_simulated_cache_v2");
+  }
+
+  isLoading.value = true;
+  errorMessage.value = "";
+  loadingPercent.value = 15;
+  loadingStatusText.value = "Obtendo dados das corridas...";
+
+  try {
+    // 1. Verificar se já temos simulações salvas em cache
+    if (!forceRefresh) {
+      const cachedSim = localStorage.getItem(
+        "f1_sim_stages_simulated_cache_v2",
+      );
+      if (cachedSim) {
+        try {
+          const parsed = JSON.parse(cachedSim);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            // Sanitiza os nomes do cache para garantir sempre o formato com país
+            simulatedStages.value = parsed.map((s: StageData) => ({
+              ...s,
+              shortName: formatStageShortName(s.round, s),
+            }));
+            onFilterModeChange(filterMode.value);
+            isLoading.value = false;
+
+            // Inicia checagem automática em segundo plano
+            checkAndSyncIfOutdated(simulatedStages.value);
+            return;
+          }
+        } catch (e) {
+          console.warn("Cache de simulação inválido:", e);
+        }
+      }
+    }
+
+    // 2. Se não houver cache ou for forceRefresh, executa a simulação completa
+    const stages: ChampionshipStage[] = await fetchChampionshipHistory(
+      (step, pct) => {
+        loadingStatusText.value = step;
+        loadingPercent.value = Math.min(70, Math.floor(15 + pct * 0.5));
+      },
+      forceRefresh,
+    );
+
+    loadingStatusText.value = "Executando simulação Monte Carlo por etapa...";
+    loadingPercent.value = 75;
+
+    const stagesResult = await runWorkerSimulation(stages);
+
+    const sanitizedResults = stagesResult.map((s) => ({
+      ...s,
+      shortName: formatStageShortName(s.round, s),
+    }));
+
+    simulatedStages.value = sanitizedResults;
+    loadingPercent.value = 100;
+    loadingStatusText.value = "Pronto!";
+
+    try {
+      localStorage.setItem(
+        "f1_sim_stages_simulated_cache_v2",
+        JSON.stringify(sanitizedResults),
+      );
+    } catch (err) {
+      console.warn("Falha ao salvar cache de simulação:", err);
+    }
+
+    onFilterModeChange(filterMode.value);
+    isLoading.value = false;
   } catch (err: any) {
     console.error(err);
     errorMessage.value =
@@ -497,6 +635,9 @@ onBeforeUnmount(() => {
   if (worker) {
     worker.terminate();
     worker = null;
+  }
+  if (autoUpdateTimer) {
+    clearTimeout(autoUpdateTimer);
   }
 });
 </script>

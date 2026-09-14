@@ -114,8 +114,10 @@ function getDriverColor(name: string, index: number) {
   };
 }
 
+import { formatStageShortName } from "@/services/championshipHistory";
+
 const chartData = computed<ChartData<"line">>(() => {
-  const labels = props.stages.map((s) => s.shortName);
+  const labels = props.stages.map((s) => formatStageShortName(s.round, s));
 
   const datasets = props.selectedDrivers.map((driverName, idx) => {
     const styling = getDriverColor(driverName, idx);

@@ -2087,5 +2087,154 @@ export const localSeason2026Stages: ChampionshipStage[] = [
         "points": 1
       }
     ]
+  },
+  {
+    "round": 14,
+    "raceName": "Formula 1 Tag Heuer Gran Premio de España 2026",
+    "shortName": "R14 - Espanha",
+    "date": "2026-09-13",
+    "hasSprint": false,
+    "racesRemaining": 10,
+    "sprintsRemaining": 1,
+    "drivers": [
+      {
+        "name": "George Russell",
+        "team": "Mercedes Formula 1 Team",
+        "teamId": "mercedes",
+        "points": 211
+      },
+      {
+        "name": "Andrea Kimi Antonelli",
+        "team": "Mercedes Formula 1 Team",
+        "teamId": "mercedes",
+        "points": 292
+      },
+      {
+        "name": "Charles Leclerc",
+        "team": "Scuderia Ferrari",
+        "teamId": "ferrari",
+        "points": 167
+      },
+      {
+        "name": "Lewis Hamilton",
+        "team": "Scuderia Ferrari",
+        "teamId": "ferrari",
+        "points": 191
+      },
+      {
+        "name": "Lando Norris",
+        "team": "McLaren Formula 1 Team",
+        "teamId": "mclaren",
+        "points": 186
+      },
+      {
+        "name": "Max Verstappen",
+        "team": "Red Bull Racing",
+        "teamId": "red_bull",
+        "points": 145
+      },
+      {
+        "name": "Oliver Bearman",
+        "team": "Haas F1 Team",
+        "teamId": "haas",
+        "points": 18
+      },
+      {
+        "name": "Arvid Lindblad",
+        "team": "RB F1 Team",
+        "teamId": "rb",
+        "points": 31
+      },
+      {
+        "name": "Gabriel Bortoleto",
+        "team": "Audi Revolut F1 Team",
+        "teamId": "audi",
+        "points": 10
+      },
+      {
+        "name": "Pierre Gasly",
+        "team": "Alpine F1 Team",
+        "teamId": "alpine",
+        "points": 41
+      },
+      {
+        "name": "Esteban Ocon",
+        "team": "Haas F1 Team",
+        "teamId": "haas",
+        "points": 3
+      },
+      {
+        "name": "Alex Albon",
+        "team": "Williams Racing",
+        "teamId": "williams",
+        "points": 5
+      },
+      {
+        "name": "Liam Lawson",
+        "team": "RB F1 Team",
+        "teamId": "rb",
+        "points": 59
+      },
+      {
+        "name": "Franco Colapinto",
+        "team": "Alpine F1 Team",
+        "teamId": "alpine",
+        "points": 27
+      },
+      {
+        "name": "Carlos Sainz",
+        "team": "Williams Racing",
+        "teamId": "williams",
+        "points": 6
+      },
+      {
+        "name": "Sergio Pérez",
+        "team": "Cadillac Formula 1 Team",
+        "teamId": "cadillac",
+        "points": 0
+      },
+      {
+        "name": "Lance Stroll",
+        "team": "Aston Martin F1 Team",
+        "teamId": "aston_martin",
+        "points": 0
+      },
+      {
+        "name": "Fernando Alonso",
+        "team": "Aston Martin F1 Team",
+        "teamId": "aston_martin",
+        "points": 3
+      },
+      {
+        "name": "Valtteri Bottas",
+        "team": "Cadillac Formula 1 Team",
+        "teamId": "cadillac",
+        "points": 0
+      },
+      {
+        "name": "Isack Hadjar",
+        "team": "Red Bull Racing",
+        "teamId": "red_bull",
+        "points": 71
+      },
+      {
+        "name": "Oscar Piastri",
+        "team": "McLaren Formula 1 Team",
+        "teamId": "mclaren",
+        "points": 120
+      },
+      {
+        "name": "Nico Hulkenberg",
+        "team": "Audi Revolut F1 Team",
+        "teamId": "audi",
+        "points": 7
+      },
+      {
+        "name": "Yuki Tsunoda",
+        "team": "RB F1 Team",
+        "teamId": "rb",
+        "points": 1
+      }
+    ]
   }
 ];

@@ -17,6 +17,200 @@ export interface ChampionshipStage {
   }[];
 }
 
+export const roundToCountryName: Record<number, string> = {
+  1: "Austrália",
+  2: "China",
+  3: "Japão",
+  4: "Miami",
+  5: "Canadá",
+  6: "Mônaco",
+  7: "Espanha",
+  8: "Áustria",
+  9: "Grã-Bretanha",
+  10: "Bélgica",
+  11: "Hungria",
+  12: "Holanda",
+  13: "Itália",
+  14: "Espanha",
+  15: "Azerbaijão",
+  16: "Malásia",
+  17: "Singapura",
+  18: "Estados Unidos",
+  19: "México",
+  20: "Brasil",
+  21: "Las Vegas",
+  22: "Catar",
+  23: "Abu Dhabi",
+  24: "Abu Dhabi",
+};
+
+export const countryTranslations: Record<string, string> = {
+  Australia: "Austrália",
+  China: "China",
+  Japan: "Japão",
+  Canada: "Canadá",
+  Monaco: "Mônaco",
+  Spain: "Espanha",
+  Austria: "Áustria",
+  "Great Britain": "Grã-Bretanha",
+  "United Kingdom": "Grã-Bretanha",
+  Belgium: "Bélgica",
+  Hungary: "Hungria",
+  Netherlands: "Holanda",
+  Italy: "Itália",
+  Azerbaijan: "Azerbaijão",
+  Malaysia: "Malásia",
+  Singapore: "Singapura",
+  "United States": "Estados Unidos",
+  Mexico: "México",
+  Brazil: "Brasil",
+  Qatar: "Catar",
+  "United Arab Emirates": "Abu Dhabi",
+  "Saudi Arabia": "Arábia Saudita",
+  Bahrain: "Bahrein",
+};
+
+export function getStageCountryName(round: number, race?: any): string {
+  if (roundToCountryName[round]) {
+    return roundToCountryName[round];
+  }
+  if (race?.circuit?.city) {
+    const city = String(race.circuit.city).toLowerCase();
+    if (city.includes("miami")) return "Miami";
+    if (city.includes("vegas")) return "Las Vegas";
+    if (city.includes("madrid")) return "Espanha";
+    if (city.includes("barcelona") || city.includes("montmelo")) return "Espanha";
+    if (city.includes("monaco") || city.includes("monte carlo")) return "Mônaco";
+    if (city.includes("sao paulo") || city.includes("interlagos")) return "Brasil";
+  }
+  if (race?.circuit?.country && countryTranslations[race.circuit.country]) {
+    return countryTranslations[race.circuit.country];
+  }
+  return `Etapa ${round}`;
+}
+
+export function formatStageShortName(round: number, race?: any): string {
+  if (round === 0) return "Início";
+  const country = getStageCountryName(round, race);
+  return `R${round} - ${country}`;
+}
+
+export function sanitizeStage(stage: ChampionshipStage): ChampionshipStage {
+  if (stage.round === 0) {
+    return { ...stage, shortName: "Início" };
+  }
+  return {
+    ...stage,
+    shortName: formatStageShortName(stage.round),
+  };
+}
+
+export interface OutdatedCheckResult {
+  isOutdated: boolean;
+  latestCompletedRound: number;
+  lastSimulatedRound: number;
+  reason?: string;
+}
+
+export async function checkChampionshipOutdated(
+  lastSimulatedRound: number,
+  latestSimulatedLeaderPoints?: number,
+): Promise<OutdatedCheckResult> {
+  const localLastRound =
+    localSeason2026Stages.length > 0
+      ? localSeason2026Stages[localSeason2026Stages.length - 1].round
+      : 0;
+
+  try {
+    const res = await fetch("https://f1api.dev/api/current");
+    if (!res.ok) {
+      if (localLastRound > lastSimulatedRound) {
+        return {
+          isOutdated: true,
+          latestCompletedRound: localLastRound,
+          lastSimulatedRound,
+          reason: "Nova etapa disponível na base local",
+        };
+      }
+      return {
+        isOutdated: false,
+        latestCompletedRound: Math.max(localLastRound, lastSimulatedRound),
+        lastSimulatedRound,
+      };
+    }
+
+    const data = await res.json();
+    const allRaces = Array.isArray(data?.races) ? data.races : [];
+    const completedRaces = allRaces.filter(
+      (r: any) => r.winner !== null && r.winner !== undefined,
+    );
+
+    const apiLatestRound = completedRaces.reduce(
+      (max: number, r: any) => Math.max(max, Number(r.round) || 0),
+      0,
+    );
+
+    const latestRound = Math.max(apiLatestRound, localLastRound);
+
+    if (latestRound > lastSimulatedRound) {
+      return {
+        isOutdated: true,
+        latestCompletedRound: latestRound,
+        lastSimulatedRound,
+        reason: `Nova etapa disputada (R${latestRound}) ainda não simulada`,
+      };
+    }
+
+    if (
+      latestSimulatedLeaderPoints !== undefined &&
+      latestRound === lastSimulatedRound &&
+      latestRound > 0
+    ) {
+      try {
+        const standingsRes = await fetch(
+          "https://f1api.dev/api/current/drivers-championship",
+        );
+        if (standingsRes.ok) {
+          const standingsData = await standingsRes.json();
+          const apiLeaderPts = Number(
+            standingsData?.drivers_championship?.[0]?.points ?? 0,
+          );
+          if (apiLeaderPts > latestSimulatedLeaderPoints) {
+            return {
+              isOutdated: true,
+              latestCompletedRound: latestRound,
+              lastSimulatedRound,
+              reason: "Pontuação oficial da API atualizada para a etapa",
+            };
+          }
+        }
+      } catch (_) {
+        // Silêncio em erro de standings secundário
+      }
+    }
+
+    return {
+      isOutdated: false,
+      latestCompletedRound: latestRound,
+      lastSimulatedRound,
+    };
+  } catch (err) {
+    if (localLastRound > lastSimulatedRound) {
+      return {
+        isOutdated: true,
+        latestCompletedRound: localLastRound,
+        lastSimulatedRound,
+        reason: "Nova etapa disponível na base local",
+      };
+    }
+    return {
+      isOutdated: false,
+      latestCompletedRound: lastSimulatedRound,
+      lastSimulatedRound,
+    };
+  }
+}
+
 const CACHE_KEY = "f1_sim_championship_history_2026_v2";
 const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 horas de cache
 
@@ -24,6 +218,11 @@ export async function fetchChampionshipHistory(
   onProgress?: (step: string, percent: number) => void,
   forceRefresh = false,
 ): Promise<ChampionshipStage[]> {
+  // Base local com nomes sanitizados
+  const baseStages = localSeason2026Stages.map(sanitizeStage);
+  const lastBaseRound =
+    baseStages.length > 0 ? baseStages[baseStages.length - 1].round : 0;
+
   // 1. Verificar cache no localStorage
   if (!forceRefresh) {
     try {
@@ -36,19 +235,18 @@ export async function fetchChampionshipHistory(
           Array.isArray(parsed.data) &&
           parsed.data.length > 0
         ) {
-          onProgress?.("Carregado dos dados locais", 100);
-          return parsed.data;
+          const cachedLastRound = parsed.data[parsed.data.length - 1]?.round ?? 0;
+          // Se o cache tiver ao menos tantas etapas quanto a base local, sanitiza e usa
+          if (cachedLastRound >= lastBaseRound) {
+            onProgress?.("Carregado dos dados locais", 100);
+            return (parsed.data as ChampionshipStage[]).map(sanitizeStage);
+          }
         }
       }
     } catch (e) {
       console.warn("Falha ao ler cache local de etapas:", e);
     }
   }
-
-  // 2. Usar dados locais pré-compilados como base (evita dezenas de chamadas às etapas passadas)
-  const baseStages = [...localSeason2026Stages];
-  const lastBaseRound =
-    baseStages.length > 0 ? baseStages[baseStages.length - 1].round : 0;
 
   try {
     onProgress?.("Verificando se há novas etapas...", 30);
@@ -85,7 +283,7 @@ export async function fetchChampionshipHistory(
       return baseStages;
     }
 
-    // Se houver novas etapas além da 13, buscar apenas as novas!
+    // Se houver novas etapas além da base, buscar apenas as novas!
     onProgress?.("Buscando dados da nova etapa...", 60);
     const sprintRounds = [2, 4, 5, 9, 12, 17];
     const totalGPs = grandPrix2026.length;
@@ -154,7 +352,7 @@ export async function fetchChampionshipHistory(
       baseStages.push({
         round: roundNum,
         raceName: race.raceName || `GP da Etapa ${roundNum}`,
-        shortName: `R${roundNum} - ${race.raceName ? race.raceName.replace(/Formula 1\s*/i, "").slice(0, 12) : ""}`,
+        shortName: formatStageShortName(roundNum, race),
         date: race.schedule?.race?.date || "",
         hasSprint: sprintRounds.includes(roundNum),
         racesRemaining: Math.max(0, totalGPs - roundNum),
@@ -185,3 +383,4 @@ export async function fetchChampionshipHistory(
     return baseStages;
   }
 }
+
