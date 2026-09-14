@@ -8,7 +8,7 @@
   </v-sheet>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed } from "vue";
 import { useTheme } from "vuetify";
 import {
@@ -21,10 +21,10 @@ import {
   CategoryScale,
   PointElement,
   Filler,
-  type ChartData,
-  type ChartOptions,
 } from "chart.js";
 import { Line } from "vue-chartjs";
+import { getTeamColor } from "@/constants/teamColors";
+import { formatStageShortName } from "@/services/championshipHistory";
 
 ChartJS.register(
   Title,
@@ -37,35 +37,21 @@ ChartJS.register(
   Filler,
 );
 
-export interface StageData {
-  round: number;
-  raceName: string;
-  shortName: string;
-  date: string;
-  hasSprint: boolean;
-  racesRemaining: number;
-  sprintsRemaining: number;
-  chances: { name: string; chance: number }[];
-  drivers: {
-    name: string;
-    team: string;
-    teamId: string;
-    points: number;
-  }[];
-}
-
-const props = defineProps<{
-  stages: StageData[];
-  selectedDrivers: string[];
-}>();
+const props = defineProps({
+  stages: {
+    type: Array,
+    required: true,
+  },
+  selectedDrivers: {
+    type: Array,
+    required: true,
+  },
+});
 
 const theme = useTheme();
 
 // Paleta visual inspirada nas cores oficiais das equipes e pilotos de F1
-const driverColors: Record<
-  string,
-  { color: string; dash?: number[]; pointStyle?: string }
-> = {
+const driverColors = {
   "Andrea Kimi Antonelli": { color: "#00D2BE" }, // Mercedes Verde-água
   "George Russell": { color: "#29E7D6", dash: [5, 5] }, // Mercedes Ciano pontilhado
   "Lewis Hamilton": { color: "#EF1A2D" }, // Ferrari Vermelho
@@ -90,8 +76,6 @@ const driverColors: Record<
   "Valtteri Bottas": { color: "#8B6914", dash: [4, 4] }, // Cadillac Bronze
 };
 
-import { getTeamColor } from "@/constants/teamColors";
-
 // Cores de apoio dinâmicas
 const fallbackColors = [
   "#AB47BC",
@@ -104,7 +88,7 @@ const fallbackColors = [
   "#9CCC65",
 ];
 
-function getDriverColor(name: string, index: number) {
+function getDriverColor(name, index) {
   const isDark = theme.global.current.value.dark;
   const teamCol = getTeamColor({ name }, isDark);
   const known = driverColors[name];
@@ -114,9 +98,7 @@ function getDriverColor(name: string, index: number) {
   };
 }
 
-import { formatStageShortName } from "@/services/championshipHistory";
-
-const chartData = computed<ChartData<"line">>(() => {
+const chartData = computed(() => {
   const labels = props.stages.map((s) => formatStageShortName(s.round, s));
 
   const datasets = props.selectedDrivers.map((driverName, idx) => {
@@ -147,7 +129,7 @@ const chartData = computed<ChartData<"line">>(() => {
   };
 });
 
-const chartOptions = computed<ChartOptions<"line">>(() => {
+const chartOptions = computed(() => {
   const isDark = theme.global.current.value.dark;
   const textColor = isDark ? "#E0E0E0" : "#2E2E2E";
   const mutedTextColor = isDark ? "#9E9E9E" : "#757575";
@@ -188,7 +170,7 @@ const chartOptions = computed<ChartOptions<"line">>(() => {
         padding: 12,
         boxPadding: 6,
         usePointStyle: true,
-        itemSort: (a, b) => (b.raw as number) - (a.raw as number),
+        itemSort: (a, b) => (b.raw || 0) - (a.raw || 0),
         callbacks: {
           label: (context) => {
             const driverName = context.dataset.label || "";

@@ -1,4 +1,4 @@
-export const lightTeamColors: Record<string, string> = {
+export const lightTeamColors = {
   mercedes: "#007C70",
   ferrari: "#D9002A",
   mclaren: "#B85C00",
@@ -12,7 +12,7 @@ export const lightTeamColors: Record<string, string> = {
   aston_martin: "#13795B",
 };
 
-export const darkTeamColors: Record<string, string> = {
+export const darkTeamColors = {
   mercedes: "#42F5D7",
   ferrari: "#FF3654",
   mclaren: "#FF9A3D",
@@ -26,11 +26,7 @@ export const darkTeamColors: Record<string, string> = {
   aston_martin: "#45C49A",
 };
 
-export function normalizeTeamKey(
-  teamId?: string,
-  teamName?: string,
-  driverName?: string,
-): string {
+export function normalizeTeamKey(teamId, teamName, driverName) {
   const id = (teamId || "").toLowerCase();
   const name = (teamName || "").toLowerCase();
   const driver = (driverName || "").toLowerCase();
@@ -121,11 +117,8 @@ export function normalizeTeamKey(
   return "";
 }
 
-export function getTeamColor(
-  driver: { name: string; team?: string; teamId?: string },
-  isDark = true,
-): string {
-  const key = normalizeTeamKey(driver.teamId, driver.team, driver.name);
+export function getTeamColor(driver, isDark = true) {
+  const key = normalizeTeamKey(driver?.teamId, driver?.team, driver?.name);
   const colors = isDark ? darkTeamColors : lightTeamColors;
   return colors[key] || (isDark ? "#90CAF9" : "#1976D2");
 }

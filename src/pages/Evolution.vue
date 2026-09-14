@@ -348,17 +348,14 @@
   </v-container>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useTheme } from "vuetify";
-import ChampionshipLineChart, {
-  type StageData,
-} from "@/components/ChampionshipLineChart.vue";
+import ChampionshipLineChart from "@/components/ChampionshipLineChart.vue";
 import {
   fetchChampionshipHistory,
   checkChampionshipOutdated,
   formatStageShortName,
-  type ChampionshipStage,
 } from "@/services/championshipHistory";
 import { getTeamColor } from "@/constants/teamColors";
 
@@ -373,15 +370,15 @@ const isAutoUpdating = ref(false);
 const autoUpdateMessage = ref("Verificando se há novas etapas...");
 const showAutoUpdatedAlert = ref(false);
 const autoUpdatedAlertMessage = ref("");
-let autoUpdateTimer: any = null;
+let autoUpdateTimer = null;
 
-const filterMode = ref<"top3" | "top5" | "top10" | "all">("top5");
-const selectedIndices = ref<number[]>([]);
-const simulatedStages = ref<StageData[]>([]);
+const filterMode = ref("top5");
+const selectedIndices = ref([]);
+const simulatedStages = ref([]);
 
-let worker: Worker | null = null;
+let worker = null;
 
-function notifyAutoUpdated(msg: string) {
+function notifyAutoUpdated(msg) {
   autoUpdatedAlertMessage.value = msg;
   showAutoUpdatedAlert.value = true;
   if (autoUpdateTimer) clearTimeout(autoUpdateTimer);
@@ -390,11 +387,7 @@ function notifyAutoUpdated(msg: string) {
   }, 6000);
 }
 
-function driverTeamColor(driver: {
-  name: string;
-  team?: string;
-  teamId?: string;
-}): string {
+function driverTeamColor(driver) {
   return getTeamColor(driver, theme.global.current.value.dark);
 }
 
@@ -440,7 +433,7 @@ const activeDrivers = computed(() => {
     .filter(Boolean);
 });
 
-function onFilterModeChange(val: "top3" | "top5" | "top10" | "all") {
+function onFilterModeChange(val) {
   if (rankedDrivers.value.length === 0) return;
   const total = rankedDrivers.value.length;
   let count = 5;
@@ -455,9 +448,7 @@ function onFilterModeChange(val: "top3" | "top5" | "top10" | "all") {
   );
 }
 
-function runWorkerSimulation(
-  stagesToRun: ChampionshipStage[],
-): Promise<StageData[]> {
+function runWorkerSimulation(stagesToRun) {
   return new Promise((resolve, reject) => {
     if (worker) {
       worker.terminate();
@@ -491,7 +482,7 @@ function runWorkerSimulation(
 }
 
 // Verifica em segundo plano se o campeonato tem novas etapas ou pontuações na API
-async function checkAndSyncIfOutdated(currentStages: StageData[]) {
+async function checkAndSyncIfOutdated(currentStages) {
   if (currentStages.length === 0) return;
   const lastStage = currentStages[currentStages.length - 1];
   const lastRound = lastStage.round;
@@ -519,7 +510,7 @@ async function checkAndSyncIfOutdated(currentStages: StageData[]) {
       (fs) => !currentStages.some((cs) => cs.round === fs.round),
     );
 
-    let finalStages: StageData[] = [];
+    let finalStages = [];
 
     if (stagesToSimulate.length > 0) {
       // Simula apenas as novas etapas incrementais
@@ -581,7 +572,7 @@ async function reloadData(forceRefresh = false) {
           const parsed = JSON.parse(cachedSim);
           if (Array.isArray(parsed) && parsed.length > 0) {
             // Sanitiza os nomes do cache para garantir sempre o formato com país
-            simulatedStages.value = parsed.map((s: StageData) => ({
+            simulatedStages.value = parsed.map((s) => ({
               ...s,
               shortName: formatStageShortName(s.round, s),
             }));
@@ -599,7 +590,7 @@ async function reloadData(forceRefresh = false) {
     }
 
     // 2. Se não houver cache ou for forceRefresh, executa a simulação completa
-    const stages: ChampionshipStage[] = await fetchChampionshipHistory(
+    const stages = await fetchChampionshipHistory(
       (step, pct) => {
         loadingStatusText.value = step;
         loadingPercent.value = Math.min(70, Math.floor(15 + pct * 0.5));
@@ -632,7 +623,7 @@ async function reloadData(forceRefresh = false) {
 
     onFilterModeChange(filterMode.value);
     isLoading.value = false;
-  } catch (err: any) {
+  } catch (err) {
     console.error(err);
     errorMessage.value =
       err?.message || "Falha ao carregar os dados do campeonato.";
