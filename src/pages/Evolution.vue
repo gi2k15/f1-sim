@@ -47,7 +47,12 @@
         >
           <div class="d-flex align-center justify-space-between flex-wrap ga-2">
             <span>{{ autoUpdateMessage }}</span>
-            <v-progress-circular indeterminate size="18" width="2" color="info" />
+            <v-progress-circular
+              indeterminate
+              size="18"
+              width="2"
+              color="info"
+            />
           </div>
         </v-alert>
       </v-col>
@@ -293,7 +298,10 @@
                       <td :style="{ color: driverTeamColor(driver) }">
                         {{ driver.team }}
                       </td>
-                      <td class="text-right font-weight-medium">
+                      <td
+                        :style="{ color: driverTeamColor(driver) }"
+                        class="text-right font-weight-medium"
+                      >
                         {{ driver.points }}
                       </td>
                       <td
@@ -447,7 +455,9 @@ function onFilterModeChange(val: "top3" | "top5" | "top10" | "all") {
   );
 }
 
-function runWorkerSimulation(stagesToRun: ChampionshipStage[]): Promise<StageData[]> {
+function runWorkerSimulation(
+  stagesToRun: ChampionshipStage[],
+): Promise<StageData[]> {
   return new Promise((resolve, reject) => {
     if (worker) {
       worker.terminate();
@@ -488,7 +498,10 @@ async function checkAndSyncIfOutdated(currentStages: StageData[]) {
   const leaderPoints = lastStage.drivers?.[0]?.points;
 
   try {
-    const outdatedCheck = await checkChampionshipOutdated(lastRound, leaderPoints);
+    const outdatedCheck = await checkChampionshipOutdated(
+      lastRound,
+      leaderPoints,
+    );
     if (!outdatedCheck.isOutdated) {
       return;
     }

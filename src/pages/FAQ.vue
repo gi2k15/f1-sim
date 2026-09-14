@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pt-8" max-width="1000">
+  <v-container class="pt-8">
     <v-row class="mb-6">
       <v-col cols="12">
         <h1 class="text-h4 font-weight-bold mb-2">FAQ</h1>
@@ -19,13 +19,13 @@
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               Ele estima a probabilidade de cada piloto conquistar o título
-              mundial de Fórmula 1 ao final da temporada, utilizando o método de
+              mundial de Fórmula 1 ao final da temporada, utilizando o
               <a
                 href="https://pt.wikipedia.org/wiki/M%C3%A9todo_de_Monte_Carlo"
                 target="_blank"
                 noreferrer
                 noopener
-                >Monte Carlo</a
+                >método de Monte Carlo</a
               >
               para simular milhares de finais alternativos de campeonato em
               segundo plano (via Web Workers). Além disso, disponibiliza um
@@ -66,7 +66,8 @@
 
           <v-expansion-panel>
             <v-expansion-panel-title>
-              E se a API ainda não tiver atualizado os pontos após a última corrida?
+              E se a API ainda não tiver atualizado os pontos após a última
+              corrida?
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               A API pública pode levar algumas horas ou dias para computar a
@@ -74,8 +75,8 @@
               <ul class="pl-6 mt-2">
                 <li>
                   O app detecta automaticamente quando uma corrida já ocorreu e
-                  avisa através de um alerta se os pontos da API ainda forem os da
-                  etapa anterior.
+                  avisa através de um alerta se os pontos da API ainda forem os
+                  da etapa anterior.
                 </li>
                 <li>
                   <strong>Você pode editar manualmente a pontuação</strong>:
@@ -131,10 +132,10 @@
                   ainda serão disputadas.
                 </li>
                 <li>
-                  <strong>Número de simulações</strong>: quantidade de temporadas
-                  alternativas geradas pelo algoritmo de Monte Carlo. Quanto
-                  maior o valor (por exemplo, 100.000), mais estatisticamente
-                  estável é o resultado.
+                  <strong>Número de simulações</strong>: quantidade de
+                  temporadas alternativas geradas pelo algoritmo de Monte Carlo.
+                  Quanto maior o valor (por exemplo, 100.000), mais
+                  estatisticamente estável é o resultado.
                 </li>
               </ul>
             </v-expansion-panel-text>
@@ -158,8 +159,8 @@
             </v-expansion-panel-title>
             <v-expansion-panel-text>
               É uma estimativa probabilística simplificada, baseada em
-              aleatoriedade combinatória a partir dos pontos atuais. O modelo não
-              calcula variáveis complexas como ritmo puro de corrida,
+              aleatoriedade combinatória a partir dos pontos atuais. O modelo
+              não calcula variáveis complexas como ritmo puro de corrida,
               confiabilidade mecânica, penalidades, clima ou adequação de cada
               carro a cada traçado. Use como uma referência estatística
               divertida!
@@ -173,9 +174,9 @@
             <v-expansion-panel-text>
               A chance é a proporção de simulações em que o piloto terminou como
               campeão mundial, multiplicada por 100. Por exemplo:
-              <code>23,50%</code> significa que, em 23.500 de 100.000 campeonatos
-              simulados, aquele piloto terminou em 1º lugar na classificação
-              final.
+              <code>23,50%</code> significa que, em 23.500 de 100.000
+              campeonatos simulados, aquele piloto terminou em 1º lugar na
+              classificação final.
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
