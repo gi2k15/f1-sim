@@ -4,10 +4,13 @@ import Home from "@/pages/Home.vue";
 import FAQ from "@/pages/FAQ.vue";
 import Coffee from "@/pages/Coffee.vue";
 import Evolution from "@/pages/Evolution.vue";
+import Scenarios from "@/pages/Scenarios.vue";
 
 const routes = [
   { path: "/", component: Home },
   { path: "/evolucao", redirect: "/?tab=evolucao" },
+  { path: "/cenarios", component: Scenarios },
+  { path: "/scenarios", redirect: "/cenarios" },
   { path: "/faq", component: FAQ },
   { path: "/cafe", component: Coffee },
 ];
