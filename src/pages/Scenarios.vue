@@ -86,29 +86,28 @@
                   hide-details
                 />
               </v-col>
-              <v-col cols="12" md="6">
-                <v-sheet
-                  color="transparent"
-                  class="d-flex flex-wrap align-center justify-start justify-md-end ga-2"
+              <v-col
+                cols="12"
+                md="6"
+                class="d-flex flex-wrap align-center justify-start justify-md-end ga-2"
+              >
+                <v-chip color="primary" variant="tonal" size="default">
+                  <v-icon icon="mdi-flag-checkered" start />
+                  {{ maxPointsInDispute }} pts em disputa
+                </v-chip>
+                <v-chip color="success" variant="tonal" size="default">
+                  <v-icon icon="mdi-account-check" start />
+                  {{ championshipStatus.contendersCount }} com chances
+                </v-chip>
+                <v-chip
+                  v-if="championshipStatus.eliminatedCount > 0"
+                  color="grey"
+                  variant="tonal"
+                  size="default"
                 >
-                  <v-chip color="primary" variant="tonal" size="default">
-                    <v-icon icon="mdi-flag-checkered" start />
-                    {{ maxPointsInDispute }} pts em disputa
-                  </v-chip>
-                  <v-chip color="success" variant="tonal" size="default">
-                    <v-icon icon="mdi-account-check" start />
-                    {{ championshipStatus.contendersCount }} com chances
-                  </v-chip>
-                  <v-chip
-                    v-if="championshipStatus.eliminatedCount > 0"
-                    color="grey"
-                    variant="tonal"
-                    size="default"
-                  >
-                    <v-icon icon="mdi-close-circle-outline" start />
-                    {{ championshipStatus.eliminatedCount }} eliminados
-                  </v-chip>
-                </v-sheet>
+                  <v-icon icon="mdi-close-circle-outline" start />
+                  {{ championshipStatus.eliminatedCount }} eliminados
+                </v-chip>
               </v-col>
             </v-row>
           </v-card-text>
@@ -129,13 +128,13 @@
           <v-alert-title class="font-weight-bold">
             Match Point do Título no Próximo GP!
           </v-alert-title>
-          <v-sheet color="transparent" class="text-body-2 mt-1">
+          <p class="text-body-2 mt-1 mb-0">
             O líder <strong>{{ leaderDriver?.name }}</strong> já possui
             combinações matemáticas possíveis para ser coroado campeão mundial
             na próxima corrida. Consulte a aba
             <em>Calculadora do Piloto</em> para conferir os resultados
             necessários.
-          </v-sheet>
+          </p>
         </v-alert>
       </v-col>
     </v-row>
@@ -172,10 +171,10 @@
                 <v-card-title
                   class="d-flex align-center justify-space-between flex-wrap ga-2"
                 >
-                  <v-sheet color="transparent" class="d-flex align-center ga-2">
+                  <span class="d-flex align-center ga-2">
                     <v-icon icon="mdi-chart-timeline" color="green-darken-2" />
                     <span>Situação Matemática de Todos os Pilotos</span>
-                  </v-sheet>
+                  </span>
 
                   <!-- Filtro rápido de status -->
                   <v-chip-group
@@ -229,10 +228,7 @@
                       <span v-else>{{ driver.position }}º</span>
                     </td>
                     <td>
-                      <v-sheet
-                        color="transparent"
-                        class="d-flex align-center ga-2"
-                      >
+                      <span class="d-flex align-center ga-2">
                         <v-avatar
                           size="24"
                           :color="getDriverColor(driver)"
@@ -246,7 +242,7 @@
                         >
                           {{ driver.name }}
                         </span>
-                      </v-sheet>
+                      </span>
                     </td>
                     <td>
                       <span :style="{ color: getDriverColor(driver) }">
@@ -296,11 +292,11 @@
         </v-row>
       </v-tabs-window-item>
 
-      <!-- ABA 2: CALCULADORA DO PILOTO SELECIONADO -->
+      <!-- ABA 2: CALCULADORA DO PILOTO -->
       <v-tabs-window-item value="calculator">
-        <!-- Seletor do piloto em foco -->
+        <!-- Seletor do piloto e do rival -->
         <v-row class="mb-4">
-          <v-col cols="12" md="6">
+          <v-col cols="12" :md="isSelectedLeader ? 6 : 12">
             <v-card variant="outlined" rounded="lg">
               <v-card-text>
                 <v-select
@@ -308,31 +304,18 @@
                   :items="aliveDriverOptions"
                   item-title="title"
                   item-value="name"
-                  label="Selecione o piloto para avaliar"
+                  label="Escolha o piloto para analisar o caminho do título"
                   prepend-inner-icon="mdi-racing-helmet"
                   hide-details
                 >
                   <template #selection>
-                    <v-sheet
+                    <span
                       v-if="selectedContenderDriver"
-                      color="transparent"
-                      class="d-flex align-center ga-2"
+                      class="font-weight-bold"
                     >
-                      <v-avatar
-                        size="22"
-                        :color="getDriverColor(selectedContenderDriver)"
-                        class="text-caption text-white"
-                      >
-                        {{ (selectedContenderDriver.name || "").charAt(0) }}
-                      </v-avatar>
-                      <span class="font-weight-bold">
-                        {{ selectedContenderDriver.position }}º -
-                        {{ selectedContenderDriver.name }} ({{
-                          selectedContenderDriver.points
-                        }}
-                        pts)
-                      </span>
-                    </v-sheet>
+                      {{ selectedContenderDriver.position }}º -
+                      {{ selectedContenderDriver.name }}
+                    </span>
                     <span v-else>{{ selectedDriverName }}</span>
                   </template>
                 </v-select>
@@ -349,7 +332,7 @@
                   :items="rivalOptions"
                   item-title="title"
                   item-value="name"
-                  label="Rival de comparação direta"
+                  label="Rival de comparação direta (vice-líder ou perseguidor)"
                   prepend-inner-icon="mdi-sword-cross"
                   hide-details
                 />
@@ -358,73 +341,188 @@
           </v-col>
         </v-row>
 
-        <!-- CENÁRIOS QUANDO O PILOTO SELECIONADO É O LÍDER -->
+        <!-- CARTÃO PRINCIPAL / HERO DO PILOTO -->
+        <v-card
+          v-if="selectedContenderDriver"
+          variant="outlined"
+          rounded="lg"
+          class="mb-4"
+        >
+          <v-card-item class="pb-2">
+            <template #title>
+              <span class="text-h5 font-weight-bold mr-2">
+                {{ selectedContenderDriver.name }}
+              </span>
+              <v-chip
+                size="small"
+                variant="tonal"
+                :color="getDriverColor(selectedContenderDriver)"
+                class="font-weight-medium"
+              >
+                {{ selectedContenderDriver.team }}
+              </v-chip>
+            </template>
+
+            <template #subtitle>
+              <span class="text-body-2 text-medium-emphasis">
+                {{ selectedContenderDriver.position }}º colocado no Mundial de
+                Pilotos
+              </span>
+            </template>
+
+            <template #append>
+              <v-chip
+                :color="driverStatusInfo?.color"
+                variant="flat"
+                size="large"
+                :prepend-icon="driverStatusInfo?.icon"
+                class="font-weight-bold"
+              >
+                {{ driverStatusInfo?.badgeText }}
+              </v-chip>
+            </template>
+          </v-card-item>
+
+          <v-divider />
+
+          <!-- 4 Cartões de Métricas Chave -->
+          <v-card-text class="pt-4">
+            <v-row>
+              <v-col cols="6" sm="3">
+                <v-card
+                  variant="tonal"
+                  color="surface-variant"
+                  rounded="lg"
+                  class="pa-3 text-center h-100"
+                >
+                  <p
+                    class="text-caption text-medium-emphasis font-weight-medium mb-1"
+                  >
+                    Pontos Atuais
+                  </p>
+                  <p
+                    class="text-display-high font-weight-bold text-high-emphasis mb-1"
+                  >
+                    {{ selectedContenderDriver.points }}
+                  </p>
+                  <p class="text-caption text-medium-emphasis mb-0">
+                    {{ selectedContenderDriver.position }}º no campeonato
+                  </p>
+                </v-card>
+              </v-col>
+
+              <v-col cols="6" sm="3">
+                <v-card
+                  variant="tonal"
+                  :color="isSelectedLeader ? 'success' : 'error'"
+                  rounded="lg"
+                  class="pa-3 text-center h-100"
+                >
+                  <p class="text-caption font-weight-medium mb-1">
+                    {{
+                      isSelectedLeader
+                        ? "Vantagem na Liderança"
+                        : "Distância para o Líder"
+                    }}
+                  </p>
+                  <p class="text-h5 font-weight-bold mb-1">
+                    {{
+                      isSelectedLeader
+                        ? `+${leaderAnalysis?.leadGap || 0}`
+                        : `-${contenderAnalysis?.deficit || 0}`
+                    }}
+                    pts
+                  </p>
+                  <p class="text-caption mb-0">
+                    {{
+                      isSelectedLeader
+                        ? `sobre ${selectedRivalDriver?.name || "rival"}`
+                        : `atrás de ${leaderDriver?.name}`
+                    }}
+                  </p>
+                </v-card>
+              </v-col>
+
+              <v-col cols="6" sm="3">
+                <v-card
+                  variant="tonal"
+                  color="primary"
+                  rounded="lg"
+                  class="pa-3 text-center h-100"
+                >
+                  <p class="text-caption font-weight-medium mb-1">
+                    Pontos em Disputa
+                  </p>
+                  <p class="text-h5 font-weight-bold mb-1">
+                    {{ maxPointsInDispute }} pts
+                  </p>
+                  <p class="text-caption mb-0">
+                    {{ racesRemaining }} GPs + {{ sprintsRemaining }} Sprints
+                  </p>
+                </v-card>
+              </v-col>
+
+              <v-col cols="6" sm="3">
+                <v-card
+                  variant="tonal"
+                  color="amber-darken-3"
+                  rounded="lg"
+                  class="pa-3 text-center h-100"
+                >
+                  <p class="text-caption font-weight-medium mb-1">
+                    Pontuação Máxima
+                  </p>
+                  <p class="text-h5 font-weight-bold mb-1">
+                    {{ selectedContenderDriver.maxAchievable }} pts
+                  </p>
+                  <p class="text-caption mb-0">se vencer 100% das etapas</p>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+
+        <!-- VEREDITO CLARO EM LINGUAGEM NATURAL -->
+        <v-alert
+          v-if="driverStatusInfo"
+          :type="
+            driverStatusInfo.color === 'grey' ? 'info' : driverStatusInfo.color
+          "
+          variant="tonal"
+          rounded="lg"
+          :icon="driverStatusInfo.icon"
+          class="mb-4"
+        >
+          <v-alert-title class="font-weight-bold text-subtitle-1">
+            Cenário Geral: {{ driverStatusInfo.title }}
+          </v-alert-title>
+          <p class="text-body-1 mt-1 mb-0">
+            {{ driverStatusInfo.summary }}
+          </p>
+        </v-alert>
+
+        <!-- DETALHAMENTO: QUANDO É O LÍDER -->
         <template v-if="isSelectedLeader">
           <v-row class="mb-4">
-            <!-- Card 1: Requisitos mínimos se o rival vencer tudo -->
+            <!-- Card 1: Margem de Segurança -->
             <v-col cols="12" md="6">
               <v-card variant="outlined" rounded="lg" class="h-100">
-                <v-card-item>
-                  <v-card-title class="d-flex align-center ga-2 text-wrap">
-                    <v-icon icon="mdi-shield-check" color="green-darken-2" />
-                    <span
-                      >Se
-                      {{ selectedRivalDriver?.name || "o vice-líder" }} vencer
-                      todas</span
-                    >
-                  </v-card-title>
-                  <v-card-subtitle>
-                    Cenário mais agressivo do rival principal
-                  </v-card-subtitle>
+                <v-card-item
+                  title="Margem de Segurança do Líder"
+                  subtitle="O que é necessário contra o rival mais próximo"
+                >
+                  <template #prepend>
+                    <v-icon icon="mdi-shield-check" color="success" />
+                  </template>
                 </v-card-item>
 
                 <v-card-text class="pt-2">
-                  <v-sheet color="transparent" class="mb-4">
-                    <span class="text-caption text-medium-emphasis">
-                      Pontuação máxima que o rival pode atingir:
-                    </span>
-                    <h3 class="text-h5 font-weight-bold text-amber-darken-3">
-                      {{ selectedRivalDriver?.maxAchievable }} pts
-                    </h3>
-                  </v-sheet>
-
-                  <v-divider class="mb-4" />
-
-                  <v-list density="compact" class="bg-transparent pa-0">
-                    <v-list-item class="px-0">
-                      <template #prepend>
-                        <v-icon icon="mdi-target" color="primary" />
-                      </template>
-                      <v-list-item-title class="font-weight-medium">
-                        Pontos necessários pelo líder:
-                      </v-list-item-title>
-                      <v-list-item-subtitle
-                        class="text-body-1 font-weight-bold text-high-emphasis"
-                      >
-                        {{ leaderAnalysis?.minPointsIfRivalWinsAll }} pontos
-                        adicionais
-                      </v-list-item-subtitle>
-                    </v-list-item>
-
-                    <v-list-item class="px-0">
-                      <template #prepend>
-                        <v-icon icon="mdi-numeric-3-box" color="primary" />
-                      </template>
-                      <v-list-item-title class="font-weight-medium">
-                        Posição média segura por GP:
-                      </v-list-item-title>
-                      <v-list-item-subtitle
-                        class="text-body-1 font-weight-bold text-success"
-                      >
-                        {{ leaderAnalysis?.minSafePositionDesc }}
-                      </v-list-item-subtitle>
-                    </v-list-item>
-
+                  <v-list density="comfortable" class="bg-transparent pa-0">
                     <v-list-item class="px-0">
                       <template #prepend>
                         <v-icon
                           icon="mdi-star-circle-outline"
-                          color="primary"
+                          color="amber-darken-3"
                         />
                       </template>
                       <v-list-item-title class="font-weight-medium">
@@ -437,22 +535,64 @@
                         a taça
                       </v-list-item-subtitle>
                     </v-list-item>
+
+                    <v-divider class="my-2" />
+
+                    <v-list-item class="px-0">
+                      <template #prepend>
+                        <v-icon icon="mdi-flag-checkered" color="primary" />
+                      </template>
+                      <v-list-item-title class="font-weight-medium">
+                        Posição Média Segura:
+                      </v-list-item-title>
+                      <v-list-item-subtitle
+                        class="text-body-1 font-weight-bold text-success"
+                      >
+                        {{ leaderAnalysis?.minSafePositionDesc }}
+                      </v-list-item-subtitle>
+                    </v-list-item>
+
+                    <v-divider class="my-2" />
+
+                    <v-list-item class="px-0">
+                      <template #prepend>
+                        <v-icon icon="mdi-sword-cross" color="error" />
+                      </template>
+                      <v-list-item-title class="font-weight-medium">
+                        Se {{ selectedRivalDriver?.name || "o rival" }} vencer
+                        100% das provas:
+                      </v-list-item-title>
+                      <v-list-item-subtitle
+                        class="text-body-2 text-medium-emphasis"
+                      >
+                        O rival chega no máximo a
+                        <strong
+                          >{{ selectedRivalDriver?.maxAchievable }} pts</strong
+                        >. Basta ao líder somar
+                        <strong
+                          >{{
+                            leaderAnalysis?.minPointsIfRivalWinsAll
+                          }}
+                          pts</strong
+                        >
+                        nas {{ racesRemaining }} etapas.
+                      </v-list-item-subtitle>
+                    </v-list-item>
                   </v-list>
                 </v-card-text>
               </v-card>
             </v-col>
 
-            <!-- Card 2: Match Point no Próximo GP -->
+            <!-- Card 2: Decisão no Próximo GP -->
             <v-col cols="12" md="6">
               <v-card variant="outlined" rounded="lg" class="h-100">
-                <v-card-item>
-                  <v-card-title class="d-flex align-center ga-2 text-wrap">
+                <v-card-item
+                  title="Decisão Antecipada (Próximo GP)"
+                  subtitle="Possibilidade matemática de fechar a conta na próxima corrida"
+                >
+                  <template #prepend>
                     <v-icon icon="mdi-check-decagram" color="amber-darken-2" />
-                    <span>Título Antecipado (Próxima Corrida)</span>
-                  </v-card-title>
-                  <v-card-subtitle>
-                    Possibilidade de decidir o campeonato no próximo evento
-                  </v-card-subtitle>
+                  </template>
                 </v-card-item>
 
                 <v-card-text class="pt-2">
@@ -461,18 +601,18 @@
                       type="success"
                       variant="tonal"
                       density="compact"
-                      class="mb-3 text-caption"
+                      class="mb-3"
                       rounded="lg"
                     >
-                      O líder pode ser campeão já no próximo GP se preencher uma
-                      das combinações abaixo:
+                      O título pode ser conquistado já na próxima corrida nas
+                      seguintes combinações:
                     </v-alert>
 
                     <v-table density="compact" class="bg-transparent">
                       <thead>
                         <tr>
                           <th>Se o Líder terminar em</th>
-                          <th>O Rival precisa</th>
+                          <th>O Rival precisa terminar em</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -494,30 +634,35 @@
                   </template>
 
                   <template v-else>
-                    <v-alert
-                      type="info"
+                    <v-card
                       variant="tonal"
-                      density="compact"
+                      color="surface-variant"
                       rounded="lg"
-                      class="mb-3"
+                      class="pa-4 text-center mb-3"
                     >
-                      Ainda não é matematicamente possível selar o título no
-                      próximo GP.
-                    </v-alert>
-                    <p class="text-body-2 text-medium-emphasis">
-                      Vantagem atual:
-                      <strong>{{ leaderAnalysis?.leadGap }} pontos</strong
-                      >.<br />
-                      Após o próximo GP, ainda restarão
-                      <strong
-                        >{{
-                          leaderAnalysis?.pointsRemainingAfterNext
-                        }}
-                        pontos</strong
-                      >
-                      em jogo. O líder precisará abrir mais vantagem para gerar
-                      um match point nas corridas seguintes.
-                    </p>
+                      <v-icon
+                        icon="mdi-clock-outline"
+                        size="large"
+                        color="medium-emphasis"
+                        class="mb-2"
+                      />
+                      <p class="text-subtitle-1 font-weight-bold mb-1">
+                        Ainda sem match point no próximo GP
+                      </p>
+                      <p class="text-body-2 text-medium-emphasis mb-0">
+                        A vantagem atual é de
+                        <strong>{{ leaderAnalysis?.leadGap }} pontos</strong>.
+                        Como restarão
+                        <strong
+                          >{{
+                            leaderAnalysis?.pointsRemainingAfterNext
+                          }}
+                          pontos</strong
+                        >
+                        em disputa após a próxima etapa, a decisão matemática
+                        ficará para as etapas seguintes.
+                      </p>
+                    </v-card>
                   </template>
                 </v-card-text>
               </v-card>
@@ -525,98 +670,101 @@
           </v-row>
         </template>
 
-        <!-- CENÁRIOS QUANDO O PILOTO SELECIONADO É UM RIVAL/DESAFIANTE -->
+        <!-- DETALHAMENTO: QUANDO É UM DESAFIANTE / RIVAL -->
         <template v-else-if="selectedContenderDriver">
           <v-row class="mb-4">
-            <!-- Card do Rival: O que ele precisa fazer -->
+            <!-- Card 1: A Missão do Desafiante -->
             <v-col cols="12" md="6">
               <v-card variant="outlined" rounded="lg" class="h-100">
-                <v-card-item>
-                  <v-card-title class="d-flex align-center ga-2 text-wrap">
-                    <v-icon icon="mdi-sword-cross" color="amber-darken-2" />
-                    <span>Missão para {{ selectedContenderDriver.name }}</span>
-                  </v-card-title>
-                  <v-card-subtitle>
-                    Déficit atual e matemática da virada
-                  </v-card-subtitle>
+                <v-card-item
+                  :title="`A Missão de ${selectedContenderDriver.name}`"
+                  subtitle="O que o piloto precisa fazer na pista"
+                >
+                  <template #prepend>
+                    <v-icon icon="mdi-bullseye-arrow" color="primary" />
+                  </template>
                 </v-card-item>
 
                 <v-card-text class="pt-2">
-                  <v-row class="mb-2">
-                    <v-col cols="6">
-                      <v-sheet color="transparent">
-                        <span class="text-caption text-medium-emphasis"
-                          >Diferença para o Líder:</span
-                        >
-                        <h4 class="text-h6 font-weight-bold text-error">
-                          -{{ contenderAnalysis?.deficit }} pts
-                        </h4>
-                      </v-sheet>
-                    </v-col>
-                    <v-col cols="6">
-                      <v-sheet color="transparent">
-                        <span class="text-caption text-medium-emphasis"
-                          >Teto Máximo Atingível:</span
-                        >
-                        <h4 class="text-h6 font-weight-bold text-primary">
-                          {{ contenderAnalysis?.maxPossible }} pts
-                        </h4>
-                      </v-sheet>
-                    </v-col>
-                  </v-row>
-
-                  <v-divider class="mb-4" />
-
-                  <v-list density="compact" class="bg-transparent pa-0">
+                  <v-list density="comfortable" class="bg-transparent pa-0">
                     <v-list-item class="px-0">
                       <template #prepend>
-                        <v-icon icon="mdi-trending-down" color="primary" />
+                        <v-icon icon="mdi-trending-down" color="error" />
                       </template>
                       <v-list-item-title class="font-weight-medium">
-                        Média de pontos a descontar:
+                        Ritmo de Desconto Necessário:
                       </v-list-item-title>
                       <v-list-item-subtitle
                         class="text-body-1 font-weight-bold text-high-emphasis"
                       >
-                        {{ contenderAnalysis?.avgPointsToDiscount }} pts/GP a
-                        mais que o líder
+                        Tirar em média +{{
+                          contenderAnalysis?.avgPointsToDiscount
+                        }}
+                        pts/GP em relação ao líder
                       </v-list-item-subtitle>
                     </v-list-item>
+
+                    <v-divider class="my-2" />
 
                     <v-list-item class="px-0">
                       <template #prepend>
                         <v-icon
-                          icon="mdi-hand-back-right-off"
-                          color="primary"
+                          icon="mdi-trophy-award"
+                          color="amber-darken-3"
                         />
                       </template>
                       <v-list-item-title class="font-weight-medium">
-                        Limite de pontuação do líder:
+                        Cenário de Vitórias Totais:
                       </v-list-item-title>
                       <v-list-item-subtitle
-                        class="text-body-1 font-weight-bold text-high-emphasis"
+                        class="text-body-2 text-medium-emphasis"
                       >
-                        Líder pode somar no máx.
-                        {{ contenderAnalysis?.maxLeaderGainAllowed }} pts
-                        adicionais
+                        Vencendo todas as corridas e sprints restantes, sua
+                        pontuação chega a
+                        <strong
+                          >{{ contenderAnalysis?.maxPossible }} pontos</strong
+                        >.
                       </v-list-item-subtitle>
                     </v-list-item>
 
+                    <v-divider class="my-2" />
+
                     <v-list-item class="px-0">
                       <template #prepend>
-                        <v-icon icon="mdi-car-brake-alert" color="error" />
+                        <v-icon
+                          :icon="
+                            selectedContenderDriver.status ===
+                            'controls_destiny'
+                              ? 'mdi-check-circle'
+                              : 'mdi-alert-circle'
+                          "
+                          :color="
+                            selectedContenderDriver.status ===
+                            'controls_destiny'
+                              ? 'success'
+                              : 'warning'
+                          "
+                        />
                       </template>
                       <v-list-item-title class="font-weight-medium">
-                        Equivalente em tropeços do líder:
+                        Dependência de Tropeços:
                       </v-list-item-title>
                       <v-list-item-subtitle
-                        class="text-body-1 font-weight-bold text-error"
+                        class="text-body-2 text-medium-emphasis"
                       >
-                        Precisa de aprox.
-                        {{
-                          contenderAnalysis?.dnfEquivalentsNeeded
-                        }}
-                        abandonos/zeradas do líder (com vitórias do desafiante)
+                        <template
+                          v-if="
+                            selectedContenderDriver.status ===
+                            'controls_destiny'
+                          "
+                        >
+                          <strong>Não depende de ninguém!</strong> Se vencer
+                          tudo, é campeão garantido.
+                        </template>
+                        <template v-else>
+                          <strong>Depende de tropeços:</strong> Além de vencer,
+                          precisa que o líder pontue abaixo da sua média normal.
+                        </template>
                       </v-list-item-subtitle>
                     </v-list-item>
                   </v-list>
@@ -624,105 +772,115 @@
               </v-card>
             </v-col>
 
-            <!-- Card de Autonomia do Desafiante -->
+            <!-- Card 2: O Limite do Líder -->
             <v-col cols="12" md="6">
               <v-card variant="outlined" rounded="lg" class="h-100">
-                <v-card-item>
-                  <v-card-title class="d-flex align-center ga-2 text-wrap">
-                    <v-icon
-                      icon="mdi-account-check-outline"
-                      color="green-darken-2"
-                    />
-                    <span>Autonomia no Campeonato</span>
-                  </v-card-title>
-                  <v-card-subtitle>
-                    Controle do próprio destino
-                  </v-card-subtitle>
+                <v-card-item
+                  :title="`O Limite de ${leaderDriver?.name}`"
+                  subtitle="Até onde o líder pode pontuar para haver virada"
+                >
+                  <template #prepend>
+                    <v-icon icon="mdi-car-brake-alert" color="warning" />
+                  </template>
                 </v-card-item>
 
                 <v-card-text class="pt-2">
-                  <template
-                    v-if="selectedContenderDriver.status === 'controls_destiny'"
-                  >
-                    <v-alert
-                      type="success"
-                      variant="tonal"
-                      rounded="lg"
-                      icon="mdi-check-circle"
-                      class="mb-3"
-                    >
-                      <v-alert-title class="font-weight-bold">
-                        Depende Apenas de Si!
-                      </v-alert-title>
-                      <v-sheet color="transparent" class="text-body-2 mt-1">
-                        Se {{ selectedContenderDriver.name }} vencer todas as
-                        corridas e sprints restantes, será campeão mundial
-                        independentemente das posições em que o líder terminar
-                        (mesmo que o líder seja 2º em todas).
-                      </v-sheet>
-                    </v-alert>
-                  </template>
+                  <v-list density="comfortable" class="bg-transparent pa-0">
+                    <v-list-item class="px-0">
+                      <template #prepend>
+                        <v-icon icon="mdi-hand-back-right-off" color="error" />
+                      </template>
+                      <v-list-item-title class="font-weight-medium">
+                        Pontuação Máxima Permitida ao Líder:
+                      </v-list-item-title>
+                      <v-list-item-subtitle
+                        class="text-body-1 font-weight-bold text-high-emphasis"
+                      >
+                        Líder pode somar no máximo
+                        {{ contenderAnalysis?.maxLeaderGainAllowed }} pts no
+                        campeonato
+                      </v-list-item-subtitle>
+                    </v-list-item>
 
-                  <template
-                    v-else-if="
-                      selectedContenderDriver.status === 'depends_on_others'
-                    "
-                  >
-                    <v-alert
-                      type="warning"
-                      variant="tonal"
-                      rounded="lg"
-                      icon="mdi-alert-circle-outline"
-                      class="mb-3"
-                    >
-                      <v-alert-title class="font-weight-bold">
-                        Depende de Tropeços do Líder
-                      </v-alert-title>
-                      <v-sheet color="transparent" class="text-body-2 mt-1">
-                        Mesmo que {{ selectedContenderDriver.name }} vença todas
-                        as etapas restantes, o líder será campeão se for 2º
-                        colocado em todas as provas. É necessário que o líder
-                        fique fora do pódio ou abandone etapas.
-                      </v-sheet>
-                    </v-alert>
+                    <v-divider class="my-2" />
 
-                    <v-card
-                      variant="flat"
-                      color="surface-variant"
-                      class="pa-3"
-                      rounded="lg"
-                    >
-                      <v-sheet color="transparent" class="text-body-2">
+                    <v-list-item class="px-0">
+                      <template #prepend>
+                        <v-icon icon="mdi-speedometer-slow" color="primary" />
+                      </template>
+                      <v-list-item-title class="font-weight-medium">
+                        Média Máxima do Líder por Corrida:
+                      </v-list-item-title>
+                      <v-list-item-subtitle
+                        class="text-body-2 text-medium-emphasis"
+                      >
+                        O líder precisa ser contido a uma média de no máximo
                         <strong
-                          >Posição máxima média que o líder pode ter:</strong
-                        ><br />
-                        O líder não pode passar de uma média de
-                        <strong
-                          >{{ contenderAnalysis?.maxLeaderAvgPerRace }} pontos
-                          por corrida</strong
+                          >{{
+                            contenderAnalysis?.maxLeaderAvgPerRace
+                          }}
+                          pts/GP</strong
                         >
-                        para que {{ selectedContenderDriver.name }} consiga
-                        ultrapassá-lo ao vencer todas as etapas.
-                      </v-sheet>
-                    </v-card>
-                  </template>
+                        (por volta de 6º lugar ou pior).
+                      </v-list-item-subtitle>
+                    </v-list-item>
 
-                  <template v-else>
-                    <v-alert
-                      type="error"
-                      variant="tonal"
-                      rounded="lg"
-                      icon="mdi-close-octagon"
-                    >
-                      Piloto matematicamente eliminado da disputa pelo título
-                      mundial de 2026.
-                    </v-alert>
-                  </template>
+                    <v-divider class="my-2" />
+
+                    <v-list-item class="px-0">
+                      <template #prepend>
+                        <v-icon icon="mdi-car-off" color="amber-darken-3" />
+                      </template>
+                      <v-list-item-title class="font-weight-medium">
+                        Equivalente em Abandonos (DNFs):
+                      </v-list-item-title>
+                      <v-list-item-subtitle
+                        class="text-body-2 text-medium-emphasis"
+                      >
+                        Cerca de
+                        <strong
+                          >{{
+                            contenderAnalysis?.dnfEquivalentsNeeded
+                          }}
+                          abandono(s) do líder</strong
+                        >
+                        com vitórias do desafiante já bastariam para fechar a
+                        diferença.
+                      </v-list-item-subtitle>
+                    </v-list-item>
+                  </v-list>
                 </v-card-text>
               </v-card>
             </v-col>
           </v-row>
         </template>
+
+        <!-- CARTÃO DE TRANSIÇÃO PARA O SIMULADOR ETAPA A ETAPA -->
+        <v-card variant="tonal" color="primary" rounded="lg" class="pa-4 mb-2">
+          <v-card-item class="pa-0">
+            <template #prepend>
+              <v-icon icon="mdi-calculator-variant-outline" size="x-large" />
+            </template>
+            <v-card-title class="text-subtitle-1 font-weight-bold">
+              Quer testar resultados corrida a corrida?
+            </v-card-title>
+            <v-card-subtitle class="text-body-2 opacity-80 text-wrap">
+              Defina as posições de chegada em cada GP e Sprint e veja o campeão
+              e a pontuação mudando em tempo real.
+            </v-card-subtitle>
+            <template #append>
+              <v-btn
+                color="primary"
+                variant="elevated"
+                prepend-icon="mdi-flag-checkered"
+                class="font-weight-bold ml-2"
+                @click="activeTab = 'simulator'"
+              >
+                Simulador Etapa a Etapa
+              </v-btn>
+            </template>
+          </v-card-item>
+        </v-card>
       </v-tabs-window-item>
 
       <!-- ABA 3: SIMULADOR ETAPA A ETAPA (INTERATIVO) -->
@@ -731,16 +889,14 @@
           <v-col cols="12">
             <v-card variant="outlined" rounded="lg">
               <v-card-item>
-                <v-card-title
-                  class="d-flex align-center justify-space-between flex-wrap ga-2"
-                >
-                  <v-sheet color="transparent" class="d-flex align-center ga-2">
-                    <v-icon icon="mdi-ray-start-arrow" color="green-darken-2" />
-                    <span>Simulador Interativo de Etapas Restantes</span>
-                  </v-sheet>
-
-                  <!-- Botões de Preset Rápido -->
-                  <v-sheet color="transparent" class="d-flex flex-wrap ga-2">
+                <template #prepend>
+                  <v-icon icon="mdi-ray-start-arrow" color="green-darken-2" />
+                </template>
+                <v-card-title>
+                  Simulador Interativo de Etapas Restantes
+                </v-card-title>
+                <template #append>
+                  <span class="d-flex flex-wrap ga-2">
                     <v-btn
                       size="small"
                       variant="tonal"
@@ -773,8 +929,8 @@
                     >
                       Limpar
                     </v-btn>
-                  </v-sheet>
-                </v-card-title>
+                  </span>
+                </template>
                 <v-card-subtitle>
                   Escolha os resultados das etapas restantes para o líder e o
                   rival principal e veja em tempo real quem fatura o caneco!
@@ -799,22 +955,19 @@
                     >
                       <v-row align="center" justify="space-between">
                         <v-col>
-                          <v-sheet
-                            color="transparent"
-                            class="text-caption text-uppercase"
-                          >
+                          <p class="text-caption text-uppercase mb-1">
                             Líder ({{ leaderDriver?.name }})
-                          </v-sheet>
-                          <h2 class="text-h4 font-weight-bold">
+                          </p>
+                          <p class="text-h4 font-weight-bold mb-1">
                             {{ simulatedLeaderTotalPoints }} pts
-                          </h2>
-                          <v-sheet color="transparent" class="text-caption">
+                          </p>
+                          <p class="text-caption text-medium-emphasis mb-0">
                             Original: {{ leaderDriver?.points }} pts (+{{
                               simulatedLeaderTotalPoints -
                               (leaderDriver?.points || 0)
                             }}
                             sim.)
-                          </v-sheet>
+                          </p>
                         </v-col>
                         <v-col cols="auto">
                           <v-icon
@@ -843,22 +996,19 @@
                     >
                       <v-row align="center" justify="space-between">
                         <v-col>
-                          <v-sheet
-                            color="transparent"
-                            class="text-caption text-uppercase"
-                          >
+                          <p class="text-caption text-uppercase mb-1">
                             Rival ({{ selectedRivalDriver?.name }})
-                          </v-sheet>
-                          <h2 class="text-h4 font-weight-bold">
+                          </p>
+                          <p class="text-h4 font-weight-bold mb-1">
                             {{ simulatedRivalTotalPoints }} pts
-                          </h2>
-                          <v-sheet color="transparent" class="text-caption">
+                          </p>
+                          <p class="text-caption text-medium-emphasis mb-0">
                             Original: {{ selectedRivalDriver?.points }} pts (+{{
                               simulatedRivalTotalPoints -
                               (selectedRivalDriver?.points || 0)
                             }}
                             sim.)
-                          </v-sheet>
+                          </p>
                         </v-col>
                         <v-col cols="auto">
                           <v-icon
@@ -893,12 +1043,17 @@
                       <strong class="text-h6 ml-2">{{
                         simulatedChampion?.name
                       }}</strong>
-                      <span class="ml-2 text-caption">
-                        (Vantagem de
+                      <span class="text-caption ml-2">
+                        ({{
+                          simulatedChampion?.name === leaderDriver?.name
+                            ? simulatedLeaderTotalPoints
+                            : simulatedRivalTotalPoints
+                        }}
+                        pts vs
                         {{
-                          Math.abs(
-                            simulatedLeaderTotalPoints -
-                              simulatedRivalTotalPoints,
+                          Math.min(
+                            simulatedLeaderTotalPoints,
+                            simulatedRivalTotalPoints,
                           )
                         }}
                         pts)
@@ -911,81 +1066,90 @@
                 <v-table density="compact">
                   <thead>
                     <tr>
-                      <th style="min-width: 140px" class="align-top py-3">
-                        <v-sheet color="transparent" class="font-weight-bold pt-2">
-                          Etapa
+                      <th
+                        style="min-width: 140px"
+                        class="align-top py-3 font-weight-bold"
+                      >
+                        Etapa
+                      </th>
+                      <th style="min-width: 290px" class="py-2">
+                        <span
+                          class="font-weight-bold text-truncate d-block mb-1"
+                        >
+                          Posição do Líder ({{ leaderDriver?.name }})
+                        </span>
+                        <v-sheet
+                          color="transparent"
+                          class="d-flex align-center ga-2 w-100"
+                        >
+                          <v-checkbox-btn
+                            v-model="allLeaderSelected"
+                            :indeterminate="isLeaderIndeterminate"
+                            density="compact"
+                            hide-details
+                            inline
+                            class="stage-checkbox flex-grow-0 flex-shrink-0"
+                            v-tooltip="
+                              'Selecionar / desselecionar todos do Líder'
+                            "
+                          />
+                          <v-select
+                            v-model="bulkLeaderPos"
+                            :items="positionSelectItems"
+                            density="compact"
+                            hide-details
+                            variant="outlined"
+                            placeholder="Definir marcados..."
+                            class="stage-select flex-grow-1"
+                            @update:model-value="onBulkLeaderChange"
+                          />
                         </v-sheet>
                       </th>
                       <th style="min-width: 290px" class="py-2">
-                        <v-sheet color="transparent" class="d-flex flex-column ga-1 w-100">
-                          <span class="font-weight-bold text-truncate">
-                            Posição do Líder ({{ leaderDriver?.name }})
-                          </span>
-                          <v-sheet color="transparent" class="d-flex align-center ga-2 w-100">
-                            <v-checkbox-btn
-                              v-model="allLeaderSelected"
-                              :indeterminate="isLeaderIndeterminate"
-                              density="compact"
-                              hide-details
-                              inline
-                              class="stage-checkbox flex-grow-0 flex-shrink-0"
-                              v-tooltip="'Selecionar / desselecionar todos do Líder'"
-                            />
-                            <v-select
-                              v-model="bulkLeaderPos"
-                              :items="positionSelectItems"
-                              density="compact"
-                              hide-details
-                              variant="outlined"
-                              placeholder="Definir marcados..."
-                              class="stage-select flex-grow-1"
-                              @update:model-value="onBulkLeaderChange"
-                            />
-                          </v-sheet>
+                        <span
+                          class="font-weight-bold text-truncate d-block mb-1"
+                        >
+                          Posição do Rival ({{ selectedRivalDriver?.name }})
+                        </span>
+                        <v-sheet
+                          color="transparent"
+                          class="d-flex align-center ga-2 w-100"
+                        >
+                          <v-checkbox-btn
+                            v-model="allRivalSelected"
+                            :indeterminate="isRivalIndeterminate"
+                            density="compact"
+                            hide-details
+                            inline
+                            class="stage-checkbox flex-grow-0 flex-shrink-0"
+                            v-tooltip="
+                              'Selecionar / desselecionar todos do Rival'
+                            "
+                          />
+                          <v-select
+                            v-model="bulkRivalPos"
+                            :items="positionSelectItems"
+                            density="compact"
+                            hide-details
+                            variant="outlined"
+                            placeholder="Definir marcados..."
+                            class="stage-select flex-grow-1"
+                            @update:model-value="onBulkRivalChange"
+                          />
                         </v-sheet>
                       </th>
-                      <th style="min-width: 290px" class="py-2">
-                        <v-sheet color="transparent" class="d-flex flex-column ga-1 w-100">
-                          <span class="font-weight-bold text-truncate">
-                            Posição do Rival ({{ selectedRivalDriver?.name }})
-                          </span>
-                          <v-sheet color="transparent" class="d-flex align-center ga-2 w-100">
-                            <v-checkbox-btn
-                              v-model="allRivalSelected"
-                              :indeterminate="isRivalIndeterminate"
-                              density="compact"
-                              hide-details
-                              inline
-                              class="stage-checkbox flex-grow-0 flex-shrink-0"
-                              v-tooltip="'Selecionar / desselecionar todos do Rival'"
-                            />
-                            <v-select
-                              v-model="bulkRivalPos"
-                              :items="positionSelectItems"
-                              density="compact"
-                              hide-details
-                              variant="outlined"
-                              placeholder="Definir marcados..."
-                              class="stage-select flex-grow-1"
-                              @update:model-value="onBulkRivalChange"
-                            />
-                          </v-sheet>
-                        </v-sheet>
-                      </th>
-                      <th class="text-right align-top py-3" style="min-width: 110px">
-                        <v-sheet color="transparent" class="font-weight-bold pt-2">
-                          Saldo do GP
-                        </v-sheet>
+                      <th
+                        class="text-right align-top py-3 font-weight-bold"
+                        style="min-width: 110px"
+                      >
+                        Saldo do GP
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(stage, idx) in interactiveStages" :key="idx">
                       <td class="font-weight-medium">
-                        <v-sheet
-                          color="transparent"
-                          class="d-flex align-center ga-1"
-                        >
+                        <span class="d-flex align-center ga-1">
                           <v-icon
                             :icon="
                               stage.isSprint
@@ -1000,10 +1164,13 @@
                             "
                           />
                           <span>{{ stage.name }}</span>
-                        </v-sheet>
+                        </span>
                       </td>
                       <td>
-                        <v-sheet color="transparent" class="d-flex align-center ga-2 w-100">
+                        <v-sheet
+                          color="transparent"
+                          class="d-flex align-center ga-2 w-100"
+                        >
                           <v-checkbox-btn
                             v-model="stage.selectedLeader"
                             density="compact"
@@ -1022,7 +1189,10 @@
                         </v-sheet>
                       </td>
                       <td>
-                        <v-sheet color="transparent" class="d-flex align-center ga-2 w-100">
+                        <v-sheet
+                          color="transparent"
+                          class="d-flex align-center ga-2 w-100"
+                        >
                           <v-checkbox-btn
                             v-model="stage.selectedRival"
                             density="compact"
@@ -1053,9 +1223,7 @@
                               ? "+"
                               : ""
                           }}
-                          {{
-                            calcStageGain(stage.leaderPos, stage.rivalPos)
-                          }}
+                          {{ calcStageGain(stage.leaderPos, stage.rivalPos) }}
                           pts
                         </span>
                       </td>
@@ -1236,6 +1404,56 @@ const contenderAnalysis = computed(() => {
     racesRemaining.value,
     sprintsRemaining.value,
   );
+});
+
+// Diagnóstico amigável e legível do piloto em foco
+const driverStatusInfo = computed(() => {
+  if (!selectedContenderDriver.value) return null;
+  const d = selectedContenderDriver.value;
+  if (isSelectedLeader.value) {
+    const magic = leaderAnalysis.value?.magicPointsNeeded ?? 0;
+    const safePos =
+      leaderAnalysis.value?.minSafePositionDesc ?? "Pódios frequentes";
+    const rivalName = selectedRivalDriver.value?.name || "o vice-líder";
+    return {
+      title: "Líder do Campeonato",
+      color: "primary",
+      icon: "mdi-trophy",
+      badgeText: "1º Lugar - Líder Atual",
+      summary: `${d.name} tem o campeonato sob controle. Para selar o título mundial sem depender de ninguém, precisa de ${magic} pontos nas etapas restantes. Mesmo se ${rivalName} vencer todas as provas, basta uma média de ${safePos}.`,
+    };
+  }
+  if (d.status === "controls_destiny") {
+    return {
+      title: "Depende Apenas de Si",
+      color: "success",
+      icon: "mdi-check-decagram",
+      badgeText: `${d.position}º Lugar - Depende Apenas de Si`,
+      summary: `${d.name} tem o destino nas mãos! Vencendo todas as ${racesRemaining.value} corridas e ${sprintsRemaining.value} sprints restantes, será campeão mundial independentemente das posições em que o líder terminar (mesmo que o líder seja 2º em todas).`,
+    };
+  }
+  if (d.status === "depends_on_others") {
+    const deficit = contenderAnalysis.value?.deficit ?? 0;
+    const avgDisc = contenderAnalysis.value?.avgPointsToDiscount ?? 0;
+    const maxLeader = contenderAnalysis.value?.maxLeaderGainAllowed ?? 0;
+    const maxLeaderAvg = contenderAnalysis.value?.maxLeaderAvgPerRace ?? 0;
+    const dnfs = contenderAnalysis.value?.dnfEquivalentsNeeded ?? 1;
+    const leaderName = leaderDriver.value?.name || "o líder";
+    return {
+      title: "Depende de Tropeços do Líder",
+      color: "warning",
+      icon: "mdi-alert-circle-outline",
+      badgeText: `${d.position}º Lugar - Depende de Tropeços`,
+      summary: `${d.name} está ${deficit} pontos atrás de ${leaderName}. Para ser campeão, precisa tirar uma média de ${avgDisc} pts por GP. Se vencer todas as etapas restantes, ${leaderName} não pode somar mais de ${maxLeader} pontos (média máxima de ${maxLeaderAvg} pts/GP, ou sofrer cerca de ${dnfs} abandono/zerada).`,
+    };
+  }
+  return {
+    title: "Matematicamente Eliminado",
+    color: "grey",
+    icon: "mdi-close-circle-outline",
+    badgeText: `${d.position}º Lugar - Fora da Disputa`,
+    summary: `${d.name} não possui mais chances matemáticas de alcançar o líder nesta temporada.`,
+  };
 });
 
 function selectDriverAndGoToCalc(driverName) {
