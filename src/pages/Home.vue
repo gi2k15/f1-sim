@@ -15,8 +15,18 @@
       <v-tab value="simulation" prepend-icon="mdi-racing-helmet">
         Simulação
       </v-tab>
-      <v-tab value="evolution" prepend-icon="mdi-chart-timeline-variant-shimmer">
+      <v-tab
+        value="evolution"
+        prepend-icon="mdi-chart-timeline-variant-shimmer"
+      >
         Evolução
+      </v-tab>
+      <v-tab
+        value="scenarios"
+        to="/cenarios"
+        prepend-icon="mdi-trophy-variant-outline"
+      >
+        Cenários
       </v-tab>
     </v-tabs>
   </v-container>
@@ -33,42 +43,40 @@
         />
         <v-row class="mb-6">
           <v-col cols="12">
-            <v-expansion-panels>
-              <v-expansion-panel>
-                <v-expansion-panel-title class="text-title-medium"
-                  >Configurações</v-expansion-panel-title
-                >
-                <v-expansion-panel-text>
-                  <v-row class="mt-4">
-                    <v-col cols="12" sm="6" md="4">
-                      <v-number-input
-                        v-model="racesRemaining"
-                        :min="0"
-                        control-variant="stacked"
-                        label="Corridas restantes"
-                      />
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-number-input
-                        v-model="sprintsRemaining"
-                        :min="0"
-                        control-variant="stacked"
-                        label="Sprints restantes"
-                      />
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-number-input
-                        v-model="numSimulations"
-                        :min="1"
-                        control-variant="stacked"
-                        label="Número de simulações"
-                        :step="10000"
-                      />
-                    </v-col>
-                  </v-row>
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-            </v-expansion-panels>
+            <v-card variant="outlined">
+              <v-card-title class="text-title-medium font-weight-bold"
+                >Configurações</v-card-title
+              >
+              <v-card-text>
+                <v-row class="mt-4">
+                  <v-col cols="12" sm="6" md="4">
+                    <v-number-input
+                      v-model="racesRemaining"
+                      :min="0"
+                      control-variant="stacked"
+                      label="Corridas restantes"
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-number-input
+                      v-model="sprintsRemaining"
+                      :min="0"
+                      control-variant="stacked"
+                      label="Sprints restantes"
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-number-input
+                      v-model="numSimulations"
+                      :min="1"
+                      control-variant="stacked"
+                      label="Número de simulações"
+                      :step="10000"
+                    />
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -164,19 +172,20 @@
             >
               <div>
                 <strong
-                  >A pontuação da API ainda não foi atualizada para o resultado mais
-                  recente!</strong
+                  >A pontuação da API ainda não foi atualizada para o resultado
+                  mais recente!</strong
                 >
               </div>
               <div class="mt-1">
                 O <strong>{{ lastOccurredRaceName || raceName }}</strong> já
-                ocorreu, mas a classificação oficial na API ainda não computou essa
-                etapa. A pontuação exibida abaixo corresponde ao
+                ocorreu, mas a classificação oficial na API ainda não computou
+                essa etapa. A pontuação exibida abaixo corresponde ao
                 <strong>{{ lastScoredRaceName }}</strong
                 >. O número de corridas restantes já foi atualizado para
                 <strong>{{ racesRemaining }}</strong
                 ><span v-if="sprintsRemaining > 0">
-                  (e <strong>{{ sprintsRemaining }}</strong> sprint restante)</span
+                  (e <strong>{{ sprintsRemaining }}</strong> sprint
+                  restante)</span
                 >.
                 <div class="mt-1">
                   Você pode atualizar manualmente a pontuação dos pilotos, basta
@@ -186,7 +195,11 @@
             </v-alert>
           </v-col>
 
-          <v-col v-else-if="apiPointsStatus === 'updated'" cols="12" class="pt-0">
+          <v-col
+            v-else-if="apiPointsStatus === 'updated'"
+            cols="12"
+            class="pt-0"
+          >
             <v-alert
               type="success"
               variant="tonal"
@@ -794,4 +807,3 @@ onBeforeUnmount(() => {
   simulationWorker.terminate();
 });
 </script>
-

@@ -52,6 +52,33 @@
 
           <v-expansion-panel>
             <v-expansion-panel-title>
+              O que é a página de Cenários de Título e como ela calcula os resultados?
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              Diferente da simulação probabilística de Monte Carlo da página inicial, a página de
+              <strong>Cenários de Título</strong> realiza uma análise matemática <em>determinística</em>
+              baseada no regulamento de pontuação da F1 (25-18-15-12-10-8-6-4-2-1 para Grandes Prêmios e
+              8-7-6-5-4-3-2-1 para Sprints). Ela avalia:
+              <ul class="pl-6 mt-2">
+                <li>
+                  <strong>Para o líder</strong>: a posição média mínima necessária para garantir o título mesmo
+                  que o rival vença todas as provas, além de mapear se já há possibilidade de título antecipado
+                  (<em>match point</em>) na próxima etapa.
+                </li>
+                <li>
+                  <strong>Para os rivais</strong>: quantos pontos precisam descontar por GP, se dependem apenas
+                  de si ou de tropeços do líder, e o limite de pontos que o líder pode somar.
+                </li>
+                <li>
+                  <strong>Simulador Interativo</strong>: permite que você atribua posições etapa a etapa para
+                  verificar em tempo real como fica a pontuação final e quem leva a taça.
+                </li>
+              </ul>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+
+          <v-expansion-panel>
+            <v-expansion-panel-title>
               O que é a coluna "Evolução vs Etapa Anterior" na tabela?
             </v-expansion-panel-title>
             <v-expansion-panel-text>

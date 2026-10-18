@@ -1,5 +1,5 @@
 /**
- * main.ts
+ * main.js
  *
  * Bootstraps Vuetify and other plugins then mounts the App`
  */
@@ -14,7 +14,6 @@ import { registerPlugins } from "@/plugins";
 import App from "@/App.vue";
 
 // Router
-// @ts-ignore
 import router from "./router/index.js";
 
 // Styles

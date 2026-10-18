@@ -1,7 +1,5 @@
 // Snapshot local das etapas concluídas de 2026 para evitar requisições repetidas à API
-import type { ChampionshipStage } from "@/services/championshipHistory";
-
-export const localSeason2026Stages: ChampionshipStage[] = [
+export const localSeason2026Stages = [
   {
     "round": 0,
     "raceName": "Pré-temporada",

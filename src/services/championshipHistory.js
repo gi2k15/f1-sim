@@ -1,23 +1,7 @@
 import { grandPrix2026, sprintRaces2026 } from "@/constants/races";
 import { localSeason2026Stages } from "@/constants/season2026Results";
 
-export interface ChampionshipStage {
-  round: number;
-  raceName: string;
-  shortName: string;
-  date: string;
-  hasSprint: boolean;
-  racesRemaining: number;
-  sprintsRemaining: number;
-  drivers: {
-    name: string;
-    team: string;
-    teamId: string;
-    points: number;
-  }[];
-}
-
-export const roundToCountryName: Record<number, string> = {
+export const roundToCountryName = {
   1: "Austrália",
   2: "China",
   3: "Japão",
@@ -44,7 +28,7 @@ export const roundToCountryName: Record<number, string> = {
   24: "Abu Dhabi",
 };
 
-export const countryTranslations: Record<string, string> = {
+export const countryTranslations = {
   Australia: "Austrália",
   China: "China",
   Japan: "Japão",
@@ -70,7 +54,7 @@ export const countryTranslations: Record<string, string> = {
   Bahrain: "Bahrein",
 };
 
-export function getStageCountryName(round: number, race?: any): string {
+export function getStageCountryName(round, race) {
   if (roundToCountryName[round]) {
     return roundToCountryName[round];
   }
@@ -89,13 +73,13 @@ export function getStageCountryName(round: number, race?: any): string {
   return `Etapa ${round}`;
 }
 
-export function formatStageShortName(round: number, race?: any): string {
+export function formatStageShortName(round, race) {
   if (round === 0) return "Início";
   const country = getStageCountryName(round, race);
   return `R${round} - ${country}`;
 }
 
-export function sanitizeStage(stage: ChampionshipStage): ChampionshipStage {
+export function sanitizeStage(stage) {
   if (stage.round === 0) {
     return { ...stage, shortName: "Início" };
   }
@@ -105,17 +89,10 @@ export function sanitizeStage(stage: ChampionshipStage): ChampionshipStage {
   };
 }
 
-export interface OutdatedCheckResult {
-  isOutdated: boolean;
-  latestCompletedRound: number;
-  lastSimulatedRound: number;
-  reason?: string;
-}
-
 export async function checkChampionshipOutdated(
-  lastSimulatedRound: number,
-  latestSimulatedLeaderPoints?: number,
-): Promise<OutdatedCheckResult> {
+  lastSimulatedRound,
+  latestSimulatedLeaderPoints,
+) {
   const localLastRound =
     localSeason2026Stages.length > 0
       ? localSeason2026Stages[localSeason2026Stages.length - 1].round
@@ -142,11 +119,11 @@ export async function checkChampionshipOutdated(
     const data = await res.json();
     const allRaces = Array.isArray(data?.races) ? data.races : [];
     const completedRaces = allRaces.filter(
-      (r: any) => r.winner !== null && r.winner !== undefined,
+      (r) => r.winner !== null && r.winner !== undefined,
     );
 
     const apiLatestRound = completedRaces.reduce(
-      (max: number, r: any) => Math.max(max, Number(r.round) || 0),
+      (max, r) => Math.max(max, Number(r.round) || 0),
       0,
     );
 
@@ -215,9 +192,9 @@ const CACHE_KEY = "f1_sim_championship_history_2026_v2";
 const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 horas de cache
 
 export async function fetchChampionshipHistory(
-  onProgress?: (step: string, percent: number) => void,
+  onProgress,
   forceRefresh = false,
-): Promise<ChampionshipStage[]> {
+) {
   // Base local com nomes sanitizados
   const baseStages = localSeason2026Stages.map(sanitizeStage);
   const lastBaseRound =
@@ -239,7 +216,7 @@ export async function fetchChampionshipHistory(
           // Se o cache tiver ao menos tantas etapas quanto a base local, sanitiza e usa
           if (cachedLastRound >= lastBaseRound) {
             onProgress?.("Carregado dos dados locais", 100);
-            return (parsed.data as ChampionshipStage[]).map(sanitizeStage);
+            return parsed.data.map(sanitizeStage);
           }
         }
       }
@@ -263,7 +240,7 @@ export async function fetchChampionshipHistory(
 
     // Novas corridas concluídas que ainda não estão na base local
     const newCompletedRaces = allRaces.filter(
-      (r: any) =>
+      (r) =>
         Number(r.round) > lastBaseRound &&
         r.winner !== null &&
         r.winner !== undefined,
@@ -316,7 +293,7 @@ export async function fetchChampionshipHistory(
 
     const newResponses = await Promise.all(newRequests);
     const latestStage = baseStages[baseStages.length - 1];
-    const runningPoints: Record<string, number> = {};
+    const runningPoints = {};
     for (const d of latestStage.drivers) {
       runningPoints[d.name] = d.points;
     }
@@ -383,4 +360,3 @@ export async function fetchChampionshipHistory(
     return baseStages;
   }
 }
-

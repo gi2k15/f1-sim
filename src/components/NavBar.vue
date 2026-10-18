@@ -14,6 +14,12 @@
         :active="isEvolutionActive"
       />
       <v-list-item
+        prepend-icon="mdi-trophy-variant-outline"
+        title="Cenários de Título"
+        to="/cenarios"
+        :active="isScenariosActive"
+      />
+      <v-list-item
         prepend-icon="mdi-frequently-asked-questions"
         title="FAQ"
         to="/faq"
@@ -47,5 +53,9 @@ const isEvolutionActive = computed(() => {
     route.path === "/" &&
     (route.query.tab === "evolucao" || route.query.tab === "evolution")
   );
+});
+
+const isScenariosActive = computed(() => {
+  return route.path === "/cenarios" || route.path === "/scenarios";
 });
 </script>
