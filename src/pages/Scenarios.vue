@@ -317,7 +317,7 @@
                   >
                     <v-chip
                       size="x-small"
-                      variant="flat"
+                      variant="tonal"
                       :color="getDriverColor(selectedContenderDriver)"
                       class="font-weight-black"
                     >
@@ -373,7 +373,7 @@
                     size="48"
                     rounded="lg"
                     :color="getDriverColor(selectedContenderDriver)"
-                    class="font-weight-black text-h6 text-white"
+                    class="font-weight-black text-body-large text-white"
                   >
                     P{{ selectedContenderDriver.position }}
                   </v-avatar>
@@ -585,9 +585,6 @@
           variant="outlined"
           rounded="xl"
           class="mb-5 pa-4"
-          :style="{
-            borderLeft: '6px solid var(--v-theme-' + (driverStatusInfo.color === 'grey' ? 'secondary' : driverStatusInfo.color) + ')',
-          }"
         >
           <v-sheet class="d-flex align-start ga-3 bg-transparent">
             <v-avatar
@@ -663,7 +660,7 @@
                   </v-row>
 
                   <!-- Bloco 3: Pior Cenário Rival -->
-                  <v-sheet class="mt-3 pa-3 bg-surface-variant rounded-lg">
+                  <v-sheet class="mt-3 pa-3 rounded-lg">
                     <v-sheet class="d-flex align-center ga-2 bg-transparent mb-1">
                       <v-icon icon="mdi-sword-cross" color="error" size="small" />
                       <span class="font-weight-bold text-caption text-high-emphasis">
