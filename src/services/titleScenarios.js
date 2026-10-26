@@ -1,8 +1,12 @@
 import { grandPrix2026, sprintRaces2026 } from "@/constants/races";
 import { localSeason2026Stages } from "@/constants/season2026Results";
+import {
+  RACE_POINTS,
+  SPRINT_POINTS,
+  calculateClinchScenarios,
+} from "@/services/titleEngine";
 
-export const RACE_POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
-export const SPRINT_POINTS = [8, 7, 6, 5, 4, 3, 2, 1];
+export { RACE_POINTS, SPRINT_POINTS };
 
 export const MAX_GP_POINTS = 25;
 export const MAX_SPRINT_POINTS = 8;
@@ -29,6 +33,22 @@ export function getMaxPointsRemaining(racesRemaining, sprintsRemaining) {
   const races = Math.max(0, Number(racesRemaining) || 0);
   const sprints = Math.max(0, Number(sprintsRemaining) || 0);
   return races * MAX_GP_POINTS + sprints * MAX_SPRINT_POINTS;
+}
+
+/**
+ * Fins de semana restantes segundo o calendário: [{ sprint: boolean }], um por GP.
+ * A sprint é a do dia anterior ao GP, limitada ao nº de sprints restantes informado.
+ * shortcut: sprints restantes além das do calendário são ignoradas aqui (dados editados à mão), tratar quando houver calendário editável.
+ */
+export function getRemainingWeekends(racesRemaining, sprintsRemaining) {
+  const races = Math.min(grandPrix2026.length, Math.max(0, Number(racesRemaining) || 0));
+  let sprintsLeft = Math.max(0, Number(sprintsRemaining) || 0);
+  return grandPrix2026.slice(grandPrix2026.length - races).map((gp) => {
+    const eve = new Date(Date.parse(`${gp}T00:00:00Z`) - 86400000).toISOString().slice(0, 10);
+    const sprint = sprintsLeft > 0 && sprintRaces2026.includes(eve);
+    if (sprint) sprintsLeft -= 1;
+    return { sprint };
+  });
 }
 
 /**
@@ -150,6 +170,7 @@ export function calculateLeaderAnalysis(
   racesRemaining = 0,
   sprintsRemaining = 0,
   hasSprintInNextRace = false,
+  field = [], // todos os pilotos: o título é decidido contra os rivais vivos, não só contra `rival`
 ) {
   if (!leader) return null;
 
@@ -163,44 +184,31 @@ export function calculateLeaderAnalysis(
 
   // 1. Número Mágico do Líder para sacramentar o título contra o rival
   const rivalMaxPts = rivalPts + maxPointsRemaining;
-  const magicPointsNeeded = Math.max(0, rivalMaxPts - leaderPts + 1);
+  const opponents = field.filter(
+    (d) => d.name !== leader.name && d.status !== "eliminated",
+  );
+  const fieldMaxPts = Math.max(
+    rivalMaxPts,
+    ...opponents.map((d) => (Number(d.points) || 0) + maxPointsRemaining),
+  );
+  const magicPointsNeeded = Math.max(0, fieldMaxPts - leaderPts + 1);
 
   // 2. Cenário em que o Rival vence 100% das etapas restantes
   const rivalWinsAllPts = rivalMaxPts;
   const minPointsIfRivalWinsAll = Math.max(0, rivalWinsAllPts - leaderPts + 1);
 
-  // Média de pontos por GP necessária caso o rival vença tudo
+  // Médias por etapa (GP + sprint): os pontos mínimos já incluem as sprints
+  const stages = races + sprints;
   const avgPointsNeededPerRace =
-    races > 0 ? (minPointsIfRivalWinsAll / races).toFixed(1) : "0";
+    stages > 0 ? (minPointsIfRivalWinsAll / stages).toFixed(1) : "0";
 
-  // Identifica a posição média correspondente na F1
+  // Ritmo seguro em pontos (a posição média é enganosa: a tabela de pontos não é linear)
   let minSafePositionDesc = "Fora dos pontos";
-  if (races > 0) {
-    const perRaceTarget = minPointsIfRivalWinsAll / races;
-    if (perRaceTarget <= 0) {
-      minSafePositionDesc = "Qualquer posição";
-    } else if (perRaceTarget <= 1) {
-      minSafePositionDesc = "10º lugar em média (1 pt/GP)";
-    } else if (perRaceTarget <= 2) {
-      minSafePositionDesc = "9º lugar em média (2 pts/GP)";
-    } else if (perRaceTarget <= 4) {
-      minSafePositionDesc = "8º lugar em média (4 pts/GP)";
-    } else if (perRaceTarget <= 6) {
-      minSafePositionDesc = "7º lugar em média (6 pts/GP)";
-    } else if (perRaceTarget <= 8) {
-      minSafePositionDesc = "6º lugar em média (8 pts/GP)";
-    } else if (perRaceTarget <= 10) {
-      minSafePositionDesc = "5º lugar em média (10 pts/GP)";
-    } else if (perRaceTarget <= 12) {
-      minSafePositionDesc = "4º lugar em média (12 pts/GP)";
-    } else if (perRaceTarget <= 15) {
-      minSafePositionDesc = "3º lugar (Pódio) em média (15 pts/GP)";
-    } else if (perRaceTarget <= 18) {
-      minSafePositionDesc = "2º lugar em média (18 pts/GP)";
-    } else {
-      minSafePositionDesc =
-        "Precisa vencer ao menos algumas etapas (mais de 18 pts/GP)";
-    }
+  if (stages > 0) {
+    minSafePositionDesc =
+      minPointsIfRivalWinsAll <= 0
+        ? "qualquer resultado"
+        : `${avgPointsNeededPerRace} pts por etapa (ex.: ${Math.ceil(minPointsIfRivalWinsAll / 15)} terceiros lugares)`;
   }
 
   // 3. Cenário de Match Point na Próxima Etapa
@@ -214,44 +222,22 @@ export function calculateLeaderAnalysis(
     sprintsAfterNext,
   );
 
-  const canClinchInNext =
-    leadGap + (MAX_GP_POINTS + (hasSprintInNextRace ? MAX_SPRINT_POINTS : 0)) >
-    pointsRemainingAfterNext;
-
-  // Gera as combinações de resultado no próximo GP que garantem o título
-  const nextGpClincherScenarios = [];
-  if (canClinchInNext && races > 0) {
-    const leaderPossiblePositions = [1, 2, 3, 4, 5, 6];
-    for (const lPos of leaderPossiblePositions) {
-      const lGain = getRacePointsByPosition(lPos);
-      let rivalMaxSafePos = null;
-
-      // Testa posições do rival de 1 a 11 (11 = fora dos pontos)
-      for (let rPos = 1; rPos <= 11; rPos += 1) {
-        const rGain = rPos <= 10 ? getRacePointsByPosition(rPos) : 0;
-        const newGap = leaderPts + lGain - (rivalPts + rGain);
-        if (newGap > pointsRemainingAfterNext) {
-          rivalMaxSafePos = rPos;
-          break;
-        }
-      }
-
-      if (rivalMaxSafePos !== null) {
-        let rivalCondition = "";
-        if (rivalMaxSafePos > 10) {
-          rivalCondition = "Rival não pontuar (11º ou pior / abandono)";
-        } else {
-          rivalCondition = `Rival terminar em ${rivalMaxSafePos}º ou pior`;
-        }
-
-        nextGpClincherScenarios.push({
-          leaderPosition: `${lPos}º lugar (+${lGain} pts)`,
-          rivalCondition,
-          pointsGain: lGain,
-        });
-      }
-    }
-  }
+  // Cenários do próximo GP contra todos os rivais vivos (inclui o `rival` se `field` vier vazio)
+  const clinch = calculateClinchScenarios(
+    leader,
+    opponents.length ? opponents : rival ? [rival] : [],
+    { races, sprints, hasSprint: hasSprintInNextRace },
+  );
+  const canClinchInNext = clinch.rows.length > 0;
+  // cada linha: posição do líder + limite de cada rival (constraints)
+  const nextGpClincherScenarios = clinch.rows.map((r) => ({
+    leaderPosition: r.targetPos > RACE_POINTS.length
+      ? "Fora dos pontos (+0 pts)"
+      : `${r.targetPos}º lugar (+${r.targetPoints} pts)`,
+    constraints: r.constraints,
+    pointsGain: r.targetPoints,
+  }));
+  const clinchCombos = { total: clinch.total, winning: clinch.winning };
 
   return {
     magicPointsNeeded,
@@ -261,6 +247,7 @@ export function calculateLeaderAnalysis(
     canClinchInNext,
     pointsRemainingAfterNext,
     nextGpClincherScenarios,
+    clinchCombos,
     leadGap,
   };
 }
@@ -300,15 +287,15 @@ export function calculateContenderAnalysis(
   // Máximo de pontos que o líder pode somar para que o desafiante ainda seja campeão
   const maxAllowedLeaderPoints = maxPossible - 1;
   const maxLeaderGainAllowed = Math.max(0, maxAllowedLeaderPoints - leaderPts);
+  const stages = races + sprints;
   const maxLeaderAvgPerRace =
-    races > 0 ? (maxLeaderGainAllowed / races).toFixed(1) : "0";
+    stages > 0 ? (maxLeaderGainAllowed / stages).toFixed(1) : "0";
 
-  // Média de pontos por GP que o desafiante precisa descontar
+  // Média de pontos por etapa (GP + sprint) que o desafiante precisa descontar
   const avgPointsToDiscount =
-    races > 0 ? (deficit / races).toFixed(1) : "0";
+    stages > 0 ? (deficit / stages).toFixed(1) : "0";
 
-  // Número mínimo de GPs em que o líder precisaria zerar (ou ficar fora do pódio)
-  // caso o desafiante vença e faça 25 pts contra 0 pts do líder (+25 por GP zerado)
+  // Piso: cada GP em que o líder zera e o desafiante vence troca 25 pts; com o líder em 2º a troca é só 7
   const dnfEquivalentsNeeded = Math.ceil(deficit / 25);
 
   return {

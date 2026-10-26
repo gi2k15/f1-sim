@@ -157,6 +157,9 @@
           <v-tab value="simulator" prepend-icon="mdi-ray-start-arrow">
             Simulador Etapa a Etapa
           </v-tab>
+          <v-tab value="rivals" prepend-icon="mdi-account-group">
+            Rivais & Probabilidades
+          </v-tab>
         </v-tabs>
       </v-col>
     </v-row>
@@ -543,7 +546,7 @@
                         <v-icon icon="mdi-flag-checkered" color="primary" />
                       </template>
                       <v-list-item-title class="font-weight-medium">
-                        Posição Média Segura:
+                        Ritmo Seguro do Líder:
                       </v-list-item-title>
                       <v-list-item-subtitle
                         class="text-body-1 font-weight-bold text-success"
@@ -612,7 +615,7 @@
                       <thead>
                         <tr>
                           <th>Se o Líder terminar em</th>
-                          <th>O Rival precisa terminar em</th>
+                          <th>Cada rival precisa terminar em</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -625,12 +628,46 @@
                           <td class="font-weight-bold text-success">
                             {{ item.leaderPosition }}
                           </td>
-                          <td class="text-error font-weight-medium">
-                            {{ item.rivalCondition }}
+                          <td>
+                            <span
+                              v-if="!item.constraints.length"
+                              class="text-medium-emphasis"
+                              >Qualquer resultado</span
+                            >
+                            <v-chip
+                              v-for="c in item.constraints"
+                              :key="c.name"
+                              size="small"
+                              color="error"
+                              variant="tonal"
+                              class="mr-1 my-1"
+                            >
+                              {{ c.name }}:
+                              {{
+                                c.minPos > 10
+                                  ? "fora dos pontos"
+                                  : `${c.minPos}º ou pior`
+                              }}
+                            </v-chip>
                           </td>
                         </tr>
                       </tbody>
                     </v-table>
+                    <p
+                      v-if="leaderAnalysis.clinchCombos.total"
+                      class="text-caption text-medium-emphasis mt-2 mb-0"
+                    >
+                      {{ leaderAnalysis.clinchCombos.winning }} de
+                      {{ leaderAnalysis.clinchCombos.total }} combinações de
+                      chegada dos pilotos vivos fecham o título.
+                    </p>
+                    <p
+                      v-if="nextHasSprint"
+                      class="text-caption text-medium-emphasis mb-0"
+                    >
+                      Fim de semana com sprint: considera o pior caso (líder
+                      zera na sprint e o rival vence).
+                    </p>
                   </template>
 
                   <template v-else>
@@ -700,7 +737,7 @@
                         Tirar em média +{{
                           contenderAnalysis?.avgPointsToDiscount
                         }}
-                        pts/GP em relação ao líder
+                        pts/etapa em relação ao líder
                       </v-list-item-subtitle>
                     </v-list-item>
 
@@ -819,9 +856,9 @@
                           >{{
                             contenderAnalysis?.maxLeaderAvgPerRace
                           }}
-                          pts/GP</strong
+                          pts/etapa</strong
                         >
-                        (por volta de 6º lugar ou pior).
+                        (GP + sprint).
                       </v-list-item-subtitle>
                     </v-list-item>
 
@@ -837,15 +874,16 @@
                       <v-list-item-subtitle
                         class="text-body-2 text-medium-emphasis"
                       >
-                        Cerca de
+                        No mínimo
                         <strong
                           >{{
                             contenderAnalysis?.dnfEquivalentsNeeded
                           }}
                           abandono(s) do líder</strong
                         >
-                        com vitórias do desafiante já bastariam para fechar a
-                        diferença.
+                        com vitória do desafiante em cada uma. Se o líder só
+                        terminar em 2º, cada GP desconta apenas 7 pts, então são
+                        necessários mais.
                       </v-list-item-subtitle>
                     </v-list-item>
                   </v-list>
@@ -987,7 +1025,7 @@
                     <v-card
                       variant="flat"
                       :color="
-                        simulatedChampion?.name === selectedRivalDriver?.name
+                        simulatedChampion?.name === simRivalDriver?.name
                           ? 'green-darken-4'
                           : 'surface-variant'
                       "
@@ -997,15 +1035,15 @@
                       <v-row align="center" justify="space-between">
                         <v-col>
                           <p class="text-caption text-uppercase mb-1">
-                            Rival ({{ selectedRivalDriver?.name }})
+                            Rival ({{ simRivalDriver?.name }})
                           </p>
                           <p class="text-h4 font-weight-bold mb-1">
                             {{ simulatedRivalTotalPoints }} pts
                           </p>
                           <p class="text-caption text-medium-emphasis mb-0">
-                            Original: {{ selectedRivalDriver?.points }} pts (+{{
+                            Original: {{ simRivalDriver?.points }} pts (+{{
                               simulatedRivalTotalPoints -
-                              (selectedRivalDriver?.points || 0)
+                              (simRivalDriver?.points || 0)
                             }}
                             sim.)
                           </p>
@@ -1013,8 +1051,7 @@
                         <v-col cols="auto">
                           <v-icon
                             v-if="
-                              simulatedChampion?.name ===
-                              selectedRivalDriver?.name
+                              simulatedChampion?.name === simRivalDriver?.name
                             "
                             icon="mdi-trophy"
                             size="48"
@@ -1109,7 +1146,7 @@
                         <span
                           class="font-weight-bold text-truncate d-block mb-1"
                         >
-                          Posição do Rival ({{ selectedRivalDriver?.name }})
+                          Posição do Rival ({{ simRivalDriver?.name }})
                         </span>
                         <v-sheet
                           color="transparent"
@@ -1180,7 +1217,7 @@
                           />
                           <v-select
                             v-model="stage.leaderPos"
-                            :items="positionSelectItems"
+                            :items="stageItems(stage)"
                             density="compact"
                             hide-details
                             variant="outlined"
@@ -1202,7 +1239,7 @@
                           />
                           <v-select
                             v-model="stage.rivalPos"
-                            :items="positionSelectItems"
+                            :items="stageItems(stage)"
                             density="compact"
                             hide-details
                             variant="outlined"
@@ -1213,17 +1250,13 @@
                       <td class="text-right font-weight-bold">
                         <span
                           :class="
-                            calcStageGain(stage.leaderPos, stage.rivalPos) >= 0
+                            calcStageGain(stage) >= 0
                               ? 'text-success'
                               : 'text-error'
                           "
                         >
-                          {{
-                            calcStageGain(stage.leaderPos, stage.rivalPos) > 0
-                              ? "+"
-                              : ""
-                          }}
-                          {{ calcStageGain(stage.leaderPos, stage.rivalPos) }}
+                          {{ calcStageGain(stage) > 0 ? "+" : "" }}
+                          {{ calcStageGain(stage) }}
                           pts
                         </span>
                       </td>
@@ -1231,6 +1264,186 @@
                   </tbody>
                 </v-table>
               </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-tabs-window-item>
+
+      <!-- ABA 4: RIVAIS E PROBABILIDADES (MULTI-PILOTO) -->
+      <v-tabs-window-item value="rivals">
+        <v-row v-if="selectedContenderDriver">
+          <v-col cols="12">
+            <v-card variant="outlined" rounded="lg">
+              <v-card-item
+                :title="`${selectedContenderDriver.name}: caminho vencendo tudo`"
+                subtitle="Quanto cada rival pode somar nas etapas restantes sem tirar o título"
+              >
+                <template #prepend>
+                  <v-icon icon="mdi-sword-cross" color="primary" />
+                </template>
+              </v-card-item>
+              <v-table density="compact" class="bg-transparent">
+                <thead>
+                  <tr>
+                    <th>Rival</th>
+                    <th class="text-right">Máx. permitido</th>
+                    <th class="text-right">Média/etapa</th>
+                    <th class="text-center">Situação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="b in contenderBox" :key="b.name">
+                    <td class="font-weight-bold">{{ b.name }}</td>
+                    <td class="text-right">
+                      {{ b.impossible ? "-" : `${b.maxAllowed} pts` }}
+                    </td>
+                    <td class="text-right">
+                      {{ b.impossible ? "-" : b.avgAllowedPerStage.toFixed(1) }}
+                    </td>
+                    <td class="text-center">
+                      <v-chip
+                        size="small"
+                        variant="tonal"
+                        :color="
+                          b.impossible
+                            ? 'grey'
+                            : b.restricted
+                              ? 'warning'
+                              : 'success'
+                        "
+                      >
+                        {{
+                          b.impossible
+                            ? "Fora de alcance"
+                            : b.restricted
+                              ? "Precisa ser contido"
+                              : "Não consegue barrar"
+                        }}
+                      </v-chip>
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-card>
+          </v-col>
+
+          <v-col cols="12">
+            <v-card variant="outlined" rounded="lg">
+              <v-card-item
+                :title="`O que elimina ${selectedContenderDriver.name} no próximo GP`"
+                subtitle="Se o piloto terminar em P, qualquer rival abaixo que chegue na posição indicada ou melhor o elimina (sem considerar sprint)"
+              >
+                <template #prepend>
+                  <v-icon icon="mdi-close-circle-outline" color="error" />
+                </template>
+              </v-card-item>
+              <v-alert
+                v-if="eliminationScenarios.alreadyEliminated"
+                type="error"
+                variant="tonal"
+                density="compact"
+                class="mx-4 mb-3"
+              >
+                Já eliminado: nenhum resultado no próximo GP muda isso.
+              </v-alert>
+              <v-table v-else density="compact" class="bg-transparent">
+                <thead>
+                  <tr>
+                    <th>Se terminar em</th>
+                    <th>Eliminado se...</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="row in eliminationScenarios.rows"
+                    :key="row.targetPos"
+                  >
+                    <td class="font-weight-bold">
+                      {{
+                        row.targetPos > 10
+                          ? "Fora dos pontos"
+                          : `${row.targetPos}º (+${row.targetPoints} pts)`
+                      }}
+                    </td>
+                    <td>
+                      <v-chip
+                        v-if="!row.killers.length"
+                        size="small"
+                        color="success"
+                        variant="tonal"
+                      >
+                        Segue vivo em qualquer cenário
+                      </v-chip>
+                      <v-chip
+                        v-for="k in row.killers"
+                        :key="k.name"
+                        size="small"
+                        color="error"
+                        variant="tonal"
+                        class="mr-1 my-1"
+                      >
+                        {{ k.name }}:
+                        {{
+                          k.needPos > 10
+                            ? "qualquer resultado"
+                            : k.needPos === 1
+                              ? "1º"
+                              : `${k.needPos}º ou melhor`
+                        }}
+                      </v-chip>
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-card>
+          </v-col>
+
+          <v-col cols="12">
+            <v-card variant="outlined" rounded="lg">
+              <v-card-item
+                title="Probabilidades (Monte Carlo)"
+                subtitle="Estimativa: ordem sorteada com peso pelos pontos atuais e 6% de abandono por etapa. Não é previsão de desempenho real."
+              >
+                <template #prepend>
+                  <v-icon icon="mdi-dice-multiple" color="amber-darken-2" />
+                </template>
+                <template #append>
+                  <v-btn
+                    color="primary"
+                    variant="tonal"
+                    prepend-icon="mdi-play"
+                    @click="runOdds"
+                  >
+                    Calcular
+                  </v-btn>
+                </template>
+              </v-card-item>
+              <v-table
+                v-if="odds.length"
+                density="compact"
+                class="bg-transparent"
+              >
+                <thead>
+                  <tr>
+                    <th>Piloto</th>
+                    <th class="text-right">Título</th>
+                    <th class="text-right">Fecha no próximo GP</th>
+                    <th class="text-right">Pontos médios finais</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="o in odds" :key="o.name">
+                    <td class="font-weight-bold">{{ o.name }}</td>
+                    <td class="text-right">
+                      {{ (o.titleProb * 100).toFixed(1) }}%
+                    </td>
+                    <td class="text-right">
+                      {{ (o.clinchNextProb * 100).toFixed(1) }}%
+                    </td>
+                    <td class="text-right">{{ o.avgPoints.toFixed(0) }}</td>
+                  </tr>
+                </tbody>
+              </v-table>
             </v-card>
           </v-col>
         </v-row>
@@ -1251,8 +1464,14 @@ import {
   getInitialChampionshipData,
   getMaxPointsRemaining,
   getRacePointsByPosition,
+  getRemainingWeekends,
   getSprintPointsByPosition,
 } from "@/services/titleScenarios";
+import {
+  calculateContenderBox,
+  calculateEliminationScenarios,
+  simulateTitleOdds,
+} from "@/services/titleEngine";
 
 const theme = useTheme();
 
@@ -1282,6 +1501,29 @@ const positionSelectItems = [
   { title: "Fora dos pontos (0 pts)", value: 11 },
   { title: "Abandono / DNF (0 pts)", value: 12 },
 ];
+
+// Pontos por posição na sprint (top 8)
+const sprintSelectItems = [
+  ...[8, 7, 6, 5, 4, 3, 2, 1].map((p, i) => ({
+    title: `${i + 1}º lugar (${p} pts)`,
+    value: i + 1,
+  })),
+  { title: "Fora dos pontos (0 pts)", value: 11 },
+  { title: "Abandono / DNF (0 pts)", value: 12 },
+];
+const stageItems = (stage) =>
+  stage.isSprint ? sprintSelectItems : positionSelectItems;
+const stagePoints = (stage, pos) =>
+  stage.isSprint
+    ? getSprintPointsByPosition(pos)
+    : getRacePointsByPosition(pos);
+
+// O próximo GP tem sprint? (calendário)
+const nextHasSprint = computed(
+  () =>
+    !!getRemainingWeekends(racesRemaining.value, sprintsRemaining.value)[0]
+      ?.sprint,
+);
 
 // Carregamento inicial e sincronização
 onMounted(() => {
@@ -1391,7 +1633,8 @@ const leaderAnalysis = computed(() => {
     selectedRivalDriver.value,
     racesRemaining.value,
     sprintsRemaining.value,
-    false,
+    nextHasSprint.value,
+    championshipStatus.value.drivers,
   );
 });
 
@@ -1420,7 +1663,7 @@ const driverStatusInfo = computed(() => {
       color: "primary",
       icon: "mdi-trophy",
       badgeText: "1º Lugar - Líder Atual",
-      summary: `${d.name} tem o campeonato sob controle. Para selar o título mundial sem depender de ninguém, precisa de ${magic} pontos nas etapas restantes. Mesmo se ${rivalName} vencer todas as provas, basta uma média de ${safePos}.`,
+      summary: `${d.name} tem o campeonato sob controle. Para selar o título mundial sem depender de ninguém, precisa de ${magic} pontos nas etapas restantes. Mesmo se ${rivalName} vencer todas as provas, basta ${safePos}.`,
     };
   }
   if (d.status === "controls_destiny") {
@@ -1444,7 +1687,7 @@ const driverStatusInfo = computed(() => {
       color: "warning",
       icon: "mdi-alert-circle-outline",
       badgeText: `${d.position}º Lugar - Depende de Tropeços`,
-      summary: `${d.name} está ${deficit} pontos atrás de ${leaderName}. Para ser campeão, precisa tirar uma média de ${avgDisc} pts por GP. Se vencer todas as etapas restantes, ${leaderName} não pode somar mais de ${maxLeader} pontos (média máxima de ${maxLeaderAvg} pts/GP, ou sofrer cerca de ${dnfs} abandono/zerada).`,
+      summary: `${d.name} está ${deficit} pontos atrás de ${leaderName}. Para ser campeão, precisa tirar uma média de ${avgDisc} pts por etapa. Se vencer todas as etapas restantes, ${leaderName} não pode somar mais de ${maxLeader} pontos (média máxima de ${maxLeaderAvg} pts/etapa, ou no mínimo ${dnfs} abandono(s)/zerada(s) do líder).`,
     };
   }
   return {
@@ -1456,6 +1699,46 @@ const driverStatusInfo = computed(() => {
   };
 });
 
+// Rivais vivos do piloto em foco (aba Rivais & Probabilidades)
+const focusOpponents = computed(() =>
+  championshipStatus.value.drivers.filter(
+    (d) => d.name !== selectedDriverName.value && d.status !== "eliminated",
+  ),
+);
+const stageCfg = computed(() => ({
+  races: racesRemaining.value,
+  sprints: sprintsRemaining.value,
+  hasSprintNext: nextHasSprint.value,
+}));
+const contenderBox = computed(() =>
+  selectedContenderDriver.value
+    ? calculateContenderBox(
+        selectedContenderDriver.value,
+        focusOpponents.value,
+        stageCfg.value,
+      )
+    : [],
+);
+const eliminationScenarios = computed(() =>
+  selectedContenderDriver.value
+    ? calculateEliminationScenarios(
+        selectedContenderDriver.value,
+        focusOpponents.value,
+        stageCfg.value,
+      )
+    : { rows: [], alreadyEliminated: false },
+);
+const odds = ref([]);
+function runOdds() {
+  // 8k corridas x ~20 pilotos roda em poucas centenas de ms; sem worker por enquanto
+  odds.value = simulateTitleOdds(
+    championshipStatus.value.drivers,
+    stageCfg.value,
+    { runs: 8000 },
+  );
+}
+watch([racesRemaining, sprintsRemaining], () => (odds.value = []));
+
 function selectDriverAndGoToCalc(driverName) {
   selectedDriverName.value = driverName;
   activeTab.value = "calculator";
@@ -1464,22 +1747,33 @@ function selectDriverAndGoToCalc(driverName) {
 // SIMULADOR ETAPA A ETAPA INTERATIVO
 const interactiveStages = reactive([]);
 
+// Linhas: uma por GP restante, com a sprint antes do GP quando o calendário indica
 function initInteractiveStages() {
   interactiveStages.length = 0;
-  const count = Math.min(10, Math.max(1, racesRemaining.value));
-  for (let i = 1; i <= count; i += 1) {
-    interactiveStages.push({
-      name: `GP ${i} de ${count}`,
-      isSprint: false,
-      leaderPos: 2,
-      rivalPos: 1,
-      selectedLeader: false,
-      selectedRival: false,
-    });
+  const row = (name, isSprint) => ({
+    name,
+    isSprint,
+    leaderPos: 2,
+    rivalPos: 1,
+    selectedLeader: false,
+    selectedRival: false,
+  });
+  const weekends = getRemainingWeekends(
+    racesRemaining.value,
+    sprintsRemaining.value,
+  );
+  weekends.forEach((w, i) => {
+    if (w.sprint) interactiveStages.push(row(`Sprint ${i + 1}`, true));
+    interactiveStages.push(row(`GP ${i + 1} de ${weekends.length}`, false));
+  });
+  // sprints informadas além do calendário entram no fim, para o total bater com "Sprints restantes"
+  const placed = weekends.filter((w) => w.sprint).length;
+  for (let k = placed; k < sprintsRemaining.value; k += 1) {
+    interactiveStages.push(row(`Sprint extra ${k - placed + 1}`, true));
   }
 }
 
-watch(racesRemaining, () => {
+watch([racesRemaining, sprintsRemaining], () => {
   initInteractiveStages();
 });
 
@@ -1547,36 +1841,44 @@ function onBulkRivalChange(newVal) {
   });
 }
 
-function calcStageGain(leaderPos, rivalPos) {
-  const lPts = leaderPos <= 10 ? getRacePointsByPosition(leaderPos) : 0;
-  const rPts = rivalPos <= 10 ? getRacePointsByPosition(rivalPos) : 0;
-  return lPts - rPts;
+function calcStageGain(stage) {
+  return (
+    stagePoints(stage, stage.leaderPos) - stagePoints(stage, stage.rivalPos)
+  );
 }
+
+// Rival do simulador: o rival escolhido (se o foco é o líder) ou o próprio piloto em foco contra o líder
+const simRivalDriver = computed(() =>
+  isSelectedLeader.value
+    ? selectedRivalDriver.value
+    : selectedContenderDriver.value,
+);
 
 const simulatedLeaderTotalPoints = computed(() => {
   const base = Number(leaderDriver.value?.points) || 0;
-  const simGain = interactiveStages.reduce((acc, stage) => {
-    return (
-      acc +
-      (stage.leaderPos <= 10 ? getRacePointsByPosition(stage.leaderPos) : 0)
-    );
-  }, 0);
-  return base + simGain;
+  return (
+    base +
+    interactiveStages.reduce(
+      (acc, stage) => acc + stagePoints(stage, stage.leaderPos),
+      0,
+    )
+  );
 });
 
 const simulatedRivalTotalPoints = computed(() => {
-  const base = Number(selectedRivalDriver.value?.points) || 0;
-  const simGain = interactiveStages.reduce((acc, stage) => {
-    return (
-      acc + (stage.rivalPos <= 10 ? getRacePointsByPosition(stage.rivalPos) : 0)
-    );
-  }, 0);
-  return base + simGain;
+  const base = Number(simRivalDriver.value?.points) || 0;
+  return (
+    base +
+    interactiveStages.reduce(
+      (acc, stage) => acc + stagePoints(stage, stage.rivalPos),
+      0,
+    )
+  );
 });
 
 const simulatedChampion = computed(() => {
   if (simulatedRivalTotalPoints.value > simulatedLeaderTotalPoints.value) {
-    return selectedRivalDriver.value;
+    return simRivalDriver.value;
   }
   return leaderDriver.value;
 });
